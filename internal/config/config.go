@@ -22,8 +22,13 @@ func (dc *DatabaseConfig) GetDSN() string {
 		" sslmode=disable"
 }
 
+type Server struct {
+	ServerAddress string `envconfig:"SERVER_ADDRESS" default:"8080"`
+}
+
 type Config struct {
 	Debug    bool
+	Server   Server
 	Database DatabaseConfig
 }
 
