@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE transaction
+CREATE TABLE transactions
 (
     id          SERIAL PRIMARY KEY,
     amount      NUMERIC(12, 2) NOT NULL,
@@ -12,17 +12,17 @@ CREATE TABLE transaction
     updated_at  TIMESTAMPTZ    NOT NULL DEFAULT now()
 );
 
-CREATE TABLE recurring_transaction
+CREATE TABLE recurring_transactions
 (
     id                  SERIAL PRIMARY KEY,
-    transaction_id      INTEGER     NOT NULL REFERENCES transaction (id) ON DELETE CASCADE,
+    transaction_id      INTEGER     NOT NULL REFERENCES transactions (id) ON DELETE CASCADE,
     recurrence_interval INTERVAL    NOT NULL,
     is_active           BOOLEAN     NOT NULL DEFAULT TRUE,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE period_financial_summary
+CREATE TABLE period_financial_summaries
 (
     id                   SERIAL PRIMARY KEY,
     date_from            DATE           NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE period_financial_summary
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE period_financial_summary;
-DROP TABLE recurring_transaction;
-DROP TABLE transaction;
+DROP TABLE period_financial_summaries;
+DROP TABLE recurring_transactions;
+DROP TABLE transactions;
 -- +goose StatementEnd
