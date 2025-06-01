@@ -25,7 +25,7 @@ func (h *Handler) Routes() http.Handler {
 }
 
 func (h *Handler) createTransaction(w http.ResponseWriter, r *http.Request) {
-	var input models.Transaction
+	var input models.CreateTransaction
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, "invalid payload", http.StatusBadRequest)
 		return

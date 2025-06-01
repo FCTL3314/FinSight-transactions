@@ -3,16 +3,24 @@ package models
 import "time"
 
 type Transaction struct {
-	ID         uint                 `gorm:"primaryKey" json:"id"`
-	Amount     float64              `gorm:"type:numeric(12,2);not null" json:"amount"`
-	Name       string               `gorm:"type:text;not null" json:"name"`
-	Note       *string              `gorm:"type:text" json:"note,omitempty"`
-	CategoryID uint                 `gorm:"not null" json:"category_id"`
-	UserID     uint                 `gorm:"not null" json:"user_id"`
-	CreatedAt  time.Time            `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt  time.Time            `gorm:"autoUpdateTime" json:"updated_at"`
-	Recurring  RecurringTransaction `gorm:"foreignKey:TransactionID" json:"recurring,omitempty"`
+	ID         uint                  `gorm:"primaryKey" json:"id"`
+	Amount     float64               `gorm:"type:numeric(12,2);not null" json:"amount"`
+	Name       string                `gorm:"type:text;not null" json:"name"`
+	Note       *string               `gorm:"type:text" json:"note,omitempty"`
+	CategoryID uint                  `gorm:"not null" json:"category_id"`
+	UserID     uint                  `gorm:"not null" json:"user_id"`
+	CreatedAt  time.Time             `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt  time.Time             `gorm:"autoUpdateTime" json:"updated_at"`
+	Recurring  *RecurringTransaction `gorm:"foreignKey:TransactionID" json:"recurring,omitempty"`
 }
+
+type CreateTransaction struct {
+	Amount     float64 `json:"amount"`
+	Name       string  `json:"name"`
+	Note       *string `json:"note,omitempty"`
+	CategoryID uint    `json:"category_id"`
+}
+
 type RecurringTransaction struct {
 	ID                 uint      `gorm:"primaryKey" json:"id"`
 	TransactionID      uint      `gorm:"not null;index" json:"transaction_id"`
