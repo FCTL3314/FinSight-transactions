@@ -25,6 +25,6 @@ func main() {
 
 	repo := repository.NewTransactionRepo(db)
 	h := handler.NewHandler(repo)
-	log.Printf("starting server on %s", cfg.Server.ServerAddress)
-	log.Fatal(http.ListenAndServe(cfg.Server.ServerAddress, h.Routes()))
+	log.Printf("starting server on %s", cfg.Server.Port)
+	log.Fatal(http.ListenAndServe(cfg.Server.Port, h.Routes()))
 }
