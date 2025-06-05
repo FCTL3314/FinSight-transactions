@@ -1,12 +1,11 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/FCTL3314/FinSight-transactions/internal/repository"
 	"github.com/FCTL3314/FinSight-transactions/pkg/models"
-	"github.com/go-chi/chi/v5"
+	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
@@ -17,32 +16,33 @@ func NewHandler(repo repository.TransactionRepo) *Handler {
 	return &Handler{repo: repo}
 }
 
-func (h *Handler) Routes() http.Handler {
-	r := chi.NewRouter()
-	r.Post("/transactions", h.createTransaction)
-	r.Get("/transactions", h.listTransactions)
-	return r
+func (h *Handler) RegisterRoutes(r *gin.Engine) {
+	r.POST("/transactions", h.createTransaction)
+	r.GET("/transactions", h.listTransactions)
 }
 
-func (h *Handler) createTransaction(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) createTransaction(c *gin.Context) {
 	var input models.CreateTransaction
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, "invalid payload", http.StatusBadRequest)
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
 		return
 	}
-	if err := h.repo.Create(r.Context(), &input); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+	if err := h.repo.Create(c.Request.Context(), input.ToTransaction()); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(input)
+
+	c.JSON(http.StatusCreated, input)
 }
 
-func (h *Handler) listTransactions(w http.ResponseWriter, r *http.Request) {
-	list, err := h.repo.FindAll(r.Context())
+func (h *Handler) listTransactions(c *gin.Context) {
+	list, err := h.repo.FindAll(c.Request.Context())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	json.NewEncoder(w).Encode(list)
+
+	c.JSON(http.StatusOK, list)
 }

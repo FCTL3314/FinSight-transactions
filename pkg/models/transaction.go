@@ -21,6 +21,15 @@ type CreateTransaction struct {
 	CategoryID uint    `json:"category_id"`
 }
 
+func (ct *CreateTransaction) ToTransaction() *Transaction {
+	return &Transaction{
+		Amount:     ct.Amount,
+		Name:       ct.Name,
+		Note:       ct.Note,
+		CategoryID: ct.CategoryID,
+	}
+}
+
 type RecurringTransaction struct {
 	ID                 uint      `gorm:"primaryKey" json:"id"`
 	TransactionID      uint      `gorm:"not null;index" json:"transaction_id"`

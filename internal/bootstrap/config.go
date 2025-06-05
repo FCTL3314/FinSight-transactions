@@ -1,4 +1,4 @@
-package config
+package bootstrap
 
 import (
 	"github.com/joho/godotenv"
@@ -23,7 +23,9 @@ func (dc *DatabaseConfig) GetDSN() string {
 }
 
 type Server struct {
-	Port string `envconfig:"PORT" default:"8080"`
+	GinMode        string   `envconfig:"GIN_MODE" default:"debug"`
+	TrustedProxies []string `envconfig:"TRUSTED_PROXIES"`
+	Port           string   `envconfig:"PORT" default:"8080"`
 }
 
 type Config struct {

@@ -7,7 +7,7 @@ import (
 )
 
 type TransactionRepo interface {
-	Create(ctx context.Context, tx *models.CreateTransaction) error
+	Create(ctx context.Context, tx *models.Transaction) error
 	FindAll(ctx context.Context) ([]models.Transaction, error)
 }
 
@@ -19,7 +19,7 @@ func NewTransactionRepo(db *gorm.DB) TransactionRepo {
 	return &transactionRepo{db: db}
 }
 
-func (r *transactionRepo) Create(ctx context.Context, tx *models.CreateTransaction) error {
+func (r *transactionRepo) Create(ctx context.Context, tx *models.Transaction) error {
 	return r.db.WithContext(ctx).Create(tx).Error
 }
 
