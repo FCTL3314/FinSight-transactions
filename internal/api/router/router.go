@@ -3,13 +3,10 @@ package router
 import (
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/middleware"
+	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/container"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
-	"github.com/FCTL3314/FinSight-transactions/internal/errormapper"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
-	"github.com/FCTL3314/FinSight-transactions/internal/repository"
-	"github.com/FCTL3314/FinSight-transactions/internal/usecase"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type GetRouter interface {
@@ -47,40 +44,31 @@ type Router interface {
 
 func RegisterRoutes(
 	gin *gin.Engine,
-	db *gorm.DB,
-	cfg *config.Config,
-	loggerGroup *logging.LoggerGroup,
+	container *container.Container,
 ) {
 	v1Router := gin.Group("/api/v1/")
 
-	registerTransactionRoutes(v1Router, db, cfg, loggerGroup.Transaction)
+	registerTransactionRoutes(
+		v1Router,
+		container.Transaction.Controller,
+		container.Config,
+		container.LoggerGroup.Transaction,
+	)
 }
 
 func registerTransactionRoutes(
 	baseRouter *gin.RouterGroup,
-	db *gorm.DB,
+	transactionController controller.TransactionController,
 	cfg *config.Config,
 	logger logging.Logger,
 ) {
 	transactionsRouter := baseRouter.Group("/transactions/")
 	transactionsRouter.Use(middleware.ErrorLoggerMiddleware(logger))
 
-	transactionRepository := repository.NewTransactionRepository(db)
-	errorMapper := errormapper.BuildAllErrorsMapperChain()
-	transactionUsecase := usecase.NewTransactionUsecase(
-		transactionRepository,
-		errorMapper,
+	transactionRouter := NewTransactionRouter(
+		transactionsRouter,
+		transactionController,
 		cfg,
 	)
-
-	errorHandler := controller.DefaultErrorHandler()
-	transactionController := controller.NewTransactionController(
-		transactionUsecase,
-		errorHandler,
-		logger,
-		cfg,
-	)
-
-	transactionRouter := NewTransactionRouter(transactionsRouter, transactionController, cfg)
 	transactionRouter.RegisterAll()
 }

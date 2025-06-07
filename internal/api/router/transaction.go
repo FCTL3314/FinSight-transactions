@@ -14,7 +14,7 @@ type TransactionRouter struct {
 
 func NewTransactionRouter(
 	router *gin.RouterGroup,
-	transactionController *controller.DefaultTransactionController,
+	transactionController controller.TransactionController,
 	cfg *config.Config,
 ) *TransactionRouter {
 	return &TransactionRouter{router, transactionController, cfg}

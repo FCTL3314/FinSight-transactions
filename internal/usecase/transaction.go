@@ -18,13 +18,13 @@ type TransactionUsecase interface {
 }
 
 type DefaultTransactionUsecase struct {
-	transactionRepository repository.ITransactionRepository
+	transactionRepository repository.TransactionRepository
 	errorMapper           errormapper.Chain
 	cfg                   *config.Config
 }
 
-func NewTransactionUsecase(
-	transactionRepository repository.ITransactionRepository,
+func NewDefaultTransactionUsecase(
+	transactionRepository repository.TransactionRepository,
 	errorMapper errormapper.Chain,
 	cfg *config.Config,
 ) *DefaultTransactionUsecase {

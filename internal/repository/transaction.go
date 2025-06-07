@@ -6,27 +6,27 @@ import (
 	"gorm.io/gorm"
 )
 
-type ITransactionRepository interface {
+type TransactionRepository interface {
 	domain.Repository[models.Transaction]
 }
 
-type TransactionRepository struct {
+type DefaultTransactionRepository struct {
 	db        *gorm.DB
 	toPreload []string
 }
 
-func NewTransactionRepository(db *gorm.DB) *TransactionRepository {
-	return &TransactionRepository{db: db}
+func NewDefaultTransactionRepository(db *gorm.DB) *DefaultTransactionRepository {
+	return &DefaultTransactionRepository{db: db}
 }
 
-func (wr *TransactionRepository) GetById(id int64) (*models.Transaction, error) {
+func (wr *DefaultTransactionRepository) GetById(id int64) (*models.Transaction, error) {
 	return wr.Get(&domain.FilterParams{
 		Query: "id = ?",
 		Args:  []interface{}{id},
 	})
 }
 
-func (wr *TransactionRepository) Get(filterParams *domain.FilterParams) (*models.Transaction, error) {
+func (wr *DefaultTransactionRepository) Get(filterParams *domain.FilterParams) (*models.Transaction, error) {
 	var transaction models.Transaction
 	query := wr.db.Where(filterParams.Query, filterParams.Args...)
 	query = applyPreloadsForGORMQuery(query, wr.toPreload)
@@ -37,7 +37,7 @@ func (wr *TransactionRepository) Get(filterParams *domain.FilterParams) (*models
 	return &transaction, nil
 }
 
-func (wr *TransactionRepository) Fetch(params *domain.Params) ([]*models.Transaction, error) {
+func (wr *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*models.Transaction, error) {
 	var transactions []*models.Transaction
 	query := wr.db.Where(params.Filter.Query, params.Filter.Args...)
 	query = query.Order(params.Order)
@@ -52,7 +52,7 @@ func (wr *TransactionRepository) Fetch(params *domain.Params) ([]*models.Transac
 	return transactions, nil
 }
 
-func (wr *TransactionRepository) Create(transaction *models.Transaction) (*models.Transaction, error) {
+func (wr *DefaultTransactionRepository) Create(transaction *models.Transaction) (*models.Transaction, error) {
 	if err := (wr.db.Save(&transaction)).Error; err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (wr *TransactionRepository) Create(transaction *models.Transaction) (*model
 	return transaction, nil
 }
 
-func (wr *TransactionRepository) Update(transaction *models.Transaction) (*models.Transaction, error) {
+func (wr *DefaultTransactionRepository) Update(transaction *models.Transaction) (*models.Transaction, error) {
 	if err := (wr.db.Save(&transaction)).Error; err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (wr *TransactionRepository) Update(transaction *models.Transaction) (*model
 	return transaction, nil
 }
 
-func (wr *TransactionRepository) Delete(id int64) error {
+func (wr *DefaultTransactionRepository) Delete(id int64) error {
 	result := wr.db.Where("id = ?", id).Delete(&models.Transaction{})
 	if result.Error != nil {
 		return result.Error
@@ -89,7 +89,7 @@ func (wr *TransactionRepository) Delete(id int64) error {
 	return nil
 }
 
-func (wr *TransactionRepository) Count(params *domain.FilterParams) (int64, error) {
+func (wr *DefaultTransactionRepository) Count(params *domain.FilterParams) (int64, error) {
 	var count int64
 	if err := (wr.db.Model(&models.Transaction{}).Where(params.Query, params.Args...).Count(&count)).Error; err != nil {
 		return 0, err

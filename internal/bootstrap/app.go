@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"fmt"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
+	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/container"
 	"github.com/FCTL3314/FinSight-transactions/internal/collections"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 
@@ -17,26 +18,27 @@ type Application struct {
 	DB          *gorm.DB
 	Cfg         *config.Config
 	LoggerGroup *logging.LoggerGroup
+	Container   *container.Container
 }
 
 func NewApplication() *Application {
 	var app Application
 	app.initConfig()
 	app.initDB()
-	app.initGin()
 	app.initLoggerGroup()
+	app.initContainer()
+	app.initGin()
 	return &app
 }
 
-func (app *Application) Run() {
-	router.RegisterRoutes(app.Router, app.DB, app.Cfg, app.LoggerGroup)
-
+func (app *Application) Run() error {
 	addr := ":" + app.Cfg.Server.Port
 
 	fmt.Printf("Listening and serving HTTP on %s\n", addr)
 	if err := app.Router.Run(addr); err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
 
 func (app *Application) initConfig() {
@@ -62,6 +64,19 @@ func (app *Application) initDB() {
 	app.DB = db
 }
 
+func (app *Application) initLoggerGroup() {
+	transactionLogger := logging.InitTransactionLogger()
+
+	loggerGroup := logging.NewLoggerGroup(
+		transactionLogger,
+	)
+	app.LoggerGroup = loggerGroup
+}
+
+func (app *Application) initContainer() {
+	app.Container = container.NewContainer(app.DB, app.Cfg, app.LoggerGroup)
+}
+
 func (app *Application) setGinMode() {
 	modes := []string{gin.ReleaseMode, gin.DebugMode, gin.TestMode}
 
@@ -80,14 +95,7 @@ func (app *Application) initGin() {
 		log.Fatal(err)
 	}
 
+	router.RegisterRoutes(r, app.Container)
+
 	app.Router = r
-}
-
-func (app *Application) initLoggerGroup() {
-	transactionLogger := logging.InitTransactionLogger()
-
-	loggerGroup := logging.NewLoggerGroup(
-		transactionLogger,
-	)
-	app.LoggerGroup = loggerGroup
 }

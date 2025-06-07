@@ -99,10 +99,3 @@ func DefaultErrorHandler() *ErrorHandler {
 	eh.RegisterHandler(handleMaxRelatedObjectsNumber)
 	return eh
 }
-
-func UserErrorHandler() *ErrorHandler {
-	eh := DefaultErrorHandler()
-	eh.RegisterHandler(handleAuthInvalidCredentials)
-	eh.RegisterHandler(handleUniqueConstraint)
-	return eh
-}

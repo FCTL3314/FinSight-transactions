@@ -32,8 +32,8 @@ type LoggerGroup struct {
 	Transaction Logger
 }
 
-func NewLoggerGroup(transactionsLogger Logger) *LoggerGroup {
+func NewLoggerGroup(transactionLogger Logger) *LoggerGroup {
 	return &LoggerGroup{
-		Transaction: transactionsLogger,
+		Transaction: transactionLogger,
 	}
 }
