@@ -5,7 +5,7 @@ import (
 )
 
 type Pagination struct {
-	MaxWorkoutLimit int `yaml:"max_workout_limit"`
+	MaxTransactionLimit int `yaml:"max_transaction_limit"`
 }
 
 type Server struct {

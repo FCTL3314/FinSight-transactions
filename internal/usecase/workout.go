@@ -8,56 +8,53 @@ import (
 	"github.com/FCTL3314/FinSight-transactions/pkg/models"
 )
 
-type IWorkoutUsecase interface {
-	GetById(id int64) (*models.Workout, error)
-	Get(params *domain.FilterParams) (*models.Workout, error)
-	List(params *domain.Params) (*domain.PaginatedResult[*models.Workout], error)
-	Create(authUserId int64, createWorkoutRequest *models.CreateWorkoutRequest) (*models.Workout, error)
-	Update(authUserId, id int64, updateWorkoutRequest *models.UpdateWorkoutRequest) (*models.Workout, error)
+type TransactionUsecase interface {
+	GetById(id int64) (*models.Transaction, error)
+	Get(params *domain.FilterParams) (*models.Transaction, error)
+	List(params *domain.Params) (*domain.PaginatedResult[*models.Transaction], error)
+	Create(authUserId int64, createTransactionRequest *models.CreateTransactionRequest) (*models.Transaction, error)
+	Update(authUserId, id int64, updateTransactionRequest *models.UpdateTransactionRequest) (*models.Transaction, error)
 	Delete(authUserId, id int64) error
 }
 
-type WorkoutUsecase struct {
-	workoutRepository         repository.IWorkoutRepository
-	workoutExerciseRepository repository.WorkoutExerciseRepository
-	errorMapper               errormapper.Chain
-	cfg                       *config.Config
+type DefaultTransactionUsecase struct {
+	transactionRepository repository.ITransactionRepository
+	errorMapper           errormapper.Chain
+	cfg                   *config.Config
 }
 
-func NewWorkoutUsecase(
-	workoutRepository repository.IWorkoutRepository,
-	workoutExerciseRepository repository.WorkoutExerciseRepository,
+func NewTransactionUsecase(
+	transactionRepository repository.ITransactionRepository,
 	errorMapper errormapper.Chain,
 	cfg *config.Config,
-) *WorkoutUsecase {
-	return &WorkoutUsecase{
-		workoutRepository:         workoutRepository,
-		workoutExerciseRepository: workoutExerciseRepository,
-		errorMapper:               errorMapper,
-		cfg:                       cfg,
+) *DefaultTransactionUsecase {
+	return &DefaultTransactionUsecase{
+		transactionRepository: transactionRepository,
+		errorMapper:           errorMapper,
+		cfg:                   cfg,
 	}
 }
 
-func (wu *WorkoutUsecase) GetById(id int64) (*models.Workout, error) {
-	return &models.Workout{}, nil
+func (wu *DefaultTransactionUsecase) GetById(id int64) (*models.Transaction, error) {
+	return &models.Transaction{}, nil
 }
 
-func (wu *WorkoutUsecase) Get(params *domain.FilterParams) (*models.Workout, error) {
-	return &models.Workout{}, nil
+func (wu *DefaultTransactionUsecase) Get(params *domain.FilterParams) (*models.Transaction, error) {
+	return &models.Transaction{}, nil
 }
 
-func (wu *WorkoutUsecase) List(params *domain.Params) (*domain.PaginatedResult[*models.Workout], error) {
-	return &domain.PaginatedResult[*models.Workout]{}, nil
+func (wu *DefaultTransactionUsecase) List(params *domain.Params) (*domain.PaginatedResult[*models.Transaction], error) {
+	return &domain.PaginatedResult[*models.Transaction]{}, nil
 }
 
-func (wu *WorkoutUsecase) Create(authUserId int64, createWorkoutRequest *models.CreateWorkoutRequest) (*models.Workout, error) {
-	return &models.Workout{}, nil
+func (wu *DefaultTransactionUsecase) Create(authUserId int64, createTransactionRequest *models.CreateTransactionRequest) (*models.Transaction, error) {
+	return &models.Transaction{}, nil
 }
 
-func (wu *WorkoutUsecase) Update(authUserId int64, id int64, updateWorkoutRequest *models.UpdateWorkoutRequest) (*models.Workout, error) {
-	return &models.Workout{}, nil
+func (wu *DefaultTransactionUsecase) Update(authUserId int64, id int64, updateTransactionRequest *models.UpdateTransactionRequest) (*models.Transaction, error) {
+	return &models.Transaction{}, nil
 }
 
-func (wu *WorkoutUsecase) Delete(authUserId int64, id int64) error {
+func (wu *DefaultTransactionUsecase) Delete(authUserId int64, id int64) error {
 	return nil
 }

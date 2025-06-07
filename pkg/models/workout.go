@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type Workout struct {
+type Transaction struct {
 	ID               int64
 	Name             string
 	Description      string
@@ -17,7 +17,7 @@ type Workout struct {
 type WorkoutExercise struct {
 	ID        int64
 	WorkoutID int64
-	Workout   *Workout
+	Workout   *Transaction
 	BreakTime time.Duration
 	CreatedAt time.Time
 }
@@ -31,12 +31,12 @@ type ResponseWorkout struct {
 	UpdatedAt        time.Time                  `json:"updated_at"`
 }
 
-type CreateWorkoutRequest struct {
+type CreateTransactionRequest struct {
 	Name        string `json:"name" binding:"required,min=1,max=128"`
 	Description string `json:"description" binding:"omitempty,max=516"`
 }
 
-type UpdateWorkoutRequest struct {
+type UpdateTransactionRequest struct {
 	Name        *string `json:"name,omitempty" binding:"omitempty,min=1,max=128"`
 	Description *string `json:"description,omitempty" binding:"omitempty,max=516"`
 }
@@ -56,14 +56,14 @@ type UpdateWorkoutExerciseRequest struct {
 	BreakTime *time.Duration `json:"break_time,omitempty" binding:"omitempty"`
 }
 
-func NewWorkoutFromCreateRequest(req *CreateWorkoutRequest) *Workout {
-	return &Workout{
+func NewWorkoutFromCreateRequest(req *CreateTransactionRequest) *Transaction {
+	return &Transaction{
 		Name:        req.Name,
 		Description: req.Description,
 	}
 }
 
-func (w *Workout) ToResponseWorkout() *ResponseWorkout {
+func (w *Transaction) ToResponseTransaction() *ResponseWorkout {
 	rw := &ResponseWorkout{
 		ID:               w.ID,
 		Name:             w.Name,
@@ -76,7 +76,7 @@ func (w *Workout) ToResponseWorkout() *ResponseWorkout {
 	return rw
 }
 
-func (w *Workout) ApplyUpdate(req *UpdateWorkoutRequest) {
+func (w *Transaction) ApplyUpdate(req *UpdateTransactionRequest) {
 	if req.Name != nil {
 		w.Name = *req.Name
 	}
@@ -102,10 +102,10 @@ func (we *WorkoutExercise) ApplyUpdate(req *UpdateWorkoutExerciseRequest) {
 	}
 }
 
-func ToResponseWorkouts(workouts []*Workout) []*ResponseWorkout {
+func ToResponseTransactions(workouts []*Transaction) []*ResponseWorkout {
 	responseWorkouts := make([]*ResponseWorkout, len(workouts))
 	for i, workout := range workouts {
-		responseWorkouts[i] = workout.ToResponseWorkout()
+		responseWorkouts[i] = workout.ToResponseTransaction()
 	}
 	return responseWorkouts
 }

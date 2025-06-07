@@ -6,21 +6,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type WorkoutRouter struct {
-	router            *gin.RouterGroup
-	workoutController controller.WorkoutController
-	cfg               *config.Config
+type TransactionRouter struct {
+	router                *gin.RouterGroup
+	transactionController controller.TransactionController
+	cfg                   *config.Config
 }
 
-func NewWorkoutRouter(
+func NewTransactionRouter(
 	router *gin.RouterGroup,
-	workoutController *controller.DefaultWorkoutController,
+	transactionController *controller.DefaultTransactionController,
 	cfg *config.Config,
-) *WorkoutRouter {
-	return &WorkoutRouter{router, workoutController, cfg}
+) *TransactionRouter {
+	return &TransactionRouter{router, transactionController, cfg}
 }
 
-func (wr *WorkoutRouter) RegisterAll() {
+func (wr *TransactionRouter) RegisterAll() {
 	wr.RegisterGet()
 	wr.RegisterList()
 	wr.RegisterCreate()
@@ -28,22 +28,22 @@ func (wr *WorkoutRouter) RegisterAll() {
 	wr.RegisterDelete()
 }
 
-func (wr *WorkoutRouter) RegisterGet() {
-	wr.router.GET("/:id", wr.workoutController.Get)
+func (wr *TransactionRouter) RegisterGet() {
+	wr.router.GET("/:id", wr.transactionController.Get)
 }
 
-func (wr *WorkoutRouter) RegisterList() {
-	wr.router.GET("", wr.workoutController.List)
+func (wr *TransactionRouter) RegisterList() {
+	wr.router.GET("", wr.transactionController.List)
 }
 
-func (wr *WorkoutRouter) RegisterCreate() {
-	wr.router.POST("", wr.workoutController.Create)
+func (wr *TransactionRouter) RegisterCreate() {
+	wr.router.POST("", wr.transactionController.Create)
 }
 
-func (wr *WorkoutRouter) RegisterUpdate() {
-	wr.router.PATCH("/:id", wr.workoutController.Update)
+func (wr *TransactionRouter) RegisterUpdate() {
+	wr.router.PATCH("/:id", wr.transactionController.Update)
 }
 
-func (wr *WorkoutRouter) RegisterDelete() {
-	wr.router.DELETE("/:id", wr.workoutController.Delete)
+func (wr *TransactionRouter) RegisterDelete() {
+	wr.router.DELETE("/:id", wr.transactionController.Delete)
 }

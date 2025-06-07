@@ -53,36 +53,34 @@ func RegisterRoutes(
 ) {
 	v1Router := gin.Group("/api/v1/")
 
-	registerWorkoutRoutes(v1Router, db, cfg, *loggerGroup.Workout)
+	registerTransactionRoutes(v1Router, db, cfg, *loggerGroup.Workout)
 }
 
-func registerWorkoutRoutes(
+func registerTransactionRoutes(
 	baseRouter *gin.RouterGroup,
 	db *gorm.DB,
 	cfg *config.Config,
 	logger bootstrap.Logger,
 ) {
-	workoutsRouter := baseRouter.Group("/workouts/")
-	workoutsRouter.Use(middleware.ErrorLoggerMiddleware(logger))
+	transactionsRouter := baseRouter.Group("/transactions/")
+	transactionsRouter.Use(middleware.ErrorLoggerMiddleware(logger))
 
-	workoutRepository := repository.NewWorkoutRepository(db)
-	workoutExerciseRepository := repository.NewWorkoutExerciseRepository(db)
+	transactionRepository := repository.NewTransactionRepository(db)
 	errorMapper := errormapper.BuildAllErrorsMapperChain()
-	workoutUsecase := usecase.NewWorkoutUsecase(
-		workoutRepository,
-		*workoutExerciseRepository,
+	transactionUsecase := usecase.NewTransactionUsecase(
+		transactionRepository,
 		errorMapper,
 		cfg,
 	)
 
 	errorHandler := controller.DefaultErrorHandler()
-	workoutController := controller.NewWorkoutController(
-		workoutUsecase,
+	transactionController := controller.NewTransactionController(
+		transactionUsecase,
 		errorHandler,
 		logger,
 		cfg,
 	)
 
-	workoutRouter := NewWorkoutRouter(workoutsRouter, workoutController, cfg)
-	workoutRouter.RegisterAll()
+	transactionRouter := NewTransactionRouter(transactionsRouter, transactionController, cfg)
+	transactionRouter.RegisterAll()
 }

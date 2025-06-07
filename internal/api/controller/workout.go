@@ -4,30 +4,30 @@ import (
 	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
-	usecase2 "github.com/FCTL3314/FinSight-transactions/internal/usecase"
+	"github.com/FCTL3314/FinSight-transactions/internal/usecase"
 	"github.com/FCTL3314/FinSight-transactions/pkg/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type WorkoutController interface {
+type TransactionController interface {
 	Controller
 }
 
-type DefaultWorkoutController struct {
-	usecase      usecase2.IWorkoutUsecase
+type DefaultTransactionController struct {
+	usecase      usecase.TransactionUsecase
 	errorHandler *ErrorHandler
 	Logger       bootstrap.Logger
 	cfg          *config.Config
 }
 
-func NewWorkoutController(
-	usecase usecase2.IWorkoutUsecase,
+func NewTransactionController(
+	usecase usecase.TransactionUsecase,
 	errorHandler *ErrorHandler,
 	logger bootstrap.Logger,
 	cfg *config.Config,
-) *DefaultWorkoutController {
-	return &DefaultWorkoutController{
+) *DefaultTransactionController {
+	return &DefaultTransactionController{
 		usecase:      usecase,
 		errorHandler: errorHandler,
 		Logger:       logger,
@@ -35,27 +35,27 @@ func NewWorkoutController(
 	}
 }
 
-func (wc *DefaultWorkoutController) Get(c *gin.Context) {
+func (wc *DefaultTransactionController) Get(c *gin.Context) {
 	id, err := getParamAsInt64(c, "id")
 	if err != nil {
 		wc.errorHandler.Handle(c, err)
 		return
 	}
 
-	workout, err := wc.usecase.GetById(id)
+	transaction, err := wc.usecase.GetById(id)
 
 	if err != nil {
 		wc.errorHandler.Handle(c, err)
 		return
 	}
 
-	responseWorkout := workout.ToResponseWorkout()
+	responseTransaction := transaction.ToResponseTransaction()
 
-	c.JSON(http.StatusOK, responseWorkout)
+	c.JSON(http.StatusOK, responseTransaction)
 }
 
-func (wc *DefaultWorkoutController) List(c *gin.Context) {
-	params, err := getParams(c, wc.cfg.Pagination.MaxWorkoutLimit)
+func (wc *DefaultTransactionController) List(c *gin.Context) {
+	params, err := getParams(c, wc.cfg.Pagination.MaxTransactionLimit)
 	if err != nil {
 		wc.errorHandler.Handle(c, err)
 		return
@@ -67,65 +67,65 @@ func (wc *DefaultWorkoutController) List(c *gin.Context) {
 		return
 	}
 
-	responseWorkouts := models.ToResponseWorkouts(paginatedResult.Results)
+	responseTransactions := models.ToResponseTransactions(paginatedResult.Results)
 
 	paginatedResponse := domain.PaginatedResponse{
 		Count:   paginatedResult.Count,
 		Limit:   params.Pagination.Limit,
 		Offset:  params.Pagination.Offset,
-		Results: responseWorkouts,
+		Results: responseTransactions,
 	}
 
 	c.JSON(http.StatusOK, paginatedResponse)
 }
 
-func (wc *DefaultWorkoutController) Create(c *gin.Context) {
-	var workout models.CreateWorkoutRequest
-	if err := c.ShouldBindJSON(&workout); err != nil {
+func (wc *DefaultTransactionController) Create(c *gin.Context) {
+	var transaction models.CreateTransactionRequest
+	if err := c.ShouldBindJSON(&transaction); err != nil {
 		c.JSON(http.StatusBadRequest, domain.NewValidationErrorResponse(err.Error()))
 		return
 	}
 
 	authUserId := c.GetInt64(string(UserIDContextKey))
 
-	createdWorkout, err := wc.usecase.Create(authUserId, &workout)
+	createdTransaction, err := wc.usecase.Create(authUserId, &transaction)
 	if err != nil {
 		wc.errorHandler.Handle(c, err)
 		return
 	}
 
-	responseWorkout := createdWorkout.ToResponseWorkout()
+	responseTransaction := createdTransaction.ToResponseTransaction()
 
-	c.JSON(http.StatusCreated, responseWorkout)
+	c.JSON(http.StatusCreated, responseTransaction)
 }
 
-func (wc *DefaultWorkoutController) Update(c *gin.Context) {
+func (wc *DefaultTransactionController) Update(c *gin.Context) {
 	id, err := getParamAsInt64(c, "id")
 	if err != nil {
 		wc.errorHandler.Handle(c, err)
 		return
 	}
 
-	var workout models.UpdateWorkoutRequest
-	if err := c.ShouldBindJSON(&workout); err != nil {
+	var transaction models.UpdateTransactionRequest
+	if err := c.ShouldBindJSON(&transaction); err != nil {
 		c.JSON(http.StatusBadRequest, domain.NewValidationErrorResponse(err.Error()))
 		return
 	}
 
 	authUserId := c.GetInt64(string(UserIDContextKey))
 
-	updatedWorkout, err := wc.usecase.Update(authUserId, id, &workout)
+	updatedTransaction, err := wc.usecase.Update(authUserId, id, &transaction)
 	if err != nil {
 		wc.errorHandler.Handle(c, err)
 		return
 	}
 
-	responseWorkout := updatedWorkout.ToResponseWorkout()
+	responseTransaction := updatedTransaction.ToResponseTransaction()
 
-	c.JSON(http.StatusOK, responseWorkout)
+	c.JSON(http.StatusOK, responseTransaction)
 }
 
-func (wc *DefaultWorkoutController) Delete(c *gin.Context) {
+func (wc *DefaultTransactionController) Delete(c *gin.Context) {
 	id, err := getParamAsInt64(c, "id")
 	if err != nil {
 		wc.errorHandler.Handle(c, err)
