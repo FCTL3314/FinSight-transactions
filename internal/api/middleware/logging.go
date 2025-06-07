@@ -17,8 +17,8 @@ func ErrorLoggerMiddleware(logger logging.Logger) gin.HandlerFunc {
 		}
 
 		logger.Error("Internal server error",
-			"method", c.Request.Method,
-			"path", c.Request.URL.Path,
+			logging.WithField("method", c.Request.Method),
+			logging.WithField("path", c.Request.URL.Path),
 		)
 	}
 }

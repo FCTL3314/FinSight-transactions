@@ -1,12 +1,18 @@
 package logging
 
 import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"os"
 	"path/filepath"
 	"sync"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
+
+type ZapLogger struct {
+	logger *zap.Logger
+	mu     sync.RWMutex
+}
 
 func toZapFields(fields ...Field) []zap.Field {
 	zapFields := make([]zap.Field, len(fields))
@@ -14,11 +20,6 @@ func toZapFields(fields ...Field) []zap.Field {
 		zapFields[i] = zap.Any(field.Key, field.Value)
 	}
 	return zapFields
-}
-
-type ZapLogger struct {
-	logger *zap.Logger
-	mu     sync.RWMutex
 }
 
 func (l *ZapLogger) With(fields ...Field) Logger {
@@ -87,19 +88,25 @@ func (f *LoggerFactory) NewZapLogger(module, fileName string) (Logger, error) {
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
 
+	level := zap.NewAtomicLevelAt(zapcore.DebugLevel)
+
 	file, err := os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil, err
 	}
 
-	fileCore := zapcore.NewCore(
-		zapcore.NewJSONEncoder(encoderConfig),
-		zapcore.AddSync(file),
-		zap.NewAtomicLevelAt(zapcore.DebugLevel),
+	fileEncoder := zapcore.NewJSONEncoder(encoderConfig)
+	consoleEncoder := zapcore.NewConsoleEncoder(encoderConfig)
+	fileWriter := zapcore.AddSync(file)
+	consoleWriter := zapcore.AddSync(os.Stdout)
+
+	core := zapcore.NewTee(
+		zapcore.NewCore(fileEncoder, fileWriter, level),
+		zapcore.NewCore(consoleEncoder, consoleWriter, level),
 	)
 
 	zapLogger := zap.New(
-		fileCore,
+		core,
 		zap.AddCaller(),
 		zap.AddCallerSkip(1),
 		zap.AddStacktrace(zapcore.ErrorLevel),

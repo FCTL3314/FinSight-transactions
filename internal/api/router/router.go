@@ -53,7 +53,7 @@ func RegisterRoutes(
 ) {
 	v1Router := gin.Group("/api/v1/")
 
-	registerTransactionRoutes(v1Router, db, cfg, *loggerGroup.Transaction)
+	registerTransactionRoutes(v1Router, db, cfg, loggerGroup.Transaction)
 }
 
 func registerTransactionRoutes(

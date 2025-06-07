@@ -2,10 +2,10 @@ package bootstrap
 
 import (
 	"fmt"
+	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
 	"github.com/FCTL3314/FinSight-transactions/internal/collections"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 
-	// "github.com/FCTL3314/FinSight-transactions/internal/api/router"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -29,7 +29,7 @@ func NewApplication() *Application {
 }
 
 func (app *Application) Run() {
-	// router.RegisterRoutes(app.Router, app.DB, app.Cfg, app.LoggerGroup)
+	router.RegisterRoutes(app.Router, app.DB, app.Cfg, app.LoggerGroup)
 
 	addr := ":" + app.Cfg.Server.Port
 
