@@ -65,9 +65,11 @@ func (app *Application) initDB() {
 }
 
 func (app *Application) initLoggerGroup() {
+	generalLogger := logging.InitGeneralLogger()
 	transactionLogger := logging.InitTransactionLogger()
 
 	loggerGroup := logging.NewLoggerGroup(
+		generalLogger,
 		transactionLogger,
 	)
 	app.LoggerGroup = loggerGroup

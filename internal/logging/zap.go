@@ -65,8 +65,8 @@ func (l *ZapLogger) Fatal(msg string, fields ...Field) {
 	l.logger.Fatal(msg, toZapFields(fields...)...)
 }
 
-func (f *LoggerFactory) NewZapLogger(module, fileName string) (Logger, error) {
-	logPath := filepath.Join(f.baseDir, module, fileName)
+func (f *LoggerFactory) NewZapLogger(fileName string) (Logger, error) {
+	logPath := filepath.Join(f.baseDir, fileName)
 
 	logDir := filepath.Dir(logPath)
 	if err := os.MkdirAll(logDir, 0755); err != nil {
@@ -110,7 +110,7 @@ func (f *LoggerFactory) NewZapLogger(module, fileName string) (Logger, error) {
 		zap.AddCaller(),
 		zap.AddCallerSkip(1),
 		zap.AddStacktrace(zapcore.ErrorLevel),
-	).With(zap.String("module", module))
+	).With(zap.String("log_path", logPath))
 
 	return &ZapLogger{logger: zapLogger}, nil
 }

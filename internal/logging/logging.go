@@ -1,9 +1,9 @@
 package logging
 
 const (
-	LogsDir               = "logs"
-	TransactionsLogsDir   = "transactions"
-	ControllerLogFileName = "controller.json"
+	LogsDir              = "logs"
+	GeneralLogsFile      = "general.json"
+	TransactionsLogsFile = "transactions.json"
 )
 
 type Logger interface {
@@ -29,11 +29,13 @@ func WithField(key string, value interface{}) Field {
 }
 
 type LoggerGroup struct {
+	General     Logger
 	Transaction Logger
 }
 
-func NewLoggerGroup(transactionLogger Logger) *LoggerGroup {
+func NewLoggerGroup(generalLogger Logger, transactionLogger Logger) *LoggerGroup {
 	return &LoggerGroup{
+		General:     generalLogger,
 		Transaction: transactionLogger,
 	}
 }
