@@ -7,9 +7,8 @@ import (
 )
 
 var (
-	ErrObjectNotFound         = errors.New("object not found")
-	ErrAccessDenied           = errors.New("access denied")
-	ErrInvalidAuthCredentials = errors.New("invalid auth credentials")
+	ErrObjectNotFound = errors.New("object not found")
+	ErrAccessDenied   = errors.New("access denied")
 )
 
 type ErrPaginationLimitExceeded struct {
@@ -37,20 +36,4 @@ type ErrInvalidURLParam struct {
 
 func (e *ErrInvalidURLParam) Error() string {
 	return fmt.Sprintf("Invalid \"%s\" URL parameter received", e.Param)
-}
-
-type ErrMaxRelatedObjectsNumberReached struct {
-	ParentObjectName  string
-	RelatedObjectName string
-	Limit             int
-}
-
-func (e *ErrMaxRelatedObjectsNumberReached) Error() string {
-	return fmt.Sprintf(
-		"Cannot add more \"%s\" objects to \"%s\" object. The maximum number of \"%s\" is %d.",
-		e.RelatedObjectName,
-		e.ParentObjectName,
-		e.RelatedObjectName,
-		e.Limit,
-	)
 }
