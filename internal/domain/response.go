@@ -44,13 +44,6 @@ func NewInvalidURLParamResponse(detail string) *ErrorResponse {
 	)
 }
 
-func NewMaxRelatedObjectsNumberErrorResponse(detail string) *ErrorResponse {
-	return NewErrorResponse(
-		detail,
-		"max_related_objects_number_error",
-	)
-}
-
 var (
 	InternalServerErrorResponse = NewErrorResponse(
 		"Internal Server Error",
@@ -63,9 +56,5 @@ var (
 	ForbiddenResponse = NewErrorResponse(
 		"Forbidden",
 		"forbidden",
-	)
-	InvalidAuthCredentialsResponse = NewErrorResponse(
-		"Invalid authentication credentials provided",
-		"invalid_auth_credentials",
 	)
 )
