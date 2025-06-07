@@ -44,7 +44,7 @@ type Router interface {
 
 func RegisterRoutes(
 	gin *gin.Engine,
-	container *container.Container,
+	container *container.AppContainer,
 ) {
 	v1Router := gin.Group("/api/v1/")
 
