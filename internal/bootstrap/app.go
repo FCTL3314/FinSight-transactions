@@ -5,6 +5,7 @@ import (
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
 	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/container"
 	"github.com/FCTL3314/FinSight-transactions/internal/collections"
+	"github.com/FCTL3314/FinSight-transactions/internal/database"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
@@ -50,7 +51,7 @@ func (app *Application) initConfig() {
 }
 
 func (app *Application) initDB() {
-	DBConnector := NewConnector(
+	DBConnector := database.NewGormConnector(
 		app.Cfg.Database.Name,
 		app.Cfg.Database.User,
 		app.Cfg.Database.Password,
