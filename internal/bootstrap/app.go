@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"fmt"
 	"github.com/FCTL3314/FinSight-transactions/internal/collections"
+	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 
 	// "github.com/FCTL3314/FinSight-transactions/internal/api/router"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
@@ -15,7 +16,7 @@ type Application struct {
 	Router      *gin.Engine
 	DB          *gorm.DB
 	Cfg         *config.Config
-	LoggerGroup *LoggerGroup
+	LoggerGroup *logging.LoggerGroup
 }
 
 func NewApplication() *Application {
@@ -83,10 +84,10 @@ func (app *Application) initGin() {
 }
 
 func (app *Application) initLoggerGroup() {
-	workoutLogger := InitWorkoutLogger()
+	transactionLogger := logging.InitTransactionLogger()
 
-	loggerGroup := NewLoggerGroup(
-		&workoutLogger,
+	loggerGroup := logging.NewLoggerGroup(
+		transactionLogger,
 	)
 	app.LoggerGroup = loggerGroup
 }

@@ -1,2 +1,2 @@
 pagination:
-  max_workout_limit: 64
+  transaction_limit: 64

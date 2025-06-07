@@ -3,9 +3,9 @@ package router
 import (
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/middleware"
-	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/errormapper"
+	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/FCTL3314/FinSight-transactions/internal/repository"
 	"github.com/FCTL3314/FinSight-transactions/internal/usecase"
 	"github.com/gin-gonic/gin"
@@ -49,18 +49,18 @@ func RegisterRoutes(
 	gin *gin.Engine,
 	db *gorm.DB,
 	cfg *config.Config,
-	loggerGroup *bootstrap.LoggerGroup,
+	loggerGroup *logging.LoggerGroup,
 ) {
 	v1Router := gin.Group("/api/v1/")
 
-	registerTransactionRoutes(v1Router, db, cfg, *loggerGroup.Workout)
+	registerTransactionRoutes(v1Router, db, cfg, *loggerGroup.Transaction)
 }
 
 func registerTransactionRoutes(
 	baseRouter *gin.RouterGroup,
 	db *gorm.DB,
 	cfg *config.Config,
-	logger bootstrap.Logger,
+	logger logging.Logger,
 ) {
 	transactionsRouter := baseRouter.Group("/transactions/")
 	transactionsRouter.Use(middleware.ErrorLoggerMiddleware(logger))

@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
+	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/FCTL3314/FinSight-transactions/internal/usecase"
 	"github.com/FCTL3314/FinSight-transactions/pkg/models"
 	"github.com/gin-gonic/gin"
@@ -17,14 +17,14 @@ type TransactionController interface {
 type DefaultTransactionController struct {
 	usecase      usecase.TransactionUsecase
 	errorHandler *ErrorHandler
-	Logger       bootstrap.Logger
+	Logger       logging.Logger
 	cfg          *config.Config
 }
 
 func NewTransactionController(
 	usecase usecase.TransactionUsecase,
 	errorHandler *ErrorHandler,
-	logger bootstrap.Logger,
+	logger logging.Logger,
 	cfg *config.Config,
 ) *DefaultTransactionController {
 	return &DefaultTransactionController{
@@ -55,7 +55,7 @@ func (wc *DefaultTransactionController) Get(c *gin.Context) {
 }
 
 func (wc *DefaultTransactionController) List(c *gin.Context) {
-	params, err := getParams(c, wc.cfg.Pagination.MaxTransactionLimit)
+	params, err := getParams(c, wc.cfg.Pagination.TransactionLimit)
 	if err != nil {
 		wc.errorHandler.Handle(c, err)
 		return

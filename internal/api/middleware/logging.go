@@ -1,12 +1,12 @@
 package middleware
 
 import (
-	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap"
+	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func ErrorLoggerMiddleware(logger bootstrap.Logger) gin.HandlerFunc {
+func ErrorLoggerMiddleware(logger logging.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
 
