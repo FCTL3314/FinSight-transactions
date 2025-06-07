@@ -1,12 +1,12 @@
-version: "3.8"
+version: "3.9"
 services:
-  postgres:
-    image: postgres:14
+  db:
+    image: postgres:15
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    volumes:
-      - ./volumes/postgresql:/var/lib/postgresql/data

@@ -1,18 +1,17 @@
 # Docker services
-DOCKER_COMPOSE_PROJECT_NAME=transactions_services_local
-LOCAL_DOCKER_COMPOSE_FILE=./docker/local/docker-compose.yml
+LOCAL_DOCKER_COMPOSE_PROJECT_NAME=transactions_services_local
+LOCAL_DOCKER_COMPOSE_FILE_PATH=./docker/local/docker-compose.yml
 
 up_local_services:
-	docker compose -p $(DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE) up -d
+	docker compose -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) up -d
 
 down_local_services:
-	docker compose -p $(DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE) down
+	docker compose -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) down
 
 restart_local_services: down_local_services up_local_services
 
 local_services_logs:
-	docker compose -p $(DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE) logs
-
+	docker compose -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) logs
 
 # Migrations(Goose)
 MIGRATIONS_DIR=migrations
@@ -23,3 +22,13 @@ apply_migrations:
 
 add_migration:
 	goose -dir $(MIGRATIONS_DIR) create $(name) sql
+
+# Deployment
+DEFAULT_SERVICE_NAME = transactions_service_server
+
+get_updates:
+	git pull
+	rm transactions_service
+	go build -o transactions_service cmd/api/main.go
+	sudo systemctl restart $(or $(SERVICE_NAME), $(DEFAULT_SERVICE_NAME))
+	sudo systemctl --no-pager -l status $(or $(SERVICE_NAME), $(DEFAULT_SERVICE_NAME))

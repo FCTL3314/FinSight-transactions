@@ -1,15 +1,21 @@
 package bootstrap
 
 import (
+	"fmt"
+	"github.com/FCTL3314/FinSight-transactions/internal/collections"
+
+	// "github.com/FCTL3314/FinSight-transactions/internal/api/router"
+	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"log"
 )
 
 type Application struct {
-	Router *gin.Engine
-	DB     *gorm.DB
-	Cfg    *Config
+	Router      *gin.Engine
+	DB          *gorm.DB
+	Cfg         *config.Config
+	LoggerGroup *LoggerGroup
 }
 
 func NewApplication() *Application {
@@ -17,12 +23,23 @@ func NewApplication() *Application {
 	app.initConfig()
 	app.initDB()
 	app.initGin()
+	app.initLoggerGroup()
 	return &app
 }
 
-func (app *Application) initConfig() {
-	c, err := Load()
+func (app *Application) Run() {
+	// router.RegisterRoutes(app.Router, app.DB, app.Cfg, app.LoggerGroup)
 
+	addr := ":" + app.Cfg.Server.Port
+
+	fmt.Printf("Listening and serving HTTP on %s\n", addr)
+	if err := app.Router.Run(addr); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func (app *Application) initConfig() {
+	c, err := config.Load()
 	if err != nil {
 		log.Fatal("Error during config loading. Please check if environmental files exist.")
 	}
@@ -30,7 +47,7 @@ func (app *Application) initConfig() {
 }
 
 func (app *Application) initDB() {
-	DBConnector := NewGormConnector(
+	DBConnector := NewConnector(
 		app.Cfg.Database.Name,
 		app.Cfg.Database.User,
 		app.Cfg.Database.Password,
@@ -45,12 +62,11 @@ func (app *Application) initDB() {
 }
 
 func (app *Application) setGinMode() {
-	switch app.Cfg.Server.GinMode {
-	case "release":
-		gin.SetMode(gin.ReleaseMode)
-	case "test":
-		gin.SetMode(gin.TestMode)
-	default:
+	modes := []string{gin.ReleaseMode, gin.DebugMode, gin.TestMode}
+
+	if collections.Contains(modes, app.Cfg.Server.Mode) {
+		gin.SetMode(app.Cfg.Server.Mode)
+	} else {
 		gin.SetMode(gin.DebugMode)
 	}
 }
@@ -66,8 +82,11 @@ func (app *Application) initGin() {
 	app.Router = r
 }
 
-func (app *Application) Run() {
-	if err := app.Router.Run(":" + app.Cfg.Server.Port); err != nil {
-		log.Fatal(err)
-	}
+func (app *Application) initLoggerGroup() {
+	workoutLogger := InitWorkoutLogger()
+
+	loggerGroup := NewLoggerGroup(
+		&workoutLogger,
+	)
+	app.LoggerGroup = loggerGroup
 }

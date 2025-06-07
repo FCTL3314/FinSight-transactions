@@ -6,11 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type DBConnector interface {
-	Connect() (*gorm.DB, error)
-}
-
-type GormConnector struct {
+type Connector struct {
 	Name     string
 	User     string
 	Password string
@@ -18,14 +14,14 @@ type GormConnector struct {
 	Port     string
 }
 
-func NewGormConnector(
+func NewConnector(
 	name string,
 	user string,
 	password string,
 	host string,
 	port string,
-) GormConnector {
-	return GormConnector{
+) Connector {
+	return Connector{
 		Name:     name,
 		User:     user,
 		Password: password,
@@ -35,7 +31,7 @@ func NewGormConnector(
 
 }
 
-func (c *GormConnector) Connect() (*gorm.DB, error) {
+func (c *Connector) Connect() (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s",
 		c.Host,

@@ -24,6 +24,8 @@ go.work.sum
 # env file
 .env
 
-# JetBrains
-.idea
+# Database files
+docker/local/volumes/postgres
 
+# JetBrains IDE's
+./.idea
