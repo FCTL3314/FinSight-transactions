@@ -28,6 +28,10 @@ func WithField(key string, value interface{}) Field {
 	return NewField(key, value)
 }
 
+func WithError(error error) Field {
+	return NewField("error", error)
+}
+
 type LoggerGroup struct {
 	General     Logger
 	Transaction Logger

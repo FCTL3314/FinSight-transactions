@@ -8,7 +8,6 @@ import (
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"log"
 )
 
 type AppContainer struct {
@@ -46,7 +45,10 @@ func NewAppContainer() *AppContainer {
 func (c *AppContainer) setupConfig() {
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatal("Failed to load configuration. Please check environmental files: ", err)
+		c.LoggerGroup.General.Fatal(
+			"failed to load configuration. Please check environmental files",
+			logging.WithError(err),
+		)
 	}
 	c.Config = cfg
 }
@@ -72,7 +74,7 @@ func (c *AppContainer) setupDatabase() {
 
 	db, err := dbConnector.Connect()
 	if err != nil {
-		log.Fatal("Database connection failed: ", err)
+		c.LoggerGroup.General.Fatal("database connection failed", logging.WithError(err))
 	}
 	c.DB = db
 }

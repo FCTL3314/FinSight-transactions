@@ -5,10 +5,8 @@ import (
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
 	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/container"
 	"github.com/FCTL3314/FinSight-transactions/internal/collections"
-	"github.com/FCTL3314/FinSight-transactions/internal/logging"
-	"log"
-
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
+	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -41,7 +39,7 @@ func NewApplication() *Application {
 func (app *Application) Run() error {
 	addr := ":" + app.Config.Server.Port
 
-	fmt.Printf("Listening and serving HTTP on %s\n", addr)
+	app.LoggerGroup.General.Info(fmt.Sprintf("Listening and serving HTTP on %s\n", addr))
 	if err := app.Router.Run(addr); err != nil {
 		return err
 	}
@@ -66,7 +64,10 @@ func (app *Application) setGinMode() {
 
 func (app *Application) setGinTrustedProxies() {
 	if err := app.Router.SetTrustedProxies(app.Config.Server.TrustedProxies); err != nil {
-		log.Fatal("Error setting trusted proxies:", err)
+		app.LoggerGroup.General.Fatal(
+			"error setting trusted proxies",
+			logging.WithError(err),
+		)
 	}
 }
 
