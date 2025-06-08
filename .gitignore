@@ -28,4 +28,4 @@ go.work.sum
 docker/local/volumes/postgres
 
 # JetBrains IDE's
-./.idea
+.idea
