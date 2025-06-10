@@ -1,15 +1,17 @@
-package domain
+package repository
+
+import "github.com/FCTL3314/FinSight-transactions/internal/domain"
 
 type GetterById[T any] interface {
 	GetById(id int64) (*T, error)
 }
 
 type Getter[T any] interface {
-	Get(filterParams *FilterParams) (*T, error)
+	Get(filterParams *domain.FilterParams) (*T, error)
 }
 
 type Fetcher[T any] interface {
-	Fetch(params *Params) ([]*T, error)
+	Fetch(params *domain.Params) ([]*T, error)
 }
 
 type Creator[T any] interface {
@@ -25,7 +27,7 @@ type Deleter[T any] interface {
 }
 
 type Counter[T any] interface {
-	Count(params *FilterParams) (int64, error)
+	Count(params *domain.FilterParams) (int64, error)
 }
 
 type Repository[T any] interface {

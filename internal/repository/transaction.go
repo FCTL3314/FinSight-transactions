@@ -7,7 +7,7 @@ import (
 )
 
 type TransactionRepository interface {
-	domain.Repository[models.Transaction]
+	Repository[models.Transaction]
 }
 
 type DefaultTransactionRepository struct {
