@@ -35,17 +35,17 @@ func NewDefaultTransactionController(
 	}
 }
 
-func (wc *DefaultTransactionController) Get(c *gin.Context) {
+func (tc *DefaultTransactionController) Get(c *gin.Context) {
 	id, err := getParamAsInt64(c, "id")
 	if err != nil {
-		wc.errorHandler.Handle(c, err)
+		tc.errorHandler.Handle(c, err)
 		return
 	}
 
-	transaction, err := wc.usecase.GetById(id)
+	transaction, err := tc.usecase.GetById(id)
 
 	if err != nil {
-		wc.errorHandler.Handle(c, err)
+		tc.errorHandler.Handle(c, err)
 		return
 	}
 
@@ -54,16 +54,16 @@ func (wc *DefaultTransactionController) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, responseTransaction)
 }
 
-func (wc *DefaultTransactionController) List(c *gin.Context) {
-	params, err := getParams(c, wc.cfg.Pagination.TransactionLimit)
+func (tc *DefaultTransactionController) List(c *gin.Context) {
+	params, err := getParams(c, tc.cfg.Pagination.TransactionLimit)
 	if err != nil {
-		wc.errorHandler.Handle(c, err)
+		tc.errorHandler.Handle(c, err)
 		return
 	}
 
-	paginatedResult, err := wc.usecase.List(&params)
+	paginatedResult, err := tc.usecase.List(&params)
 	if err != nil {
-		wc.errorHandler.Handle(c, err)
+		tc.errorHandler.Handle(c, err)
 		return
 	}
 
@@ -79,7 +79,7 @@ func (wc *DefaultTransactionController) List(c *gin.Context) {
 	c.JSON(http.StatusOK, paginatedResponse)
 }
 
-func (wc *DefaultTransactionController) Create(c *gin.Context) {
+func (tc *DefaultTransactionController) Create(c *gin.Context) {
 	var transaction models.CreateTransactionRequest
 	if err := c.ShouldBindJSON(&transaction); err != nil {
 		c.JSON(http.StatusBadRequest, domain.NewValidationErrorResponse(err.Error()))
@@ -88,9 +88,9 @@ func (wc *DefaultTransactionController) Create(c *gin.Context) {
 
 	authUserId := c.GetInt64(string(UserIDContextKey))
 
-	createdTransaction, err := wc.usecase.Create(authUserId, &transaction)
+	createdTransaction, err := tc.usecase.Create(authUserId, &transaction)
 	if err != nil {
-		wc.errorHandler.Handle(c, err)
+		tc.errorHandler.Handle(c, err)
 		return
 	}
 
@@ -99,10 +99,10 @@ func (wc *DefaultTransactionController) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, responseTransaction)
 }
 
-func (wc *DefaultTransactionController) Update(c *gin.Context) {
+func (tc *DefaultTransactionController) Update(c *gin.Context) {
 	id, err := getParamAsInt64(c, "id")
 	if err != nil {
-		wc.errorHandler.Handle(c, err)
+		tc.errorHandler.Handle(c, err)
 		return
 	}
 
@@ -114,9 +114,9 @@ func (wc *DefaultTransactionController) Update(c *gin.Context) {
 
 	authUserId := c.GetInt64(string(UserIDContextKey))
 
-	updatedTransaction, err := wc.usecase.Update(authUserId, id, &transaction)
+	updatedTransaction, err := tc.usecase.Update(authUserId, id, &transaction)
 	if err != nil {
-		wc.errorHandler.Handle(c, err)
+		tc.errorHandler.Handle(c, err)
 		return
 	}
 
@@ -125,17 +125,17 @@ func (wc *DefaultTransactionController) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, responseTransaction)
 }
 
-func (wc *DefaultTransactionController) Delete(c *gin.Context) {
+func (tc *DefaultTransactionController) Delete(c *gin.Context) {
 	id, err := getParamAsInt64(c, "id")
 	if err != nil {
-		wc.errorHandler.Handle(c, err)
+		tc.errorHandler.Handle(c, err)
 		return
 	}
 
 	authUserId := c.GetInt64(string(UserIDContextKey))
 
-	if err := wc.usecase.Delete(authUserId, id); err != nil {
-		wc.errorHandler.Handle(c, err)
+	if err := tc.usecase.Delete(authUserId, id); err != nil {
+		tc.errorHandler.Handle(c, err)
 		return
 	}
 	c.Status(http.StatusNoContent)
