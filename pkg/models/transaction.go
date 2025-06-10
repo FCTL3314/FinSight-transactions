@@ -91,27 +91,3 @@ type UpdateTransactionRequest struct {
 	Note       *string  `json:"note"`
 	CategoryID *int64   `json:"category_id"`
 }
-
-type RecurringTransaction struct {
-	ID                 uint      `json:"id" gorm:"primaryKey"`
-	TransactionID      uint      `json:"transaction_id" gorm:"not null"`
-	RecurrenceInterval string    `json:"recurrence_interval" gorm:"type:interval;not null"` // Using string as GORM doesn't have a direct interval type
-	IsActive           bool      `json:"is_active" gorm:"not null;default:true"`
-	CreatedAt          time.Time `json:"created_at" gorm:"not null;default:now()"`
-	UpdatedAt          time.Time `json:"updated_at" gorm:"not null;default:now()"`
-
-	Transaction *Transaction `json:"transaction,omitempty" gorm:"foreignKey:TransactionID"`
-}
-
-type PeriodFinancialSummary struct {
-	ID                 uint      `json:"id" gorm:"primaryKey"`
-	DateFrom           time.Time `json:"date_from" gorm:"type:date;not null"`
-	DateTo             time.Time `json:"date_to" gorm:"type:date;not null"`
-	StartingBalance    float64   `json:"starting_balance" gorm:"type:numeric(12,2);not null"`
-	ProjectedBalance   float64   `json:"projected_balance" gorm:"type:numeric(12,2)"`
-	ActualBalance      float64   `json:"actual_balance" gorm:"type:numeric(12,2)"`
-	ProjectedNetChange float64   `json:"projected_net_change" gorm:"type:numeric(12,2)"`
-	ActualNetChange    float64   `json:"actual_net_change" gorm:"type:numeric(12,2)"`
-	CreatedAt          time.Time `json:"created_at" gorm:"not null;default:now()"`
-	UpdatedAt          time.Time `json:"updated_at" gorm:"not null;default:now()"`
-}
