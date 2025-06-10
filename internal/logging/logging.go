@@ -32,13 +32,13 @@ func WithError(error error) Field {
 	return NewField("error", error)
 }
 
-type LoggerGroup struct {
+type LoggersGroup struct {
 	General     Logger
 	Transaction Logger
 }
 
-func NewLoggerGroup(generalLogger Logger, transactionLogger Logger) *LoggerGroup {
-	return &LoggerGroup{
+func NewLoggersGroup(generalLogger Logger, transactionLogger Logger) *LoggersGroup {
+	return &LoggersGroup{
 		General:     generalLogger,
 		Transaction: transactionLogger,
 	}

@@ -15,7 +15,7 @@ type AppContainer struct {
 	Router      *gin.RouterGroup
 	DB          *gorm.DB
 	Config      *config.Config
-	LoggerGroup *logging.LoggerGroup
+	LoggerGroup *logging.LoggersGroup
 
 	Transaction *TransactionContainer
 }
@@ -55,7 +55,7 @@ func (c *AppContainer) setupLoggers() {
 	generalLogger := logging.InitGeneralLogger()
 	transactionLogger := logging.InitTransactionLogger()
 
-	c.LoggerGroup = logging.NewLoggerGroup(
+	c.LoggerGroup = logging.NewLoggersGroup(
 		generalLogger,
 		transactionLogger,
 	)
