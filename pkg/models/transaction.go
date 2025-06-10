@@ -70,7 +70,7 @@ type CreateTransactionRequest struct {
 	Name       string  `json:"name" binding:"required"`
 	Note       string  `json:"note"`
 	CategoryID int64   `json:"category_id" binding:"required"`
-	UserID     int64   `json:"user_id" binding:"required"`
+	UserID     int64   `json:"user_id"`
 }
 
 func (ct *CreateTransactionRequest) ToFullTransaction() *Transaction {

@@ -21,7 +21,7 @@ type DefaultTransactionController struct {
 	cfg          *config.Config
 }
 
-func NewTransactionController(
+func NewDefaultTransactionController(
 	usecase usecase.TransactionUsecase,
 	errorHandler *ErrorHandler,
 	logger logging.Logger,

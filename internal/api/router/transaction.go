@@ -2,48 +2,66 @@ package router
 
 import (
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
+	"github.com/FCTL3314/FinSight-transactions/internal/api/middleware"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
+	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/gin-gonic/gin"
 )
 
-type TransactionRouter struct {
+type TransactionRouter interface {
+	Router
+}
+
+type DefaultTransactionRouter struct {
 	router                *gin.RouterGroup
 	transactionController controller.TransactionController
 	cfg                   *config.Config
 }
 
-func NewTransactionRouter(
-	router *gin.RouterGroup,
+func NewDefaultTransactionRouter(
+	baseRouter *gin.RouterGroup,
 	transactionController controller.TransactionController,
 	cfg *config.Config,
-) *TransactionRouter {
-	return &TransactionRouter{router, transactionController, cfg}
+	logger logging.Logger,
+) *DefaultTransactionRouter {
+	baseRoute := baseRouter.Group("/transactions/")
+	baseRoute.Use(middleware.ErrorLoggerMiddleware(logger))
+
+	return &DefaultTransactionRouter{baseRoute, transactionController, cfg}
 }
 
-func (wr *TransactionRouter) RegisterAll() {
-	wr.RegisterGet()
-	wr.RegisterList()
-	wr.RegisterCreate()
-	wr.RegisterUpdate()
-	wr.RegisterDelete()
+func (tr *DefaultTransactionRouter) Get() {
+	tr.router.GET("/:id", tr.transactionController.Get)
 }
 
-func (wr *TransactionRouter) RegisterGet() {
-	wr.router.GET("/:id", wr.transactionController.Get)
+func (tr *DefaultTransactionRouter) List() {
+	tr.router.GET("", tr.transactionController.List)
 }
 
-func (wr *TransactionRouter) RegisterList() {
-	wr.router.GET("", wr.transactionController.List)
+func (tr *DefaultTransactionRouter) Create() {
+	tr.router.POST("", tr.transactionController.Create)
 }
 
-func (wr *TransactionRouter) RegisterCreate() {
-	wr.router.POST("", wr.transactionController.Create)
+func (tr *DefaultTransactionRouter) Update() {
+	tr.router.PATCH("/:id", tr.transactionController.Update)
 }
 
-func (wr *TransactionRouter) RegisterUpdate() {
-	wr.router.PATCH("/:id", wr.transactionController.Update)
+func (tr *DefaultTransactionRouter) Delete() {
+	tr.router.DELETE("/:id", tr.transactionController.Delete)
 }
 
-func (wr *TransactionRouter) RegisterDelete() {
-	wr.router.DELETE("/:id", wr.transactionController.Delete)
+type TransactionRouterRegistrator struct {
+	router TransactionRouter
+}
+
+func NewTransactionRouterRegistrator(transactionRouter TransactionRouter) *TransactionRouterRegistrator {
+	return &TransactionRouterRegistrator{router: transactionRouter}
+}
+
+func (r *TransactionRouterRegistrator) Register() {
+	r.router.Get()
+	r.router.List()
+	r.router.Create()
+	r.router.Update()
+	r.router.Delete()
 }

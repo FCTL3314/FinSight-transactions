@@ -11,35 +11,33 @@ import (
 )
 
 type AppContainer struct {
-	Router      *gin.Engine
+	GinEngine   *gin.Engine
+	Router      *gin.RouterGroup
 	DB          *gorm.DB
 	Config      *config.Config
 	LoggerGroup *logging.LoggerGroup
-	ErrorMapper errormapper.Chain
+
 	Transaction *TransactionContainer
 }
 
 func NewAppContainer() *AppContainer {
-	container := &AppContainer{}
+	c := &AppContainer{}
 
-	errorMapper := errormapper.BuildAllErrorsMapperChain()
-	errorHandler := controller.DefaultErrorHandler()
+	c.setupGin()
+	c.setupConfig()
+	c.setupLoggers()
+	c.setupDatabase()
+	c.setupTransaction()
 
-	container.setupConfig()
-	container.setupLoggers()
-	container.setupDatabase()
+	return c
+}
 
-	container.Router = gin.Default()
-	container.ErrorMapper = errorMapper
-	container.Transaction = NewTransactionContainer(
-		container.DB,
-		container.Config,
-		errorMapper,
-		errorHandler,
-		container.LoggerGroup.Transaction,
-	)
+func (c *AppContainer) setupGin() {
+	engine := gin.Default()
+	router := engine.Group("/api/v1/")
 
-	return container
+	c.GinEngine = engine
+	c.Router = router
 }
 
 func (c *AppContainer) setupConfig() {
@@ -77,4 +75,18 @@ func (c *AppContainer) setupDatabase() {
 		c.LoggerGroup.General.Fatal("database connection failed", logging.WithError(err))
 	}
 	c.DB = db
+}
+
+func (c *AppContainer) setupTransaction() {
+	errorMapper := errormapper.BuildAllErrorsMapperChain()
+	errorHandler := controller.DefaultErrorHandler()
+
+	c.Transaction = NewTransactionContainer(
+		c.Router,
+		c.DB,
+		c.Config,
+		errorMapper,
+		errorHandler,
+		c.LoggerGroup.Transaction,
+	)
 }

@@ -1,36 +1,23 @@
 package router
 
-import (
-	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
-	"github.com/FCTL3314/FinSight-transactions/internal/api/middleware"
-	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/container"
-	"github.com/FCTL3314/FinSight-transactions/internal/config"
-	"github.com/FCTL3314/FinSight-transactions/internal/logging"
-	"github.com/gin-gonic/gin"
-)
-
 type GetRouter interface {
-	RegisterGet()
+	Get()
 }
 
 type ListRouter interface {
-	RegisterList()
+	List()
 }
 
 type CreateRouter interface {
-	RegisterCreate()
+	Create()
 }
 
 type UpdateRouter interface {
-	RegisterUpdate()
+	Update()
 }
 
 type DeleteRouter interface {
-	RegisterDelete()
-}
-
-type AllRouter interface {
-	RegisterAll()
+	Delete()
 }
 
 type Router interface {
@@ -39,36 +26,14 @@ type Router interface {
 	CreateRouter
 	UpdateRouter
 	DeleteRouter
-	AllRouter
 }
 
-func RegisterRoutes(
-	gin *gin.Engine,
-	container *container.AppContainer,
-) {
-	v1Router := gin.Group("/api/v1/")
-
-	registerTransactionRoutes(
-		v1Router,
-		container.Transaction.Controller,
-		container.Config,
-		container.LoggerGroup.Transaction,
-	)
+type Registrator interface {
+	Register()
 }
 
-func registerTransactionRoutes(
-	baseRouter *gin.RouterGroup,
-	transactionController controller.TransactionController,
-	cfg *config.Config,
-	logger logging.Logger,
-) {
-	transactionsRouter := baseRouter.Group("/transactions/")
-	transactionsRouter.Use(middleware.ErrorLoggerMiddleware(logger))
-
-	transactionRouter := NewTransactionRouter(
-		transactionsRouter,
-		transactionController,
-		cfg,
-	)
-	transactionRouter.RegisterAll()
+func RegisterAll(registrators ...Registrator) {
+	for _, registrator := range registrators {
+		registrator.Register()
+	}
 }
