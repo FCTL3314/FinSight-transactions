@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"fmt"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
-	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/dependencies"
+	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/dependency"
 	"github.com/FCTL3314/FinSight-transactions/internal/collections"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/gin-gonic/gin"
@@ -13,11 +13,11 @@ type Application struct {
 	Logger logging.Logger
 
 	ginEngine *gin.Engine
-	deps      *dependencies.AppContainer
+	deps      *dependency.AppContainer
 }
 
 func NewApplication() *Application {
-	deps := dependencies.NewAppContainer()
+	deps := dependency.NewAppContainer()
 
 	app := &Application{
 		Logger:    deps.LoggersGroup.General,

@@ -1,4 +1,4 @@
-package dependencies
+package dependency
 
 import (
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"

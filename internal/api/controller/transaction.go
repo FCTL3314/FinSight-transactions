@@ -69,7 +69,7 @@ func (wc *DefaultTransactionController) List(c *gin.Context) {
 
 	responseTransactions := models.ToResponseTransactions(paginatedResult.Results)
 
-	paginatedResponse := domain.PaginatedResponse{
+	paginatedResponse := domain.PaginatedResponse[*models.ResponseTransaction]{
 		Count:   paginatedResult.Count,
 		Limit:   params.Pagination.Limit,
 		Offset:  params.Pagination.Offset,
