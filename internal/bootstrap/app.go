@@ -3,45 +3,30 @@ package bootstrap
 import (
 	"fmt"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
-	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/container"
+	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/dependencies"
 	"github.com/FCTL3314/FinSight-transactions/internal/collections"
-	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/gin-gonic/gin"
 )
 
 type Application struct {
-	Router       *gin.RouterGroup
-	Config       *config.Config
-	LoggersGroup *logging.LoggersGroup
+	Logger logging.Logger
 
 	ginEngine *gin.Engine
-	container *container.AppContainer
+	deps      *dependencies.AppContainer
 }
 
 func NewApplication() *Application {
-	c := container.NewAppContainer()
+	deps := dependencies.NewAppContainer()
 
 	app := &Application{
-		Router:       c.Router,
-		Config:       c.Config,
-		LoggersGroup: c.LoggerGroup,
-		ginEngine:    c.GinEngine,
-		container:    c,
+		Logger:    deps.LoggersGroup.General,
+		ginEngine: deps.GinEngine,
+		deps:      deps,
 	}
 	app.initialize()
 
 	return app
-}
-
-func (app *Application) Run() error {
-	addr := ":" + app.Config.Server.Port
-
-	app.LoggersGroup.General.Info(fmt.Sprintf("Listening and serving HTTP on %s\n", addr))
-	if err := app.ginEngine.Run(addr); err != nil {
-		return err
-	}
-	return nil
 }
 
 func (app *Application) initialize() {
@@ -53,22 +38,22 @@ func (app *Application) initialize() {
 func (app *Application) setGinMode() {
 	modes := []string{gin.ReleaseMode, gin.DebugMode, gin.TestMode}
 
-	if !collections.Contains(modes, app.Config.Server.Mode) {
-		app.LoggersGroup.General.Warn(
-			"Unsupported Gin mode provided. Falling back to DebugMode for safety.",
-			logging.WithField("mode", app.Config.Server.Mode),
+	if !collections.Contains(modes, app.deps.Config.Server.Mode) {
+		app.Logger.Warn(
+			"Unsupported Gin mode provided. Falling back to debug mode for safety.",
+			logging.WithField("mode", app.deps.Config.Server.Mode),
 			logging.WithField("allowed_modes", modes),
 		)
 		gin.SetMode(gin.DebugMode)
 		return
 	}
 
-	gin.SetMode(app.Config.Server.Mode)
+	gin.SetMode(app.deps.Config.Server.Mode)
 }
 
 func (app *Application) setGinTrustedProxies() {
-	if err := app.ginEngine.SetTrustedProxies(app.Config.Server.TrustedProxies); err != nil {
-		app.LoggersGroup.General.Fatal(
+	if err := app.ginEngine.SetTrustedProxies(app.deps.Config.Server.TrustedProxies); err != nil {
+		app.Logger.Fatal(
 			"Error setting trusted proxies",
 			logging.WithError(err),
 		)
@@ -77,6 +62,16 @@ func (app *Application) setGinTrustedProxies() {
 
 func (app *Application) registerGinRoutes() {
 	router.RegisterAll(
-		app.container.Transaction.RouterRegistrator,
+		app.deps.TransactionContainer.RouterRegistrator,
 	)
+}
+
+func (app *Application) Run() error {
+	addr := ":" + app.deps.Config.Server.Port
+
+	app.Logger.Info(fmt.Sprintf("Listening and serving HTTP on %s\n", addr))
+	if err := app.ginEngine.Run(addr); err != nil {
+		return err
+	}
+	return nil
 }

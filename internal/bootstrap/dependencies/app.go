@@ -1,4 +1,4 @@
-package container
+package dependencies
 
 import (
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
@@ -11,17 +11,17 @@ import (
 )
 
 type AppContainer struct {
-	GinEngine   *gin.Engine
-	Router      *gin.RouterGroup
-	DB          *gorm.DB
-	Config      *config.Config
-	LoggerGroup *logging.LoggersGroup
+	GinEngine    *gin.Engine
+	BaseRouter   *gin.RouterGroup
+	DB           *gorm.DB
+	Config       *config.Config
+	LoggersGroup *logging.LoggersGroup
 
-	Transaction *TransactionContainer
+	*TransactionContainer
 }
 
 func NewAppContainer() *AppContainer {
-	c := &AppContainer{}
+	var c AppContainer
 
 	c.setupGin()
 	c.setupConfig()
@@ -29,7 +29,7 @@ func NewAppContainer() *AppContainer {
 	c.setupDatabase()
 	c.setupTransaction()
 
-	return c
+	return &c
 }
 
 func (c *AppContainer) setupGin() {
@@ -37,14 +37,14 @@ func (c *AppContainer) setupGin() {
 	router := engine.Group("/api/v1/")
 
 	c.GinEngine = engine
-	c.Router = router
+	c.BaseRouter = router
 }
 
 func (c *AppContainer) setupConfig() {
 	cfg, err := config.Load()
 	if err != nil {
-		c.LoggerGroup.General.Fatal(
-			"failed to load configuration. Please check environmental files",
+		c.LoggersGroup.General.Fatal(
+			"Failed to load configuration. Please check environmental files",
 			logging.WithError(err),
 		)
 	}
@@ -55,7 +55,7 @@ func (c *AppContainer) setupLoggers() {
 	generalLogger := logging.InitGeneralLogger()
 	transactionLogger := logging.InitTransactionLogger()
 
-	c.LoggerGroup = logging.NewLoggersGroup(
+	c.LoggersGroup = logging.NewLoggersGroup(
 		generalLogger,
 		transactionLogger,
 	)
@@ -72,7 +72,7 @@ func (c *AppContainer) setupDatabase() {
 
 	db, err := dbConnector.Connect()
 	if err != nil {
-		c.LoggerGroup.General.Fatal("database connection failed", logging.WithError(err))
+		c.LoggersGroup.General.Fatal("database connection failed", logging.WithError(err))
 	}
 	c.DB = db
 }
@@ -81,12 +81,12 @@ func (c *AppContainer) setupTransaction() {
 	errorMapper := errormapper.BuildAllErrorsMapperChain()
 	errorHandler := controller.DefaultErrorHandler()
 
-	c.Transaction = NewTransactionContainer(
-		c.Router,
+	c.TransactionContainer = NewTransactionContainer(
+		c.BaseRouter,
 		c.DB,
 		c.Config,
 		errorMapper,
 		errorHandler,
-		c.LoggerGroup.Transaction,
+		c.LoggersGroup.Transaction,
 	)
 }

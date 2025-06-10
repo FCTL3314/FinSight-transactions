@@ -9,7 +9,7 @@ func main() {
 	app := bootstrap.NewApplication()
 
 	if err := app.Run(); err != nil {
-		app.LoggersGroup.General.Error(
+		app.Logger.Error(
 			"The application ended with an error...",
 			logging.WithError(err),
 		)
