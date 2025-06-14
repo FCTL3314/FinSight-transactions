@@ -4,24 +4,29 @@ type Mapper interface {
 	MapError(err error) (mappedErr error, ok bool)
 }
 
-type Chain interface {
+type MapperChain interface {
+	registerMapper(mapper Mapper)
+	getMappers() []Mapper
 	MapError(err error) error
-	GetMappers() []Mapper
 }
 
-type MapperChain struct {
+type mapperChain struct {
 	mappers []Mapper
 }
 
-func NewChain() *MapperChain {
-	return &MapperChain{}
+func NewMapperChain() MapperChain {
+	return &mapperChain{}
 }
 
-func (mc *MapperChain) registerMapper(mapper Mapper) {
+func (mc *mapperChain) registerMapper(mapper Mapper) {
 	mc.mappers = append(mc.mappers, mapper)
 }
 
-func (mc *MapperChain) MapError(err error) error {
+func (mc *mapperChain) getMappers() []Mapper {
+	return mc.mappers
+}
+
+func (mc *mapperChain) MapError(err error) error {
 	for _, mapper := range mc.mappers {
 		if mappedErr, ok := mapper.MapError(err); ok {
 			return mappedErr
@@ -30,23 +35,19 @@ func (mc *MapperChain) MapError(err error) error {
 	return err
 }
 
-func (mc *MapperChain) GetMappers() []Mapper {
-	return mc.mappers
-}
-
-func BuildAllErrorsMapperChain() *MapperChain {
-	mc := NewChain()
+func BuildAllErrorsMapperChain() MapperChain {
+	mc := NewMapperChain()
 	GORMMapperChain := BuildGORMErrorsMapperChain()
 	PostgresMapperChain := BuildPostgresErrorsMapperChain()
 
-	allMapperChains := [2]Chain{
+	allMapperChains := [2]MapperChain{
 		GORMMapperChain,
 		PostgresMapperChain,
 	}
 
 	for _, mapperChain := range allMapperChains {
 
-		for _, mapper := range mapperChain.GetMappers() {
+		for _, mapper := range mapperChain.getMappers() {
 			mc.registerMapper(mapper)
 		}
 	}

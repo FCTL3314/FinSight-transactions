@@ -1,4 +1,4 @@
-package controller
+package errorhandler
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-type ErrorHandlerFunc = func(c *gin.Context, err error) bool
+type HandlerFunc = func(c *gin.Context, err error) bool
 
 func handleObjectNotFound(c *gin.Context, err error) bool {
 	if errors.Is(err, domain.ErrObjectNotFound) {
@@ -50,34 +50,4 @@ func handleUniqueConstraint(c *gin.Context, err error) bool {
 		return true
 	}
 	return false
-}
-
-type ErrorHandler struct {
-	handlers []ErrorHandlerFunc
-}
-
-func NewErrorHandler() *ErrorHandler {
-	return &ErrorHandler{}
-}
-
-func (eh *ErrorHandler) RegisterHandler(handler ErrorHandlerFunc) {
-	eh.handlers = append(eh.handlers, handler)
-}
-
-func (eh *ErrorHandler) Handle(c *gin.Context, err error) {
-	for _, handler := range eh.handlers {
-		if handler(c, err) {
-			return
-		}
-	}
-	c.JSON(http.StatusInternalServerError, domain.InternalServerErrorResponse)
-}
-
-func DefaultErrorHandler() *ErrorHandler {
-	eh := NewErrorHandler()
-	eh.RegisterHandler(handleObjectNotFound)
-	eh.RegisterHandler(handleAccessDenied)
-	eh.RegisterHandler(handleInvalidParam)
-	eh.RegisterHandler(handlePaginationLimitExceeded)
-	return eh
 }

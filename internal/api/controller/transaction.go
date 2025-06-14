@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/FCTL3314/FinSight-transactions/internal/api/controller/errorhandler"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
@@ -16,14 +17,14 @@ type TransactionController interface {
 
 type DefaultTransactionController struct {
 	usecase      usecase.TransactionUsecase
-	errorHandler *ErrorHandler
+	errorHandler *errorhandler.ErrorHandler
 	Logger       logging.Logger
 	cfg          *config.Config
 }
 
 func NewDefaultTransactionController(
 	usecase usecase.TransactionUsecase,
-	errorHandler *ErrorHandler,
+	errorHandler *errorhandler.ErrorHandler,
 	logger logging.Logger,
 	cfg *config.Config,
 ) *DefaultTransactionController {

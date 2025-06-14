@@ -2,9 +2,7 @@ package router
 
 import (
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
-	"github.com/FCTL3314/FinSight-transactions/internal/api/middleware"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
-	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,11 +20,8 @@ func NewDefaultTransactionRouter(
 	baseRouter *gin.RouterGroup,
 	transactionController controller.TransactionController,
 	cfg *config.Config,
-	logger logging.Logger,
 ) *DefaultTransactionRouter {
 	baseRoute := baseRouter.Group("/transactions/")
-	baseRoute.Use(middleware.ErrorLoggerMiddleware(logger))
-
 	return &DefaultTransactionRouter{baseRoute, transactionController, cfg}
 }
 

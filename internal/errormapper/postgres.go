@@ -28,8 +28,8 @@ func getMappedConstraintFieldName(constraintName string) string {
 	return "unknown"
 }
 
-func BuildPostgresErrorsMapperChain() *MapperChain {
-	mc := NewChain()
+func BuildPostgresErrorsMapperChain() MapperChain {
+	mc := NewMapperChain()
 	mc.registerMapper(&PostgresErrUniqueViolationMapper{})
 	return mc
 }

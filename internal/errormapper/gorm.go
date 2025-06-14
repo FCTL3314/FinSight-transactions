@@ -15,8 +15,8 @@ func (m *GORMErrRecordNotFoundMapper) MapError(err error) (error, bool) {
 	return nil, false
 }
 
-func BuildGORMErrorsMapperChain() *MapperChain {
-	mc := NewChain()
+func BuildGORMErrorsMapperChain() MapperChain {
+	mc := NewMapperChain()
 	mc.registerMapper(&GORMErrRecordNotFoundMapper{})
 	return mc
 }
