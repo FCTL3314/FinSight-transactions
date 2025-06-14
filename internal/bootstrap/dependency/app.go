@@ -1,7 +1,7 @@
 package dependency
 
 import (
-	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
+	"github.com/FCTL3314/FinSight-transactions/internal/api/controller/errorhandler"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/database"
 	"github.com/FCTL3314/FinSight-transactions/internal/errormapper"
@@ -79,13 +79,13 @@ func (c *AppContainer) setupDatabase() {
 
 func (c *AppContainer) setupTransaction() {
 	errorMapper := errormapper.BuildAllErrorsMapperChain()
-	errorHandler := controller.DefaultErrorHandler()
+	errorHandler := errorhandler.NewErrorHandler(errorMapper)
+	errorhandler.RegisterAllErrorHandlers(errorHandler)
 
 	c.TransactionContainer = NewTransactionContainer(
 		c.BaseRouter,
 		c.DB,
 		c.Config,
-		errorMapper,
 		errorHandler,
 		c.LoggersGroup.Transaction,
 	)

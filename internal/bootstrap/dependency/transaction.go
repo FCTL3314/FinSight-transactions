@@ -2,9 +2,9 @@ package dependency
 
 import (
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
+	"github.com/FCTL3314/FinSight-transactions/internal/api/controller/errorhandler"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
-	"github.com/FCTL3314/FinSight-transactions/internal/errormapper"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/FCTL3314/FinSight-transactions/internal/repository"
 	"github.com/FCTL3314/FinSight-transactions/internal/usecase"
@@ -25,8 +25,7 @@ func NewTransactionContainer(
 	baseRouter *gin.RouterGroup,
 	db *gorm.DB,
 	cfg *config.Config,
-	errorMapper errormapper.Chain,
-	errorHandler *controller.ErrorHandler,
+	errorHandler *errorhandler.ErrorHandler,
 	logger logging.Logger,
 ) *TransactionContainer {
 	var container TransactionContainer
@@ -34,7 +33,6 @@ func NewTransactionContainer(
 	container.Repository = repository.NewDefaultTransactionRepository(db)
 	container.Usecase = usecase.NewDefaultTransactionUsecase(
 		container.Repository,
-		errorMapper,
 		cfg,
 	)
 	container.Controller = controller.NewDefaultTransactionController(
@@ -47,7 +45,6 @@ func NewTransactionContainer(
 		baseRouter,
 		container.Controller,
 		cfg,
-		container.Logger,
 	)
 	container.RouterRegistrator = router.NewTransactionRouterRegistrator(
 		container.Router,
