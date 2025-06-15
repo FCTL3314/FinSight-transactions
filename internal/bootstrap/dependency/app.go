@@ -44,7 +44,9 @@ func (c *AppContainer) setupConfig() {
 	cfg, err := config.Load()
 	if err != nil {
 		c.LoggersGroup.General.Fatal(
-			"Failed to load configuration. Please check environmental files",
+			"Failed to load configuration. Please check environmental files. "+
+				"If you run the application via Docker, "+
+				"check if you use the WORKDIR directive.",
 			logging.WithError(err),
 		)
 	}

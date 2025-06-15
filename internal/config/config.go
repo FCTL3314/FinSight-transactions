@@ -24,6 +24,7 @@ type Database struct {
 	Port     string `env:"DB_PORT"`
 }
 type Config struct {
+	BaseDir string
 	Server
 	Database
 	Pagination
@@ -32,10 +33,11 @@ type Config struct {
 func Load() (*Config, error) {
 	var cfg Config
 
-	baseDir, _ := os.Getwd()
-
-	fmt.Printf("App base dir: %s", baseDir)
-	fmt.Printf("App .env path: %s/.env", baseDir)
+	baseDir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	cfg.BaseDir = baseDir
 
 	if err := cleanenv.ReadConfig(fmt.Sprintf("%s/.env", baseDir), &cfg); err != nil {
 		return nil, err
