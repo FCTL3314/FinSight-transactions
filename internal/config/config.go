@@ -34,6 +34,9 @@ func Load() (*Config, error) {
 
 	baseDir, _ := os.Getwd()
 
+	fmt.Printf("App base dir: %s", baseDir)
+	fmt.Printf("App .env path: %s/.env", baseDir)
+
 	if err := cleanenv.ReadConfig(fmt.Sprintf("%s/.env", baseDir), &cfg); err != nil {
 		return nil, err
 	}
