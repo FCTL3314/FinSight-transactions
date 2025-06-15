@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"fmt"
-	"github.com/FCTL3314/FinSight-transactions/internal/api/middleware"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
 	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/dependency"
 	"github.com/FCTL3314/FinSight-transactions/internal/collections"
@@ -31,7 +30,6 @@ func NewApplication() *Application {
 }
 
 func (app *Application) initialize() {
-	app.deps.GinEngine.Use(middleware.ErrorLoggerMiddleware(app.Logger))
 	app.setGinMode()
 	app.setGinTrustedProxies()
 	app.registerGinRoutes()

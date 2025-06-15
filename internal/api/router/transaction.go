@@ -10,38 +10,38 @@ type TransactionRouter interface {
 	Router
 }
 
-type DefaultTransactionRouter struct {
+type transactionRouter struct {
 	router                *gin.RouterGroup
 	transactionController controller.TransactionController
 	cfg                   *config.Config
 }
 
-func NewDefaultTransactionRouter(
+func NewTransactionRouter(
 	baseRouter *gin.RouterGroup,
 	transactionController controller.TransactionController,
 	cfg *config.Config,
-) *DefaultTransactionRouter {
+) TransactionRouter {
 	baseRoute := baseRouter.Group("/transactions/")
-	return &DefaultTransactionRouter{baseRoute, transactionController, cfg}
+	return &transactionRouter{baseRoute, transactionController, cfg}
 }
 
-func (tr *DefaultTransactionRouter) Get() {
+func (tr *transactionRouter) Get() {
 	tr.router.GET("/:id", tr.transactionController.Get)
 }
 
-func (tr *DefaultTransactionRouter) List() {
+func (tr *transactionRouter) List() {
 	tr.router.GET("", tr.transactionController.List)
 }
 
-func (tr *DefaultTransactionRouter) Create() {
+func (tr *transactionRouter) Create() {
 	tr.router.POST("", tr.transactionController.Create)
 }
 
-func (tr *DefaultTransactionRouter) Update() {
+func (tr *transactionRouter) Update() {
 	tr.router.PATCH("/:id", tr.transactionController.Update)
 }
 
-func (tr *DefaultTransactionRouter) Delete() {
+func (tr *transactionRouter) Delete() {
 	tr.router.DELETE("/:id", tr.transactionController.Delete)
 }
 

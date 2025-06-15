@@ -6,9 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type GORMErrRecordNotFoundMapper struct{}
-
-func (m *GORMErrRecordNotFoundMapper) MapError(err error) (error, bool) {
+func MapGORMRecordNotFoundError(err error) (error, bool) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return domain.ErrObjectNotFound, true
 	}
@@ -17,6 +15,6 @@ func (m *GORMErrRecordNotFoundMapper) MapError(err error) (error, bool) {
 
 func BuildGORMErrorsMapperChain() MapperChain {
 	mc := NewMapperChain()
-	mc.registerMapper(&GORMErrRecordNotFoundMapper{})
+	mc.registerMapper(MapGORMRecordNotFoundError)
 	return mc
 }

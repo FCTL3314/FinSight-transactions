@@ -1,34 +1,32 @@
 package errormapper
 
-type Mapper interface {
-	MapError(err error) (mappedErr error, ok bool)
-}
+type MapperFunc func(err error) (mappedErr error, ok bool)
 
 type MapperChain interface {
-	registerMapper(mapper Mapper)
-	getMappers() []Mapper
+	registerMapper(mapper MapperFunc)
+	getMappers() []MapperFunc
 	MapError(err error) error
 }
 
 type mapperChain struct {
-	mappers []Mapper
+	mappers []MapperFunc
 }
 
 func NewMapperChain() MapperChain {
 	return &mapperChain{}
 }
 
-func (mc *mapperChain) registerMapper(mapper Mapper) {
+func (mc *mapperChain) registerMapper(mapper MapperFunc) {
 	mc.mappers = append(mc.mappers, mapper)
 }
 
-func (mc *mapperChain) getMappers() []Mapper {
+func (mc *mapperChain) getMappers() []MapperFunc {
 	return mc.mappers
 }
 
 func (mc *mapperChain) MapError(err error) error {
 	for _, mapper := range mc.mappers {
-		if mappedErr, ok := mapper.MapError(err); ok {
+		if mappedErr, ok := mapper(err); ok {
 			return mappedErr
 		}
 	}

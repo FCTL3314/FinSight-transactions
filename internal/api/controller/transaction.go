@@ -15,20 +15,20 @@ type TransactionController interface {
 	Controller
 }
 
-type DefaultTransactionController struct {
+type transactionController struct {
 	usecase      usecase.TransactionUsecase
 	errorHandler *errorhandler.ErrorHandler
 	Logger       logging.Logger
 	cfg          *config.Config
 }
 
-func NewDefaultTransactionController(
+func NewTransactionController(
 	usecase usecase.TransactionUsecase,
 	errorHandler *errorhandler.ErrorHandler,
 	logger logging.Logger,
 	cfg *config.Config,
-) *DefaultTransactionController {
-	return &DefaultTransactionController{
+) TransactionController {
+	return &transactionController{
 		usecase:      usecase,
 		errorHandler: errorHandler,
 		Logger:       logger,
@@ -36,7 +36,7 @@ func NewDefaultTransactionController(
 	}
 }
 
-func (tc *DefaultTransactionController) Get(c *gin.Context) {
+func (tc *transactionController) Get(c *gin.Context) {
 	id, err := getParamAsInt64(c, "id")
 	if err != nil {
 		tc.errorHandler.Handle(c, err)
@@ -55,7 +55,7 @@ func (tc *DefaultTransactionController) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, responseTransaction)
 }
 
-func (tc *DefaultTransactionController) List(c *gin.Context) {
+func (tc *transactionController) List(c *gin.Context) {
 	params, err := getParams(c, tc.cfg.Pagination.TransactionLimit)
 	if err != nil {
 		tc.errorHandler.Handle(c, err)
@@ -80,7 +80,7 @@ func (tc *DefaultTransactionController) List(c *gin.Context) {
 	c.JSON(http.StatusOK, paginatedResponse)
 }
 
-func (tc *DefaultTransactionController) Create(c *gin.Context) {
+func (tc *transactionController) Create(c *gin.Context) {
 	var transaction models.CreateTransactionRequest
 	if err := c.ShouldBindJSON(&transaction); err != nil {
 		c.JSON(http.StatusBadRequest, domain.NewValidationErrorResponse(err.Error()))
@@ -100,7 +100,7 @@ func (tc *DefaultTransactionController) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, responseTransaction)
 }
 
-func (tc *DefaultTransactionController) Update(c *gin.Context) {
+func (tc *transactionController) Update(c *gin.Context) {
 	id, err := getParamAsInt64(c, "id")
 	if err != nil {
 		tc.errorHandler.Handle(c, err)
@@ -126,7 +126,7 @@ func (tc *DefaultTransactionController) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, responseTransaction)
 }
 
-func (tc *DefaultTransactionController) Delete(c *gin.Context) {
+func (tc *transactionController) Delete(c *gin.Context) {
 	id, err := getParamAsInt64(c, "id")
 	if err != nil {
 		tc.errorHandler.Handle(c, err)

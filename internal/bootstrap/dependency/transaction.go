@@ -31,17 +31,17 @@ func NewTransactionContainer(
 	var container TransactionContainer
 
 	container.Repository = repository.NewDefaultTransactionRepository(db)
-	container.Usecase = usecase.NewDefaultTransactionUsecase(
+	container.Usecase = usecase.NewTransactionUsecase(
 		container.Repository,
 		cfg,
 	)
-	container.Controller = controller.NewDefaultTransactionController(
+	container.Controller = controller.NewTransactionController(
 		container.Usecase,
 		errorHandler,
 		logger,
 		cfg,
 	)
-	container.Router = router.NewDefaultTransactionRouter(
+	container.Router = router.NewTransactionRouter(
 		baseRouter,
 		container.Controller,
 		cfg,

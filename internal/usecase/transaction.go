@@ -16,22 +16,22 @@ type TransactionUsecase interface {
 	Delete(authUserId, id int64) error
 }
 
-type DefaultTransactionUsecase struct {
+type transactionUsecase struct {
 	transactionRepository repository.TransactionRepository
 	cfg                   *config.Config
 }
 
-func NewDefaultTransactionUsecase(
+func NewTransactionUsecase(
 	transactionRepository repository.TransactionRepository,
 	cfg *config.Config,
-) *DefaultTransactionUsecase {
-	return &DefaultTransactionUsecase{
+) TransactionUsecase {
+	return &transactionUsecase{
 		transactionRepository: transactionRepository,
 		cfg:                   cfg,
 	}
 }
 
-func (wu *DefaultTransactionUsecase) GetById(id int64) (*models.Transaction, error) {
+func (wu *transactionUsecase) GetById(id int64) (*models.Transaction, error) {
 	transaction, err := wu.transactionRepository.GetById(id)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (wu *DefaultTransactionUsecase) GetById(id int64) (*models.Transaction, err
 	return transaction, nil
 }
 
-func (wu *DefaultTransactionUsecase) Get(params *domain.FilterParams) (*models.Transaction, error) {
+func (wu *transactionUsecase) Get(params *domain.FilterParams) (*models.Transaction, error) {
 	transaction, err := wu.transactionRepository.Get(params)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (wu *DefaultTransactionUsecase) Get(params *domain.FilterParams) (*models.T
 	return transaction, nil
 }
 
-func (wu *DefaultTransactionUsecase) List(params *domain.Params) (*domain.PaginatedResult[*models.Transaction], error) {
+func (wu *transactionUsecase) List(params *domain.Params) (*domain.PaginatedResult[*models.Transaction], error) {
 	transactions, err := wu.transactionRepository.Fetch(params)
 	if err != nil {
 		return nil, err
@@ -62,12 +62,12 @@ func (wu *DefaultTransactionUsecase) List(params *domain.Params) (*domain.Pagina
 	return &domain.PaginatedResult[*models.Transaction]{Results: transactions, Count: count}, nil
 }
 
-func (wu *DefaultTransactionUsecase) Create(authUserId int64, createTransactionRequest *models.CreateTransactionRequest) (*models.Transaction, error) {
+func (wu *transactionUsecase) Create(authUserId int64, createTransactionRequest *models.CreateTransactionRequest) (*models.Transaction, error) {
 	transaction := createTransactionRequest.ToFullTransaction()
 	return wu.transactionRepository.Create(transaction)
 }
 
-func (wu *DefaultTransactionUsecase) Update(authUserId int64, id int64, updateTransactionRequest *models.UpdateTransactionRequest) (*models.Transaction, error) {
+func (wu *transactionUsecase) Update(authUserId int64, id int64, updateTransactionRequest *models.UpdateTransactionRequest) (*models.Transaction, error) {
 	transactionToUpdate, err := wu.transactionRepository.GetById(id)
 	if err != nil {
 		return nil, err
@@ -86,13 +86,13 @@ func (wu *DefaultTransactionUsecase) Update(authUserId int64, id int64, updateTr
 	return updatedTransaction, nil
 }
 
-func (wu *DefaultTransactionUsecase) Delete(authUserId int64, id int64) error {
-	//_, err := wu.transactionRepository.GetById(id)
-	//if err != nil {
-	//	return wu.errorMapper.MapError(err)
-	//}
+func (wu *transactionUsecase) Delete(authUserId int64, id int64) error {
+	_, err := wu.transactionRepository.GetById(id)
+	if err != nil {
+		return err
+	}
 
-	//if !wu.accessManager.HasAccess(authUserId, workout) {
+	//if !wu.accessManager.HasAccess(authUserId, transaction) {
 	//	return domain.ErrAccessDenied
 	//}
 

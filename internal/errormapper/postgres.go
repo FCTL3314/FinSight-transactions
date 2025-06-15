@@ -7,9 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-type PostgresErrUniqueViolationMapper struct{}
-
-func (m *PostgresErrUniqueViolationMapper) MapError(err error) (error, bool) {
+func MapPostgresUniqueViolationError(err error) (error, bool) {
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
 		field := getMappedConstraintFieldName(pgErr.ConstraintName)
@@ -30,6 +28,6 @@ func getMappedConstraintFieldName(constraintName string) string {
 
 func BuildPostgresErrorsMapperChain() MapperChain {
 	mc := NewMapperChain()
-	mc.registerMapper(&PostgresErrUniqueViolationMapper{})
+	mc.registerMapper(MapPostgresUniqueViolationError)
 	return mc
 }

@@ -1,3 +1,7 @@
+# Application
+run:
+	go run cmd/api/main.go
+
 # Docker services
 LOCAL_DOCKER_COMPOSE_PROJECT_NAME=transactions_services_local
 LOCAL_DOCKER_COMPOSE_FILE_PATH=./docker/local/docker-compose.yml

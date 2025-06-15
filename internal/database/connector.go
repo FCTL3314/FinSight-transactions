@@ -10,7 +10,7 @@ type Connector[T any] interface {
 	Connect() (T, error)
 }
 
-type GormConnector struct {
+type gormConnector struct {
 	Name     string
 	User     string
 	Password string
@@ -24,8 +24,8 @@ func NewGormConnector(
 	password string,
 	host string,
 	port string,
-) GormConnector {
-	return GormConnector{
+) Connector[*gorm.DB] {
+	return &gormConnector{
 		Name:     name,
 		User:     user,
 		Password: password,
@@ -35,7 +35,7 @@ func NewGormConnector(
 
 }
 
-func (c *GormConnector) Connect() (*gorm.DB, error) {
+func (c *gormConnector) Connect() (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s",
 		c.Host,
