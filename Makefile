@@ -29,4 +29,4 @@ add_migration:
 
 # Deployment
 build_docker_image:
-    docker build -f .\docker\prod\Dockerfile .
+	docker build -f .\docker\prod\Dockerfile .
