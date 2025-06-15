@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
+	"os"
 )
 
 type Pagination struct {
@@ -30,11 +32,13 @@ type Config struct {
 func Load() (*Config, error) {
 	var cfg Config
 
-	if err := cleanenv.ReadConfig(".env", &cfg); err != nil {
+	baseDir, _ := os.Getwd()
+
+	if err := cleanenv.ReadConfig(fmt.Sprintf("%s/.env", baseDir), &cfg); err != nil {
 		return nil, err
 	}
 
-	if err := cleanenv.ReadConfig("config.yml", &cfg); err != nil {
+	if err := cleanenv.ReadConfig(fmt.Sprintf("%s/config.yml", baseDir), &cfg); err != nil {
 		return nil, err
 	}
 
