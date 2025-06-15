@@ -28,11 +28,5 @@ add_migration:
 	goose -dir $(MIGRATIONS_DIR) create $(name) sql
 
 # Deployment
-DEFAULT_SERVICE_NAME = transactions_service_server
-
-get_updates:
-	git pull
-	rm transactions_service
-	go build -o transactions_service cmd/api/main.go
-	sudo systemctl restart $(or $(SERVICE_NAME), $(DEFAULT_SERVICE_NAME))
-	sudo systemctl --no-pager -l status $(or $(SERVICE_NAME), $(DEFAULT_SERVICE_NAME))
+build_docker_image:
+    docker build -f .\docker\prod\Dockerfile .
