@@ -11,7 +11,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o transactions_app ./cmd/api
 
 FROM alpine:3.22
 
-COPY --from=builder /app/transactions_app /usr/local/bin/transactions_app
+COPY --from=builder /app /app
 
 CMD ["transactions_app"]
 
