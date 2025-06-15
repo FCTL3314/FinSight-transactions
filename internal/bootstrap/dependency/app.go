@@ -24,8 +24,8 @@ func NewAppContainer() *AppContainer {
 	var c AppContainer
 
 	c.setupGin()
-	c.setupConfig()
 	c.setupLoggers()
+	c.setupConfig()
 	c.setupDatabase()
 	c.setupTransaction()
 
