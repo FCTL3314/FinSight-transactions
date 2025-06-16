@@ -4,6 +4,8 @@ on:
   pull_request:
     branches: [master]
   workflow_dispatch:
+  schedule:
+    - cron: '0 21 * * 6' # Saturday 21:00 (UTC)
 
 permissions:
   contents: read
