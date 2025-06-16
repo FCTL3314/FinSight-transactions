@@ -24,10 +24,10 @@ type Database struct {
 	Port     string `env:"DB_PORT"`
 }
 type Config struct {
-	BaseDir string
-	Server
-	Database
-	Pagination
+	BaseDir    string
+	Server     Server
+	Database   Database
+	Pagination Pagination
 }
 
 func Load() (*Config, error) {
