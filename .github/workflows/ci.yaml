@@ -6,12 +6,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    uses: XXXDESHXXX/infra-pipelines/.github/workflows/build-go.yaml@main
+  lint:
+    uses: XXXDESHXXX/infra-pipelines/.github/workflows/lint-go.yaml@main
     with:
       go-version: '1.24'
 
-  lint:
-    uses: XXXDESHXXX/infra-pipelines/.github/workflows/lint-go.yaml@main
+  build:
+    uses: XXXDESHXXX/infra-pipelines/.github/workflows/build-go.yaml@main
+    needs: lint
     with:
       go-version: '1.24'
