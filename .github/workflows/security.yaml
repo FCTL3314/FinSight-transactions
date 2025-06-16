@@ -7,10 +7,10 @@ on:
   schedule:
     - cron: '0 21 * * 6' # Saturday 21:00 (UTC)
 
-  permissions:
-    contents: read
-    security-events: write
-    pull-requests: write
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
 
 jobs:
   sast-gosec:
