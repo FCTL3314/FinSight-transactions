@@ -5,6 +5,10 @@ on:
     branches: [master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   sast-gosec:
     uses: XXXDESHXXX/infra-pipelines/.github/workflows/gosec.yaml@main
