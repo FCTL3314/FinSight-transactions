@@ -10,9 +10,10 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o transactions_app ./cmd/api
 
 FROM alpine:3.22
+WORKDIR /app
 
-COPY --from=builder /app /app
+COPY --from=builder /app/.env /app/config.yml /app/transactions_app /app/
 
-CMD ["transactions_app"]
+CMD ["/app/transactions_app"]
 
 EXPOSE 8080
