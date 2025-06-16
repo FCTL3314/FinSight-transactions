@@ -9,7 +9,7 @@ jobs:
   sast-gosec:
     uses: XXXDESHXXX/infra-pipelines/.github/workflows/gosec.yaml@main
     with:
-      go-version: '1.24'
+      go-version: '1.24.3'
 
   sast-semgrep:
     uses: XXXDESHXXX/infra-pipelines/.github/workflows/semgrep.yaml@main
