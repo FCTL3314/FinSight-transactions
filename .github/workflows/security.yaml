@@ -13,4 +13,3 @@ jobs:
 
   sast-semgrep:
     uses: XXXDESHXXX/infra-pipelines/.github/workflows/semgrep.yaml@main
-
