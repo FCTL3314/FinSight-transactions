@@ -1,0 +1,15 @@
+name: Security Check
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  sast-gosec:
+    uses: XXXDESHXXX/infra-pipelines/.github/workflows/gosec.yaml@main
+    with:
+      go-version: '1.24'
+
+  sast-semgrep:
+    uses: XXXDESHXXX/infra-pipelines/.github/workflows/semgrep.yaml@main
