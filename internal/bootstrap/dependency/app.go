@@ -17,7 +17,7 @@ type AppContainer struct {
 	Config       *config.Config
 	LoggersGroup *logging.LoggersGroup
 
-	*TransactionContainer
+	TransactionContainer *TransactionContainer
 }
 
 func NewAppContainer() *AppContainer {
