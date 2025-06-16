@@ -63,6 +63,7 @@ func (wu *transactionUsecase) List(params *domain.Params) (*domain.PaginatedResu
 }
 
 func (wu *transactionUsecase) Create(authUserId int64, createTransactionRequest *models.CreateTransactionRequest) (*models.Transaction, error) {
+	createTransactionRequest.UserID = authUserId
 	transaction := createTransactionRequest.ToFullTransaction()
 	return wu.transactionRepository.Create(transaction)
 }
@@ -73,6 +74,7 @@ func (wu *transactionUsecase) Update(authUserId int64, id int64, updateTransacti
 		return nil, err
 	}
 
+	// TODO: Implement access control
 	//if !wu.accessManager.HasAccess(authUserId, transactionToUpdate) {
 	//	return nil, domain.ErrAccessDenied
 	//}
@@ -92,6 +94,7 @@ func (wu *transactionUsecase) Delete(authUserId int64, id int64) error {
 		return err
 	}
 
+	// TODO: Implement access control
 	//if !wu.accessManager.HasAccess(authUserId, transaction) {
 	//	return domain.ErrAccessDenied
 	//}
