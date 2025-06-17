@@ -43,7 +43,6 @@ func (t *Transaction) ApplyUpdateTransaction(req *UpdateTransactionRequest) {
 	if req.CategoryID != nil {
 		t.CategoryID = *req.CategoryID
 	}
-	// t.UpdatedAt = time.Now()
 }
 
 func ToResponseTransactions(transactions []*Transaction) []*ResponseTransaction {
