@@ -1,10 +1,10 @@
 package usecase
 
 import (
-	"github.com/FCTL3314/FinSight-transactions/internal/access"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/FCTL3314/FinSight-transactions/internal/repository"
+	"github.com/FCTL3314/FinSight-transactions/internal/usecase/access"
 	"github.com/FCTL3314/FinSight-transactions/pkg/models"
 )
 

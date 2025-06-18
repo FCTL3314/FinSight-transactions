@@ -1,7 +1,6 @@
 package dependency
 
 import (
-	"github.com/FCTL3314/FinSight-transactions/internal/access"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller/errorhandler"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
@@ -9,6 +8,7 @@ import (
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/FCTL3314/FinSight-transactions/internal/repository"
 	"github.com/FCTL3314/FinSight-transactions/internal/usecase"
+	"github.com/FCTL3314/FinSight-transactions/internal/usecase/access"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )

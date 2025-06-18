@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
 	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/dependency"
-	"github.com/FCTL3314/FinSight-transactions/internal/collections"
+	"github.com/FCTL3314/FinSight-transactions/internal/collections/slice"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/gin-gonic/gin"
 )
@@ -38,7 +38,7 @@ func (app *Application) initialize() {
 func (app *Application) setGinMode() {
 	modes := []string{gin.ReleaseMode, gin.DebugMode, gin.TestMode}
 
-	if !collections.Contains(modes, app.deps.Config.Server.Mode) {
+	if !slice.Contains(modes, app.deps.Config.Server.Mode) {
 		app.Logger.Warn(
 			"Unsupported Gin mode provided. Falling back to debug mode for safety.",
 			logging.WithField("mode", app.deps.Config.Server.Mode),
