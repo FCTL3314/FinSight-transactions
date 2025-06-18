@@ -13,10 +13,12 @@ import (
 type AppContainer struct {
 	GinEngine    *gin.Engine
 	BaseRouter   *gin.RouterGroup
+	V1Router     *gin.RouterGroup
 	DB           *gorm.DB
 	Config       *config.Config
 	LoggersGroup *logging.LoggersGroup
 
+	SystemContainer      *SystemContainer
 	TransactionContainer *TransactionContainer
 }
 
@@ -27,6 +29,7 @@ func NewAppContainer() *AppContainer {
 	c.setupLoggers()
 	c.setupConfig()
 	c.setupDatabase()
+	c.setupHealthCheck()
 	c.setupTransaction()
 
 	return &c
@@ -34,10 +37,12 @@ func NewAppContainer() *AppContainer {
 
 func (c *AppContainer) setupGin() {
 	engine := gin.Default()
-	router := engine.Group("/api/v1/")
+	baseRouter := engine.Group("/")
+	v1Router := baseRouter.Group("/api/v1/")
 
 	c.GinEngine = engine
-	c.BaseRouter = router
+	c.BaseRouter = baseRouter
+	c.V1Router = v1Router
 }
 
 func (c *AppContainer) setupConfig() {
@@ -79,13 +84,20 @@ func (c *AppContainer) setupDatabase() {
 	c.DB = db
 }
 
+func (c *AppContainer) setupHealthCheck() {
+	c.SystemContainer = NewSystemContainer(
+		c.BaseRouter,
+		c.Config,
+	)
+}
+
 func (c *AppContainer) setupTransaction() {
 	errorMapper := errormapper.BuildAllErrorsMapperChain()
 	errorHandler := errorhandler.NewErrorHandler(errorMapper)
 	errorhandler.RegisterAllErrorHandlers(errorHandler)
 
 	c.TransactionContainer = NewTransactionContainer(
-		c.BaseRouter,
+		c.V1Router,
 		c.DB,
 		c.Config,
 		errorHandler,

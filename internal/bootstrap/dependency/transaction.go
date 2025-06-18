@@ -1,6 +1,7 @@
 package dependency
 
 import (
+	"github.com/FCTL3314/FinSight-transactions/internal/access"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller/errorhandler"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
@@ -31,8 +32,11 @@ func NewTransactionContainer(
 	var container TransactionContainer
 
 	container.Repository = repository.NewDefaultTransactionRepository(db)
+
+	accessPolicy := access.NewTransactionAccessPolicy()
 	container.Usecase = usecase.NewTransactionUsecase(
 		container.Repository,
+		accessPolicy,
 		cfg,
 	)
 	container.Controller = controller.NewTransactionController(

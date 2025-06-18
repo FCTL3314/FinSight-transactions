@@ -17,6 +17,69 @@
 - **Migrations**: Goose for database schema management
 - **Containerization**: Docker & Docker Compose
 
+## 📌 Features
+
+- **Core Functionality**:
+  - Transaction management (create, read, update, delete)
+  - Recurring transaction support
+  - Financial analytics (periodic summaries)
+  - Pagination with configurable limits
+
+- **Architecture**:
+  - Clean architecture with separated layers (controllers, usecases, repositories)
+  - Error handling middleware with domain-specific errors
+  - Configurable logging with structured JSON output
+  - Database abstraction with GORM ORM
+
+- **Infrastructure**:
+  - Docker-based development environment
+  - Database migrations with Goose
+  - Environment configuration with cleanenv
+  - Configurable pagination limits
+
+## ⚙️ Configuration
+
+The application uses environment variables and a `config.yml` file for configuration. Example `.env` file:
+
+```env
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_HOST=localhost
+DB_PORT=5432
+PORT=8080
+GIN_MODE=debug
+TRUSTED_PROXIES=localhost,127.0.0.1
+```
+
+## 📦 API Endpoints
+
+### Transactions
+- `GET /api/v1/transactions` - List transactions with pagination
+- `GET /api/v1/transactions/:id` - Get specific transaction
+- `POST /api/v1/transactions` - Create new transaction
+- `PUT /api/v1/transactions/:id` - Update transaction
+- `DELETE /api/v1/transactions/:id` - Delete transaction
+
+## 🧪 Testing
+
+The application includes comprehensive testing capabilities:
+
+1. Start test database:
+```bash
+make up_local_services
+```
+
+2. Run migrations:
+```bash
+make apply_migrations
+```
+
+3. Run tests:
+```bash
+go test ./...
+```
+
 ## 📃 Notes
 
 * All Docker volumes are stored in the `docker/local/volumes/` directory. If you need to reset your database or any other data, simply delete the corresponding folder.

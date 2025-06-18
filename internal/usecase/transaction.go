@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"github.com/FCTL3314/FinSight-transactions/internal/access"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/FCTL3314/FinSight-transactions/internal/repository"
@@ -18,15 +19,18 @@ type TransactionUsecase interface {
 
 type transactionUsecase struct {
 	transactionRepository repository.TransactionRepository
+	accessPolicy          access.Policy[models.Transaction]
 	cfg                   *config.Config
 }
 
 func NewTransactionUsecase(
 	transactionRepository repository.TransactionRepository,
+	accessPolicy access.Policy[models.Transaction],
 	cfg *config.Config,
 ) TransactionUsecase {
 	return &transactionUsecase{
 		transactionRepository: transactionRepository,
+		accessPolicy:          accessPolicy,
 		cfg:                   cfg,
 	}
 }
@@ -74,10 +78,9 @@ func (wu *transactionUsecase) Update(authUserId int64, id int64, updateTransacti
 		return nil, err
 	}
 
-	// TODO: Implement access control
-	//if !wu.accessManager.HasAccess(authUserId, transactionToUpdate) {
-	//	return nil, domain.ErrAccessDenied
-	//}
+	if !wu.accessPolicy.HasAccess(authUserId, transactionToUpdate) {
+		return nil, domain.ErrAccessDenied
+	}
 
 	transactionToUpdate.ApplyUpdateTransaction(updateTransactionRequest)
 
@@ -89,15 +92,14 @@ func (wu *transactionUsecase) Update(authUserId int64, id int64, updateTransacti
 }
 
 func (wu *transactionUsecase) Delete(authUserId int64, id int64) error {
-	_, err := wu.transactionRepository.GetById(id)
+	transaction, err := wu.transactionRepository.GetById(id)
 	if err != nil {
 		return err
 	}
 
-	// TODO: Implement access control
-	//if !wu.accessManager.HasAccess(authUserId, transaction) {
-	//	return domain.ErrAccessDenied
-	//}
+	if !wu.accessPolicy.HasAccess(authUserId, transaction) {
+		return domain.ErrAccessDenied
+	}
 
 	return wu.transactionRepository.Delete(id)
 }

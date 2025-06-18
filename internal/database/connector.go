@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"time"
 )
 
 type Connector[T any] interface {
@@ -36,18 +37,22 @@ func NewGormConnector(
 }
 
 func (c *gormConnector) Connect() (*gorm.DB, error) {
-	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s",
-		c.Host,
-		c.User,
-		c.Password,
-		c.Name,
-		c.Port,
-	)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s",
+		c.Host, c.User, c.Password, c.Name, c.Port)
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
+
+	pool, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	pool.SetMaxOpenConns(25)
+	pool.SetMaxIdleConns(5)
+	pool.SetConnMaxLifetime(5 * time.Minute)
 
 	return db, nil
 }

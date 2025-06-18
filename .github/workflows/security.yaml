@@ -14,10 +14,10 @@ permissions:
 
 jobs:
   sast-gosec:
-    uses: XXXDESHXXX/infra-pipelines/.github/workflows/gosec.yaml@main
+    uses: XXXDESHXXX/FinSight-Pipelines/.github/workflows/gosec.yaml@main
     with:
       go-version: '1.24.3'
 
   sast-semgrep:
-    uses: XXXDESHXXX/infra-pipelines/.github/workflows/semgrep.yaml@main
+    uses: XXXDESHXXX/FinSight-Pipelines/.github/workflows/semgrep.yaml@main
 

@@ -45,15 +45,15 @@ func (tr *transactionRouter) Delete() {
 	tr.router.DELETE("/:id", tr.transactionController.Delete)
 }
 
-type TransactionRouterRegistrator struct {
+type transactionRouterRegistrator struct {
 	router TransactionRouter
 }
 
-func NewTransactionRouterRegistrator(transactionRouter TransactionRouter) *TransactionRouterRegistrator {
-	return &TransactionRouterRegistrator{router: transactionRouter}
+func NewTransactionRouterRegistrator(transactionRouter TransactionRouter) Registrator {
+	return &transactionRouterRegistrator{router: transactionRouter}
 }
 
-func (r *TransactionRouterRegistrator) Register() {
+func (r *transactionRouterRegistrator) Register() {
 	r.router.Get()
 	r.router.List()
 	r.router.Create()
