@@ -28,5 +28,5 @@ add_migration:
 	goose -dir $(MIGRATIONS_DIR) create $(name) sql
 
 # Deployment
-build_docker_image:
+build_prod_image:
 	docker build -f .\docker\prod\Dockerfile .
