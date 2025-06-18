@@ -90,3 +90,14 @@ type UpdateTransactionRequest struct {
 	Note       *string  `json:"note"`
 	CategoryID *int64   `json:"category_id"`
 }
+
+func (ut *UpdateTransactionRequest) ToFullTransaction() *Transaction {
+	return &Transaction{
+		Amount:     *ut.Amount,
+		Name:       *ut.Name,
+		Note:       *ut.Note,
+		CategoryID: *ut.CategoryID,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}
+}
