@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/FCTL3314/FinSight-transactions/internal/collections"
+	"github.com/FCTL3314/FinSight-transactions/internal/collections/slice"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -55,7 +55,7 @@ func getFilterParams(c *gin.Context) (domain.FilterParams, error) {
 	}
 
 	for key, values := range queryParams {
-		if collections.Contains(FilterParamsToExclude, key) {
+		if slice.Contains(FilterParamsToExclude, key) {
 			continue
 		}
 
