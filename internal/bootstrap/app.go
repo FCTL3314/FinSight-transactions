@@ -63,6 +63,7 @@ func (app *Application) setGinTrustedProxies() {
 func (app *Application) registerGinRoutes() {
 	router.RegisterAll(
 		app.deps.TransactionContainer.RouterRegistrator,
+		app.deps.SystemContainer.RouterRegistrator,
 	)
 }
 
