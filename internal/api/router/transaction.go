@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
+	"github.com/FCTL3314/FinSight-transactions/internal/api/middleware"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/gin-gonic/gin"
 )
@@ -26,23 +27,23 @@ func NewTransactionRouter(
 }
 
 func (tr *transactionRouter) Get() {
-	tr.router.GET("/:id", tr.transactionController.Get)
+	tr.router.GET("/:id", middleware.UserContext, tr.transactionController.Get)
 }
 
 func (tr *transactionRouter) List() {
-	tr.router.GET("", tr.transactionController.List)
+	tr.router.GET("", middleware.UserContext, tr.transactionController.List)
 }
 
 func (tr *transactionRouter) Create() {
-	tr.router.POST("", tr.transactionController.Create)
+	tr.router.POST("", middleware.UserContext, tr.transactionController.Create)
 }
 
 func (tr *transactionRouter) Update() {
-	tr.router.PATCH("/:id", tr.transactionController.Update)
+	tr.router.PATCH("/:id", middleware.UserContext, tr.transactionController.Update)
 }
 
 func (tr *transactionRouter) Delete() {
-	tr.router.DELETE("/:id", tr.transactionController.Delete)
+	tr.router.DELETE("/:id", middleware.UserContext, tr.transactionController.Delete)
 }
 
 type transactionRouterRegistrator struct {

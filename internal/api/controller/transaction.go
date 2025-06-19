@@ -87,7 +87,7 @@ func (tc *transactionController) Create(c *gin.Context) {
 		return
 	}
 
-	authUserId := c.GetInt64(string(UserIDContextKey))
+	authUserId := c.GetInt64(UserIDContextKey)
 
 	createdTransaction, err := tc.usecase.Create(authUserId, &transaction)
 	if err != nil {
@@ -113,7 +113,7 @@ func (tc *transactionController) Update(c *gin.Context) {
 		return
 	}
 
-	authUserId := c.GetInt64(string(UserIDContextKey))
+	authUserId := c.GetInt64(UserIDContextKey)
 
 	updatedTransaction, err := tc.usecase.Update(authUserId, id, &transaction)
 	if err != nil {
@@ -133,7 +133,7 @@ func (tc *transactionController) Delete(c *gin.Context) {
 		return
 	}
 
-	authUserId := c.GetInt64(string(UserIDContextKey))
+	authUserId := c.GetInt64(UserIDContextKey)
 
 	if err := tc.usecase.Delete(authUserId, id); err != nil {
 		tc.errorHandler.Handle(c, err)

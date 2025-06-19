@@ -44,6 +44,13 @@ func NewInvalidURLParamResponse(detail string) *ErrorResponse {
 	)
 }
 
+func NewUnauthorizedErrorResponse() *ErrorResponse {
+	return NewErrorResponse(
+		"Authentication required - X-User-ID header is missing",
+		"unauthorized",
+	)
+}
+
 var (
 	InternalServerErrorResponse = NewErrorResponse(
 		"Internal Server Error",

@@ -1,7 +1,6 @@
 package bootstrap
 
 import (
-	"fmt"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
 	"github.com/FCTL3314/FinSight-transactions/internal/bootstrap/dependency"
 	"github.com/FCTL3314/FinSight-transactions/internal/collections/slice"
@@ -70,7 +69,7 @@ func (app *Application) registerGinRoutes() {
 func (app *Application) Run() error {
 	addr := ":" + app.deps.Config.Server.Port
 
-	app.Logger.Info(fmt.Sprintf("Listening and serving HTTP on %s\n", addr))
+	app.Logger.Info("Listening and serving HTTP", logging.WithField("addr", addr))
 	if err := app.ginEngine.Run(addr); err != nil {
 		return err
 	}
