@@ -22,8 +22,8 @@ func UserContext(c *gin.Context) {
 	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, domain.NewErrorResponse(
-			"invalid_user_id",
 			"X-User-ID header must be a valid integer",
+			"invalid_user_id",
 		))
 		return
 	}
