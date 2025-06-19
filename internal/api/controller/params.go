@@ -7,10 +7,9 @@ import (
 	"strconv"
 )
 
-type ContextKey string
-
 const (
-	UserIDContextKey ContextKey = "userID"
+	UserIDContextKey   = "userID"
+	UserRoleContextKey = "userRole"
 )
 
 var (
