@@ -6,13 +6,20 @@ run:
 LOCAL_DOCKER_COMPOSE_PROJECT_NAME=transactions_services_local
 LOCAL_DOCKER_COMPOSE_FILE_PATH=./docker/local/docker-compose.yml
 
+PROD_DOCKER_COMPOSE_PROJECT_NAME=transactions_services_prod
+PROD_DOCKER_COMPOSE_FILE_PATH=./docker/prod/docker-compose.yml
+
 up_local_services:
 	docker compose -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) up -d
-
 down_local_services:
 	docker compose -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) down
-
 restart_local_services: down_local_services up_local_services
+
+up_prod_services:
+	docker compose -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d
+down_prod_services:
+	docker compose -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) down
+restart_prod_services: down_prod_services up_prod_services
 
 local_services_logs:
 	docker compose -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) logs
