@@ -40,5 +40,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.COMPOSE_FILE_DIR }}
-            docker-compose pull app
-            docker-compose up -d --force-recreate app
+            docker compose pull app
+            docker compose up -d --force-recreate app
