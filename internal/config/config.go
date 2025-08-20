@@ -2,8 +2,9 @@ package config
 
 import (
 	"fmt"
-	"github.com/ilyakaznacheev/cleanenv"
 	"os"
+
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Pagination struct {
@@ -39,7 +40,7 @@ func Load() (*Config, error) {
 	}
 	cfg.BaseDir = baseDir
 
-	if err := cleanenv.ReadConfig(fmt.Sprintf("%s/.env", baseDir), &cfg); err != nil {
+	if err := cleanenv.ReadEnv(&cfg); err != nil {
 		return nil, err
 	}
 
