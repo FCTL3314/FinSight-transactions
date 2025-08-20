@@ -4,6 +4,8 @@ RUN apk add --no-cache git
 
 WORKDIR /app
 
+RUN go install github.com/pressly/goose/v3/cmd/goose@latest
+
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -13,19 +15,15 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o app ./cmd
 
 FROM alpine:latest
 
-ENV GOPATH=/go
-ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
-
-RUN apk add --no-cache bash ca-certificates make go curl \
-    && go install github.com/pressly/goose/v3/cmd/goose@latest \
-    && apk del go
+RUN apk add --no-cache bash ca-certificates make curl
 
 RUN adduser -D -g '' appuser
 
 WORKDIR /app
 
 COPY --from=builder /app/app .
-COPY .env /app/.env
+COPY --from=builder /go/bin/goose /usr/local/bin/
+
 COPY config.yml /app/config.yml
 COPY docker/prod/scripts/entrypoint.sh /app/entrypoint.sh
 COPY Makefile /app/Makefile
