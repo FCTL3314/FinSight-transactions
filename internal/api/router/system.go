@@ -1,9 +1,10 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type SystemRouter interface {
