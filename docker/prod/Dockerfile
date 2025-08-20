@@ -13,8 +13,12 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o app ./cmd
 
 FROM alpine:latest
 
-RUN apk add --no-cache bash ca-certificates make git curl go \
-    && go install github.com/pressly/goose/v3/cmd/goose@latest
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+
+RUN apk add --no-cache bash ca-certificates make go curl \
+    && go install github.com/pressly/goose/v3/cmd/goose@latest \
+    && apk del go
 
 RUN adduser -D -g '' appuser
 
@@ -25,6 +29,7 @@ COPY .env /app/.env
 COPY config.yml /app/config.yml
 COPY docker/prod/scripts/entrypoint.sh /app/entrypoint.sh
 COPY Makefile /app/Makefile
+COPY migrations /app/migrations
 
 RUN chmod +x /app/entrypoint.sh
 
