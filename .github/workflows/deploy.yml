@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - main # Я также поменял 'master' на 'main', так как это сейчас стандарт
+      - master
 
 jobs:
   build-and-push:
