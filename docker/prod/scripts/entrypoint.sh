@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
-make apply_migrations POSTGRES_DSN=postgresql://postgres:postgres@db:5432/postgres?sslmode=disable
+chown -R appuser:appuser /app/logs
 
-exec ./app
+gosu appuser make apply_migrations POSTGRES_DSN=postgresql://postgres:postgres@db:5432/postgres?sslmode=disable
+
+exec gosu appuser ./app
