@@ -31,7 +31,7 @@ COPY migrations /app/migrations
 
 RUN chmod +x /app/entrypoint.sh
 
-USER root
+USER appuser
 
 EXPOSE 8080
 
