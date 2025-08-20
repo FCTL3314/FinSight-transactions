@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - master
+      - main # Я также поменял 'master' на 'main', так как это сейчас стандарт
 
 jobs:
   build-and-push:
@@ -23,7 +23,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          dockerfile: docker/prod/Dockerfile
+          file: ./docker/prod/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/finsight-transactions:latest
 
