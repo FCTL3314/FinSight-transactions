@@ -15,7 +15,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o app ./cmd
 
 FROM alpine:latest
 
-RUN apk add --no-cache bash ca-certificates make curl
+RUN apk add --no-cache bash ca-certificates make curl su-exec
 
 RUN adduser -D -g '' appuser
 
@@ -32,8 +32,6 @@ COPY Makefile /app/Makefile
 COPY migrations /app/migrations
 
 RUN chmod +x /app/entrypoint.sh
-
-USER appuser
 
 EXPOSE 8080
 
