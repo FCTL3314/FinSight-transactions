@@ -41,3 +41,8 @@ deploy_prod:
 	docker compose --env-file ./.env -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d --force-recreate app
 	@echo "Deployment complete."
 
+health_check_prod:
+	docker compose --env-file .env -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) ps app
+
+logs_prod:
+	docker compose --env-file .env -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) logs app

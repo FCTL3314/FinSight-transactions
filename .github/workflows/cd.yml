@@ -49,7 +49,7 @@ jobs:
 
             echo "Waiting for the application to become healthy..."
             for i in {1..12}; do
-              if [ "$(docker compose ps app | grep 'healthy')" ]; then
+              if make health_check_prod | grep -q 'healthy'; then
                 echo "Application is healthy!"
                 exit 0
               fi
@@ -57,5 +57,5 @@ jobs:
             done
             
             echo "Application did not become healthy in time."
-            docker compose logs app
+            make logs_prod
             exit 1
