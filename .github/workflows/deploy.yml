@@ -43,3 +43,16 @@ jobs:
             git pull origin master
             docker compose pull app
             docker compose up -d --force-recreate app
+
+            echo "Waiting for the application to become healthy..."
+            for i in {1..12}; do
+              if [ "$(docker compose ps app | grep 'healthy')" ]; then
+                echo "Application is healthy!"
+                exit 0
+              fi
+              sleep 5
+            done
+            
+            echo "Application did not become healthy in time."
+            docker compose logs app
+            exit 1
