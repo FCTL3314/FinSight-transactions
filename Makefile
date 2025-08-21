@@ -29,7 +29,7 @@ build_prod_image:
 
 deploy_prod:
 	@echo "Deploying production services..."
-	docker compose --env-file .env -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) pull app
-	docker compose --env-file .env -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d --force-recreate app
+	docker compose --env-file ./.env -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) pull app
+	docker compose --env-file ./.env -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d --force-recreate app
 	@echo "Deployment complete."
 
