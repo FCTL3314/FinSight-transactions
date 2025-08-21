@@ -45,8 +45,7 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_DIR }}
             git pull origin master
-            docker compose --env-file ../../.env pull app
-            docker compose --env-file ../../.env up -d --force-recreate app
+            make deploy_prod
 
             echo "Waiting for the application to become healthy..."
             for i in {1..12}; do
