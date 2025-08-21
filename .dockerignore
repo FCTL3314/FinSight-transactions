@@ -1,4 +1,5 @@
-.env.dist
+.env.prod.dist
+.env.local.dist
 README.md
 .gitignore
 LICENSE
