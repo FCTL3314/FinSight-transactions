@@ -33,6 +33,6 @@ COPY migrations /app/migrations
 
 RUN chmod +x /app/entrypoint.sh
 
-EXPOSE 8080
+EXPOSE ${PORT}
 
 ENTRYPOINT ["/app/entrypoint.sh"]

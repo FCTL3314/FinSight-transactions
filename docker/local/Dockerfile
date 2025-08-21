@@ -9,7 +9,9 @@ RUN go mod download
 
 COPY . .
 
-COPY docker/local/scripts/entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+COPY docker/local/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+EXPOSE ${PORT}
+
+ENTRYPOINT ["entrypoint.sh"]
