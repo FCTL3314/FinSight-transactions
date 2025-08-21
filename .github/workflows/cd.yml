@@ -6,7 +6,11 @@ on:
       - master
 
 jobs:
+  run-ci-checks:
+    uses: ./.github/workflows/ci.yml
+
   build-and-push:
+    needs: run-ci-checks
     runs-on: ubuntu-latest
 
     steps:
@@ -41,8 +45,8 @@ jobs:
           script: |
             cd ${{ secrets.COMPOSE_FILE_DIR }}
             git pull origin master
-            docker compose pull app
-            docker compose up -d --force-recreate app
+            docker compose --env-file .env pull app
+            docker compose --env-file .env up -d --force-recreate app
 
             echo "Waiting for the application to become healthy..."
             for i in {1..12}; do
