@@ -18,10 +18,10 @@ services:
     restart: unless-stopped
 
   app:
-    build:
-      context: ../../
-      dockerfile: docker/prod/Dockerfile
-#    image: fctl3314/finsight-transactions:latest
+#    build:
+#      context: ../../
+#      dockerfile: docker/prod/Dockerfile
+    image: fctl3314/finsight-transactions:latest
     env_file:
       - ../../.env
     depends_on:
