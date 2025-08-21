@@ -13,6 +13,14 @@ rebuild_local_services:
 	docker compose -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) up -d --build
 restart_local_services: down_local_services up_local_services
 
+up_prod_services:
+	docker compose --env-file ./.env -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d
+down_prod_services:
+	docker compose --env-file ./.env -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) down
+rebuild_prod_services:
+	docker compose --env-file ./.env -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d --build
+restart_prod_services: down_prod_services up_prod_services
+
 # Migrations(Goose)
 MIGRATIONS_DIR=migrations
 POSTGRES_DSN_DEFAULT=postgresql://postgres:postgres@127.0.0.1:5432/postgres?sslmode=disable
