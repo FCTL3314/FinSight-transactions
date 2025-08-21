@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
 
   app:
-    image: fctl3314/finsight-transactions:latest
+    image: ${DOCKERHUB_USERNAME}/finsight-transactions:latest
     env_file:
       - ../../.env
     depends_on:
