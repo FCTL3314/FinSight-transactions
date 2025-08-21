@@ -2,6 +2,7 @@ package errormapper
 
 import (
 	"errors"
+
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
