@@ -1,6 +1,6 @@
 ######    Variables    ######
 # Environment
-END_LOCAL_PATH=./env_files/.env.local
+ENV_LOCAL_PATH=./env_files/.env.local
 ENV_PROD_PATH=./env_files/.env.prod
 
 # Docker

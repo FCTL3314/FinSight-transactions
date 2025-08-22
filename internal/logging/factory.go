@@ -27,3 +27,12 @@ func InitTransactionLogger() Logger {
 	}
 	return logger
 }
+
+func InitDetailingLogger() Logger {
+	factory := NewLoggerFactory(LogsDir)
+	logger, err := factory.NewZapLogger(DetailingLogsFile)
+	if err != nil {
+		log.Fatalf("Failed to initialize detailing logger: %v", err)
+	}
+	return logger
+}
