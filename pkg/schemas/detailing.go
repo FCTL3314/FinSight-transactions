@@ -4,6 +4,11 @@ import "time"
 
 // TODO: Move here all schema-like struct from models
 
+type GetFinanceDetailingRequest struct {
+	DateFrom time.Time `json:"dateFrom"`
+	DateTo   time.Time `json:"dateTo"`
+}
+
 type ResponseFinanceDetailing struct {
 	DateFrom         time.Time `json:"dateFrom"`
 	DateTo           time.Time `json:"dateTo"`
