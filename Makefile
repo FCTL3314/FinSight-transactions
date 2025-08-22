@@ -1,30 +1,41 @@
-# Docker services
+### Variables ###
+
+# Environment
+END_LOCAL_PATH=./env_files/.env.local
+ENV_PROD_PATH=./env_files/.env.prod
+
+# Docker
 LOCAL_DOCKER_COMPOSE_PROJECT_NAME=transactions_services_local
 LOCAL_DOCKER_COMPOSE_FILE_PATH=./docker/local/docker-compose.yml
 
 PROD_DOCKER_COMPOSE_PROJECT_NAME=transactions_services
 PROD_DOCKER_COMPOSE_FILE_PATH=./docker/prod/docker-compose.yml
 
-up_local_services:
-	docker compose --env-file ./.env.local -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) up -d
-down_local_services:
-	docker compose --env-file ./.env.local -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) down
-rebuild_local_services:
-	docker compose --env-file ./.env.local -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) up -d --build
-restart_local_services: down_local_services up_local_services
-
-up_prod_services:
-	docker compose --env-file ./.env.prod -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d
-down_prod_services:
-	docker compose --env-file ./.env.prod -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) down
-rebuild_prod_services:
-	docker compose --env-file ./.env.prod -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d --build
-restart_prod_services: down_prod_services up_prod_services
-
-# Migrations(Goose)
+# Migrations (Goose)
 MIGRATIONS_DIR=migrations
 POSTGRES_DSN_DEFAULT=postgresql://postgres:postgres@127.0.0.1:5432/postgres?sslmode=disable
 
+### Commands ###
+
+# Local Docker Services
+up_local_services:
+	docker compose --env-file ${ENV_LOCAL_PATH} -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) up -d
+down_local_services:
+	docker compose --env-file ${ENV_LOCAL_PATH} -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) down
+rebuild_local_services:
+	docker compose --env-file ${ENV_LOCAL_PATH} -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) up -d --build
+restart_local_services: down_local_services up_local_services
+
+# Production Docker Services
+up_prod_services:
+	docker compose --env-file ${ENV_PROD_PATH} -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d
+down_prod_services:
+	docker compose --env-file ${ENV_PROD_PATH} -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) down
+rebuild_prod_services:
+	docker compose --env-file ${ENV_PROD_PATH} -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d --build
+restart_prod_services: down_prod_services up_prod_services
+
+# Migrations (Goose)
 apply_migrations:
 	goose -dir $(MIGRATIONS_DIR)  postgres "$(or $(POSTGRES_DSN), $(POSTGRES_DSN_DEFAULT))" up
 
@@ -37,12 +48,12 @@ build_prod_image:
 
 deploy_prod:
 	@echo "Deploying production services..."
-	docker compose --env-file ./.env.prod -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) pull app
-	docker compose --env-file ./.env.prod -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d --force-recreate app
+	docker compose --env-file ${ENV_PROD_PATH} -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) pull app
+	docker compose --env-file ${ENV_PROD_PATH} -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d --force-recreate app
 	@echo "Deployment complete."
 
 health_check_prod:
-	docker compose --env-file .env.prod -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) ps app
+	docker compose --env-file ${ENV_PROD_PATH} -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) ps app
 
 logs_prod:
-	docker compose --env-file .env.prod -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) logs app
+	docker compose --env-file ${ENV_PROD_PATH} -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) logs app
