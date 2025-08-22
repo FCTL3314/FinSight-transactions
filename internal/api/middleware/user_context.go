@@ -1,11 +1,12 @@
 package middleware
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strconv"
 )
 
 const (

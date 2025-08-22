@@ -2,9 +2,10 @@ package errorhandler
 
 import (
 	"errors"
+	"net/http"
+
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type HandlerFunc = func(c *gin.Context, err error) bool

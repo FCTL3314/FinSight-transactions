@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"net/http"
+
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller/errorhandler"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
@@ -8,7 +10,6 @@ import (
 	"github.com/FCTL3314/FinSight-transactions/internal/usecase"
 	"github.com/FCTL3314/FinSight-transactions/pkg/models"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type TransactionController interface {
