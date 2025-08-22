@@ -16,3 +16,23 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
+
+  app:
+    build:
+      context: ../../
+      dockerfile: ./docker/local/Dockerfile
+    env_file:
+      - ../../.env.local
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../../:/app
+    ports:
+      - "${PORT}:${PORT}"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:${PORT}/health-check || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
