@@ -1,7 +1,8 @@
-.env.prod.dist
-.env.local.dist
+env_files/.env.prod.dist
+env_files/.env.local.dist
 README.md
 .gitignore
 LICENSE
 .idea
 .git
+.github

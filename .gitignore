@@ -22,12 +22,12 @@ go.work
 go.work.sum
 
 # env file
-.env.local
-.env.prod
+env_files/.env.local
+env_files/.env.prod
 
 # Database files
-docker/local/volumes/postgres
-docker/prod/volumes/postgres
+docker/local/volumes
+docker/prod/volumes
 
 # JetBrains IDE's
 .idea
