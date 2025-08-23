@@ -2,8 +2,6 @@ package schemas
 
 import (
 	"time"
-
-	"github.com/FCTL3314/FinSight-transactions/pkg/models"
 )
 
 type ResponseRecurringTransaction struct {
@@ -14,5 +12,5 @@ type ResponseRecurringTransaction struct {
 	CreatedAt          time.Time `json:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at"`
 
-	Transaction *models.Transaction `json:"transaction,omitempty"`
+	Transaction *ResponseTransaction `json:"transaction,omitempty"`
 }

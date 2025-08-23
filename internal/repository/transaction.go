@@ -7,12 +7,11 @@ import (
 	"time"
 
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
-	"github.com/FCTL3314/FinSight-transactions/pkg/models"
 	"github.com/Masterminds/squirrel"
 )
 
 type TransactionRepository interface {
-	Repository[models.Transaction]
+	Repository[domain.Transaction]
 }
 
 type DefaultTransactionRepository struct {
@@ -27,8 +26,8 @@ func NewDefaultTransactionRepository(db *sql.DB) *DefaultTransactionRepository {
 	}
 }
 
-func (r *DefaultTransactionRepository) scanRow(row squirrel.RowScanner) (*models.Transaction, error) {
-	var t models.Transaction
+func (r *DefaultTransactionRepository) scanRow(row squirrel.RowScanner) (*domain.Transaction, error) {
+	var t domain.Transaction
 	err := row.Scan(
 		&t.ID, &t.Amount, &t.Name, &t.Note,
 		&t.CategoryID, &t.UserID, &t.CreatedAt, &t.UpdatedAt,
@@ -42,7 +41,7 @@ func (r *DefaultTransactionRepository) scanRow(row squirrel.RowScanner) (*models
 	return &t, nil
 }
 
-func (r *DefaultTransactionRepository) GetById(id int64) (*models.Transaction, error) {
+func (r *DefaultTransactionRepository) GetById(id int64) (*domain.Transaction, error) {
 	return r.Get(&domain.FilterParams{
 		Conditions: []domain.FilterCondition{
 			{Field: "id", Operator: domain.OpEq, Value: id},
@@ -50,7 +49,7 @@ func (r *DefaultTransactionRepository) GetById(id int64) (*models.Transaction, e
 	})
 }
 
-func (r *DefaultTransactionRepository) Get(filterParams *domain.FilterParams) (*models.Transaction, error) {
+func (r *DefaultTransactionRepository) Get(filterParams *domain.FilterParams) (*domain.Transaction, error) {
 	queryBuilder := r.sq.Select(
 		"id",
 		"amount",
@@ -73,7 +72,7 @@ func (r *DefaultTransactionRepository) Get(filterParams *domain.FilterParams) (*
 	return r.scanRow(row)
 }
 
-func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*models.Transaction, error) {
+func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*domain.Transaction, error) {
 	queryBuilder := r.sq.Select(
 		"id", "amount", "name", "note",
 		"category_id", "user_id", "created_at", "updated_at",
@@ -100,7 +99,7 @@ func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*models.T
 	}
 	defer rows.Close()
 
-	transactions := make([]*models.Transaction, 0)
+	transactions := make([]*domain.Transaction, 0)
 	for rows.Next() {
 		t, err := r.scanRow(rows)
 		if err != nil {
@@ -112,7 +111,7 @@ func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*models.T
 	return transactions, nil
 }
 
-func (r *DefaultTransactionRepository) Create(transaction *models.Transaction) (*models.Transaction, error) {
+func (r *DefaultTransactionRepository) Create(transaction *domain.Transaction) (*domain.Transaction, error) {
 	sqlQuery, args, err := r.sq.Insert("transactions").
 		Columns("amount", "name", "note", "category_id", "user_id", "created_at", "updated_at").
 		Values(transaction.Amount, transaction.Name, transaction.Note, transaction.CategoryID, transaction.UserID, transaction.CreatedAt, transaction.UpdatedAt).
@@ -130,7 +129,7 @@ func (r *DefaultTransactionRepository) Create(transaction *models.Transaction) (
 	return transaction, nil
 }
 
-func (r *DefaultTransactionRepository) Update(transaction *models.Transaction) (*models.Transaction, error) {
+func (r *DefaultTransactionRepository) Update(transaction *domain.Transaction) (*domain.Transaction, error) {
 	sqlQuery, args, err := r.sq.Update("transactions").
 		Set("amount", transaction.Amount).
 		Set("name", transaction.Name).

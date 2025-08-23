@@ -1,7 +1,7 @@
 package access
 
 import (
-	"github.com/FCTL3314/FinSight-transactions/pkg/models"
+	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 )
 
 type Policy[T any] interface {
@@ -10,10 +10,10 @@ type Policy[T any] interface {
 
 type transactionAccessPolicy struct{}
 
-func NewTransactionAccessPolicy() Policy[models.Transaction] {
+func NewTransactionAccessPolicy() Policy[domain.Transaction] {
 	return &transactionAccessPolicy{}
 }
 
-func (wa *transactionAccessPolicy) HasAccess(authUserID int64, transaction *models.Transaction) bool {
+func (wa *transactionAccessPolicy) HasAccess(authUserID int64, transaction *domain.Transaction) bool {
 	return authUserID == transaction.UserID
 }
