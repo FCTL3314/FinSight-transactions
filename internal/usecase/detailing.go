@@ -7,11 +7,10 @@ import (
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/FCTL3314/FinSight-transactions/internal/repository"
-	"github.com/FCTL3314/FinSight-transactions/pkg/schemas"
 )
 
 type DetailingUsecase interface {
-	Get(authUserId int64, params *domain.Params) (*schemas.ResponseFinanceDetailing, error)
+	Get(authUserId int64, params *domain.Params) (*domain.FinanceDetailing, error)
 }
 
 type detailingUsecase struct {
@@ -29,14 +28,23 @@ func NewDetailingUsecase(
 	}
 }
 
-func (du *detailingUsecase) Get(authUserId int64, params *domain.Params) (*schemas.ResponseFinanceDetailing, error) {
-	params.Filter.Query = "user_id = ?"
-	params.Filter.Args = []interface{}{authUserId}
+func (du *detailingUsecase) Get(authUserId int64, params *domain.Params) (*domain.FinanceDetailing, error) {
+	authCondition := domain.FilterCondition{
+		Field:    "user_id",
+		Operator: domain.OpEq,
+		Value:    authUserId,
+	}
+
+	params.Filter.Conditions = append(params.Filter.Conditions, authCondition)
+
+	fmt.Println(params.Filter)
 
 	transactions, err := du.transactionRepository.Fetch(params)
 	if err != nil {
 		return nil, err
 	}
+
 	fmt.Println(transactions)
-	return schemas.NewResponseFinanceDetailing(time.Time{}, time.Time{}, 0, 0, 0, 0), nil
+	// TODO: Здесь должна быть логика расчета детализации на основе полученных транзакций
+	return domain.NewFinanceDetailing(time.Time{}, time.Time{}, 0, 0, 0, 0), nil
 }

@@ -1,6 +1,8 @@
 package dependency
 
 import (
+	"database/sql"
+
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller/errorhandler"
 	"github.com/FCTL3314/FinSight-transactions/internal/api/router"
@@ -9,7 +11,6 @@ import (
 	"github.com/FCTL3314/FinSight-transactions/internal/repository"
 	"github.com/FCTL3314/FinSight-transactions/internal/usecase"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type DetailingContainer struct {
@@ -23,7 +24,7 @@ type DetailingContainer struct {
 
 func NewDetailingContainer(
 	baseRouter *gin.RouterGroup,
-	db *gorm.DB,
+	db *sql.DB,
 	cfg *config.Config,
 	errorHandler *errorhandler.ErrorHandler,
 	logger logging.Logger,
