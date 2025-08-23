@@ -1,44 +1,45 @@
 package schemas
 
-import "time"
+import (
+	"time"
+
+	"github.com/FCTL3314/FinSight-transactions/internal/domain"
+)
 
 type GetFinanceDetailingRequest struct {
-	DateFrom time.Time `json:"dateFrom"`
-	DateTo   time.Time `json:"dateTo"`
+	DateFrom time.Time `json:"date_from"`
+	DateTo   time.Time `json:"date_to"`
 }
 
 type ResponseFinanceDetailing struct {
-	DateFrom         time.Time `json:"dateFrom"`
-	DateTo           time.Time `json:"dateTo"`
-	InitialAmount    float64   `json:"initialAmount"`
-	TotalIncome      float64   `json:"totalIncome"`
-	TotalExpense     float64   `json:"totalExpense"`
-	ProfitEstimated  float64   `json:"profitEstimated"`
-	ProfitReal       float64   `json:"profitReal"`
-	AfterAmountNet   float64   `json:"afterAmountNet"`
-	AfterAmountGross float64   `json:"afterAmountGross"`
+	DateFrom         time.Time `json:"date_from"`
+	DateTo           time.Time `json:"date_to"`
+	InitialAmount    float64   `json:"initial_amount"`
+	TotalIncome      float64   `json:"total_income"`
+	TotalExpense     float64   `json:"total_expense"`
+	ProfitEstimated  float64   `json:"profit_estimated"`
+	ProfitReal       float64   `json:"profit_real"`
+	AfterAmountNet   float64   `json:"after_amount_net"`
+	AfterAmountGross float64   `json:"after_amount_gross"`
 }
 
-func NewResponseFinanceDetailing(
-	dateFrom time.Time,
-	dateTo time.Time,
-	initialAmount float64,
-	totalIncome float64,
-	totalExpense float64,
-	profitReal float64,
-) *ResponseFinanceDetailing {
-	profitEstimated := totalIncome - totalExpense
-	afterAmountGross := initialAmount + totalIncome
-	afterAmountNet := afterAmountGross - totalExpense
+func NewResponseFinanceDetailing(fd *domain.FinanceDetailing) *ResponseFinanceDetailing {
+	if fd == nil {
+		return nil
+	}
+
+	profitEstimated := fd.TotalIncome - fd.TotalExpense
+	afterAmountGross := fd.InitialAmount + fd.TotalIncome
+	afterAmountNet := afterAmountGross - fd.TotalExpense
 
 	return &ResponseFinanceDetailing{
-		DateFrom:         dateFrom,
-		DateTo:           dateTo,
-		InitialAmount:    initialAmount,
-		TotalIncome:      totalIncome,
-		TotalExpense:     totalExpense,
+		DateFrom:         fd.DateFrom,
+		DateTo:           fd.DateTo,
+		InitialAmount:    fd.InitialAmount,
+		TotalIncome:      fd.TotalIncome,
+		TotalExpense:     fd.TotalExpense,
 		ProfitEstimated:  profitEstimated,
-		ProfitReal:       profitReal,
+		ProfitReal:       fd.ProfitReal,
 		AfterAmountGross: afterAmountGross,
 		AfterAmountNet:   afterAmountNet,
 	}

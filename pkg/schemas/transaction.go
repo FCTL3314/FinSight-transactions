@@ -62,6 +62,7 @@ func NewResponseTransaction(t *domain.Transaction) *ResponseTransaction {
 	if t == nil {
 		return nil
 	}
+
 	return &ResponseTransaction{
 		ID:         t.ID,
 		Amount:     t.Amount,

@@ -7,6 +7,7 @@ import (
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/FCTL3314/FinSight-transactions/internal/usecase"
+	"github.com/FCTL3314/FinSight-transactions/pkg/schemas"
 	"github.com/gin-gonic/gin"
 )
 
@@ -44,12 +45,14 @@ func (tc *detailingController) Get(c *gin.Context) {
 
 	authUserId := c.GetInt64(UserIDContextKey)
 
-	responseDetailing, err := tc.usecase.Get(authUserId, &params)
+	financeDetailing, err := tc.usecase.Get(authUserId, &params)
 
 	if err != nil {
 		tc.errorHandler.Handle(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, responseDetailing)
+	responseFinanceDetailing := schemas.NewResponseFinanceDetailing(financeDetailing)
+
+	c.JSON(http.StatusOK, responseFinanceDetailing)
 }
