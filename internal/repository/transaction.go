@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
@@ -29,8 +28,14 @@ func NewDefaultTransactionRepository(db *sql.DB) *DefaultTransactionRepository {
 func (r *DefaultTransactionRepository) scanRow(row squirrel.RowScanner) (*domain.Transaction, error) {
 	var t domain.Transaction
 	err := row.Scan(
-		&t.ID, &t.Amount, &t.Name, &t.Note,
-		&t.CategoryID, &t.UserID, &t.CreatedAt, &t.UpdatedAt,
+		&t.ID,
+		&t.Amount,
+		&t.Name,
+		&t.Note,
+		&t.CategoryID,
+		&t.UserID,
+		&t.CreatedAt,
+		&t.UpdatedAt,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -74,8 +79,14 @@ func (r *DefaultTransactionRepository) Get(filterParams *domain.FilterParams) (*
 
 func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*domain.Transaction, error) {
 	queryBuilder := r.sq.Select(
-		"id", "amount", "name", "note",
-		"category_id", "user_id", "created_at", "updated_at",
+		"id",
+		"amount",
+		"name",
+		"note",
+		"category_id",
+		"user_id",
+		"created_at",
+		"updated_at",
 	).From("transactions")
 
 	if params.Filter != nil {
@@ -117,7 +128,15 @@ func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*domain.T
 
 func (r *DefaultTransactionRepository) Create(transaction *domain.Transaction) (*domain.Transaction, error) {
 	sqlQuery, args, err := r.sq.Insert("transactions").
-		Columns("amount", "name", "note", "category_id", "user_id", "created_at", "updated_at").
+		Columns(
+			"amount",
+			"name",
+			"note",
+			"category_id",
+			"user_id",
+			"created_at",
+			"updated_at",
+		).
 		Values(transaction.Amount, transaction.Name, transaction.Note, transaction.CategoryID, transaction.UserID, transaction.CreatedAt, transaction.UpdatedAt).
 		Suffix("RETURNING id").
 		ToSql()
@@ -209,31 +228,4 @@ func (r *DefaultTransactionRepository) Count(params *domain.FilterParams) (int64
 	}
 
 	return count, nil
-}
-
-func applyFilters(builder squirrel.SelectBuilder, conditions []domain.FilterCondition) squirrel.SelectBuilder {
-	if conditions == nil {
-		return builder
-	}
-	for _, cond := range conditions {
-		switch cond.Operator {
-		case domain.OpEq:
-			builder = builder.Where(squirrel.Eq{cond.Field: cond.Value})
-		case domain.OpNotEq:
-			builder = builder.Where(squirrel.NotEq{cond.Field: cond.Value})
-		case domain.OpGt:
-			builder = builder.Where(squirrel.Gt{cond.Field: cond.Value})
-		case domain.OpGte:
-			builder = builder.Where(squirrel.GtOrEq{cond.Field: cond.Value})
-		case domain.OpLt:
-			builder = builder.Where(squirrel.Lt{cond.Field: cond.Value})
-		case domain.OpLte:
-			builder = builder.Where(squirrel.LtOrEq{cond.Field: cond.Value})
-		case domain.OpLike:
-			builder = builder.Where(squirrel.Like{cond.Field: fmt.Sprintf("%%%v%%", cond.Value)})
-		case domain.OpIn:
-			builder = builder.Where(squirrel.Eq{cond.Field: cond.Value})
-		}
-	}
-	return builder
 }
