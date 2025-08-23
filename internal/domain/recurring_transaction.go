@@ -3,12 +3,12 @@ package domain
 import "time"
 
 type RecurringTransaction struct {
-	ID                 uint      `gorm:"primaryKey"`
-	TransactionID      uint      `gorm:"not null"`
-	RecurrenceInterval string    `gorm:"type:interval;not null"`
-	IsActive           bool      `gorm:"not null;default:true"`
-	CreatedAt          time.Time `gorm:"not null;default:now()"`
-	UpdatedAt          time.Time `gorm:"not null;default:now()"`
+	ID                 uint
+	TransactionID      uint
+	RecurrenceInterval string
+	IsActive           bool
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
 
-	Transaction *Transaction `gorm:"foreignKey:TransactionID"`
+	Transaction *Transaction
 }
