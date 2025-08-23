@@ -37,7 +37,9 @@ func NewDetailingController(
 }
 
 func (tc *detailingController) Get(c *gin.Context) {
-	params, err := getParams(c, tc.cfg.Pagination.TransactionLimit)
+	params, err := getParams(c, tc.cfg.Pagination.TransactionLimit,
+		WithAllowedFilters(map[string][]string{"amount": {"gt", "lt"}}),
+	)
 	if err != nil {
 		tc.errorHandler.Handle(c, err)
 		return
