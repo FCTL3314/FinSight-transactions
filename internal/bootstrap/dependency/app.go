@@ -20,6 +20,7 @@ type AppContainer struct {
 
 	SystemContainer      *SystemContainer
 	TransactionContainer *TransactionContainer
+	DetailingContainer   *DetailingContainer
 }
 
 func NewAppContainer() *AppContainer {
@@ -31,6 +32,7 @@ func NewAppContainer() *AppContainer {
 	c.setupDatabase()
 	c.setupHealthCheck()
 	c.setupTransaction()
+	c.setupDetailing()
 
 	return &c
 }
@@ -61,10 +63,12 @@ func (c *AppContainer) setupConfig() {
 func (c *AppContainer) setupLoggers() {
 	generalLogger := logging.InitGeneralLogger()
 	transactionLogger := logging.InitTransactionLogger()
+	detailingLogger := logging.InitDetailingLogger()
 
 	c.LoggersGroup = logging.NewLoggersGroup(
 		generalLogger,
 		transactionLogger,
+		detailingLogger,
 	)
 }
 
@@ -102,5 +106,19 @@ func (c *AppContainer) setupTransaction() {
 		c.Config,
 		errorHandler,
 		c.LoggersGroup.Transaction,
+	)
+}
+
+func (c *AppContainer) setupDetailing() {
+	errorMapper := errormapper.BuildAllErrorsMapperChain()
+	errorHandler := errorhandler.NewErrorHandler(errorMapper)
+	errorhandler.RegisterAllErrorHandlers(errorHandler)
+
+	c.DetailingContainer = NewDetailingContainer(
+		c.V1Router,
+		c.DB,
+		c.Config,
+		errorHandler,
+		c.LoggersGroup.Detailing,
 	)
 }

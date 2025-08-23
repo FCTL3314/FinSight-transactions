@@ -1,15 +1,15 @@
 package controller
 
 import (
+	"strconv"
+
 	"github.com/FCTL3314/FinSight-transactions/internal/collections/slice"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
 
 const (
-	UserIDContextKey   = "userID"
-	UserRoleContextKey = "userRole"
+	UserIDContextKey = "userID"
 )
 
 var (

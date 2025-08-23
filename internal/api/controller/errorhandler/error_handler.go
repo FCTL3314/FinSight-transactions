@@ -1,10 +1,11 @@
 package errorhandler
 
 import (
+	"net/http"
+
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/FCTL3314/FinSight-transactions/internal/errormapper"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type ErrorHandler struct {

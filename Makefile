@@ -1,7 +1,6 @@
-### Variables ###
-
+######    Variables    ######
 # Environment
-END_LOCAL_PATH=./env_files/.env.local
+ENV_LOCAL_PATH=./env_files/.env.local
 ENV_PROD_PATH=./env_files/.env.prod
 
 # Docker
@@ -15,8 +14,7 @@ PROD_DOCKER_COMPOSE_FILE_PATH=./docker/prod/docker-compose.yml
 MIGRATIONS_DIR=migrations
 POSTGRES_DSN_DEFAULT=postgresql://postgres:postgres@127.0.0.1:5432/postgres?sslmode=disable
 
-### Commands ###
-
+######    Shortcuts    ######
 # Local Docker Services
 up_local_services:
 	docker compose --env-file ${ENV_LOCAL_PATH} -p $(LOCAL_DOCKER_COMPOSE_PROJECT_NAME) -f $(LOCAL_DOCKER_COMPOSE_FILE_PATH) up -d

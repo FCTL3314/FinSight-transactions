@@ -34,3 +34,6 @@ docker/prod/volumes
 
 # Logs
 ./logs
+
+# Qodana
+qodana.yaml

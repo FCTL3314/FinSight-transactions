@@ -4,6 +4,7 @@ const (
 	LogsDir              = "logs"
 	GeneralLogsFile      = "general.json"
 	TransactionsLogsFile = "transactions.json"
+	DetailingLogsFile    = "detailing.json"
 )
 
 type Logger interface {
@@ -35,11 +36,13 @@ func WithError(error error) Field {
 type LoggersGroup struct {
 	General     Logger
 	Transaction Logger
+	Detailing   Logger
 }
 
-func NewLoggersGroup(generalLogger Logger, transactionLogger Logger) *LoggersGroup {
+func NewLoggersGroup(generalLogger Logger, transactionLogger Logger, detailingLogger Logger) *LoggersGroup {
 	return &LoggersGroup{
 		General:     generalLogger,
 		Transaction: transactionLogger,
+		Detailing:   detailingLogger,
 	}
 }
