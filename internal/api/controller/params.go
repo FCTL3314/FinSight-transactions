@@ -14,8 +14,7 @@ const (
 )
 
 var (
-	allowedFilterKeys = []string{"amount", "name", "note", "category_id"}
-	operatorMap       = map[string]string{
+	operatorMap = map[string]string{
 		"gt":   domain.OpGt,
 		"gte":  domain.OpGte,
 		"lt":   domain.OpLt,
@@ -56,7 +55,7 @@ func getPaginationParams(c *gin.Context, maxLimit int) (domain.PaginationParams,
 	}, nil
 }
 
-func getFilterParams(c *gin.Context) (*domain.FilterParams, error) {
+func getFilterParams(c *gin.Context, allowedFilterFields []string) (*domain.FilterParams, error) {
 	queryParams := c.Request.URL.Query()
 	filter := domain.NewFilterParams()
 
@@ -66,7 +65,7 @@ func getFilterParams(c *gin.Context) (*domain.FilterParams, error) {
 		}
 
 		fieldName := key
-		operator := domain.OpEq // По умолчанию оператор "равно"
+		operator := domain.OpEq
 
 		if parts := strings.Split(key, "_"); len(parts) > 1 {
 			suffix := parts[len(parts)-1]
@@ -76,7 +75,7 @@ func getFilterParams(c *gin.Context) (*domain.FilterParams, error) {
 			}
 		}
 
-		if !slice.Contains(allowedFilterKeys, fieldName) {
+		if !slice.Contains(allowedFilterFields, fieldName) {
 			continue
 		}
 
@@ -96,18 +95,17 @@ func getFilterParams(c *gin.Context) (*domain.FilterParams, error) {
 	return filter, nil
 }
 
-func getParams(c *gin.Context, paginationMaxLimit int) (domain.Params, error) {
+func getParams(c *gin.Context, paginationMaxLimit int, allowedFilterFields ...string) (domain.Params, error) {
 	paginationParams, err := getPaginationParams(c, paginationMaxLimit)
 	if err != nil {
 		return domain.Params{}, err
 	}
 
-	filterParams, err := getFilterParams(c)
+	filterParams, err := getFilterParams(c, allowedFilterFields)
 	if err != nil {
 		return domain.Params{}, err
 	}
 
-	// TODO: Добавить парсинг сортировки (order by) из query-параметров
 	orderParams := domain.OrderParams{Order: "created_at DESC"}
 
 	return domain.Params{
