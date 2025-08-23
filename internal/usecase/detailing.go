@@ -30,9 +30,8 @@ func NewDetailingUsecase(
 }
 
 func (du *detailingUsecase) Get(authUserId int64, params *domain.Params) (*schemas.ResponseFinanceDetailing, error) {
-	params.Filter.Query = "user_id = ?"
-	params.Filter.Args = []interface{}{authUserId}
-
+	//params.Filter.Query = "user_id = ?"
+	//params.Filter.Args = []interface{}{authUserId}
 	transactions, err := du.transactionRepository.Fetch(params)
 	if err != nil {
 		return nil, err

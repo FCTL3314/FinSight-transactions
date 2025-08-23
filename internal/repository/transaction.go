@@ -97,7 +97,11 @@ func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*domain.T
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+
+	err = rows.Close()
+	if err != nil {
+		return nil, err
+	}
 
 	transactions := make([]*domain.Transaction, 0)
 	for rows.Next() {

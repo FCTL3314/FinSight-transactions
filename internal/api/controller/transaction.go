@@ -8,7 +8,7 @@ import (
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/FCTL3314/FinSight-transactions/internal/usecase"
-	"github.com/FCTL3314/FinSight-transactions/pkg/models"
+	"github.com/FCTL3314/FinSight-transactions/pkg/schemas"
 	"github.com/gin-gonic/gin"
 )
 
@@ -51,7 +51,7 @@ func (tc *transactionController) Get(c *gin.Context) {
 		return
 	}
 
-	responseTransaction := transaction.ToResponseTransaction()
+	responseTransaction := schemas.NewResponseTransaction(transaction)
 
 	c.JSON(http.StatusOK, responseTransaction)
 }
@@ -69,9 +69,9 @@ func (tc *transactionController) List(c *gin.Context) {
 		return
 	}
 
-	responseTransactions := models.ToResponseTransactions(paginatedResult.Results)
+	responseTransactions := schemas.NewResponseTransactionList(paginatedResult.Results)
 
-	paginatedResponse := domain.PaginatedResponse[*models.ResponseTransaction]{
+	paginatedResponse := domain.PaginatedResponse[*schemas.ResponseTransaction]{
 		Count:   paginatedResult.Count,
 		Limit:   params.Pagination.Limit,
 		Offset:  params.Pagination.Offset,
@@ -82,7 +82,7 @@ func (tc *transactionController) List(c *gin.Context) {
 }
 
 func (tc *transactionController) Create(c *gin.Context) {
-	var transaction models.CreateTransactionRequest
+	var transaction schemas.CreateTransactionRequest
 	if err := c.ShouldBindJSON(&transaction); err != nil {
 		c.JSON(http.StatusBadRequest, domain.NewValidationErrorResponse(err.Error()))
 		return
@@ -96,7 +96,7 @@ func (tc *transactionController) Create(c *gin.Context) {
 		return
 	}
 
-	responseTransaction := createdTransaction.ToResponseTransaction()
+	responseTransaction := schemas.NewResponseTransaction(createdTransaction)
 
 	c.JSON(http.StatusCreated, responseTransaction)
 }
@@ -108,7 +108,7 @@ func (tc *transactionController) Update(c *gin.Context) {
 		return
 	}
 
-	var transaction models.UpdateTransactionRequest
+	var transaction schemas.UpdateTransactionRequest
 	if err := c.ShouldBindJSON(&transaction); err != nil {
 		c.JSON(http.StatusBadRequest, domain.NewValidationErrorResponse(err.Error()))
 		return
@@ -122,7 +122,7 @@ func (tc *transactionController) Update(c *gin.Context) {
 		return
 	}
 
-	responseTransaction := updatedTransaction.ToResponseTransaction()
+	responseTransaction := schemas.NewResponseTransaction(updatedTransaction)
 
 	c.JSON(http.StatusOK, responseTransaction)
 }
