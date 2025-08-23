@@ -37,6 +37,8 @@ func (du *detailingUsecase) Get(authUserId int64, params *domain.Params) (*domai
 
 	params.Filter.Conditions = append(params.Filter.Conditions, authCondition)
 
+	fmt.Println(params.Filter)
+
 	transactions, err := du.transactionRepository.Fetch(params)
 	if err != nil {
 		return nil, err
