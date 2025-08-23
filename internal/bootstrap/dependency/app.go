@@ -1,20 +1,21 @@
 package dependency
 
 import (
+	"database/sql"
+
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller/errorhandler"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/database"
 	"github.com/FCTL3314/FinSight-transactions/internal/errormapper"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type AppContainer struct {
 	GinEngine    *gin.Engine
 	BaseRouter   *gin.RouterGroup
 	V1Router     *gin.RouterGroup
-	DB           *gorm.DB
+	DB           *sql.DB
 	Config       *config.Config
 	LoggersGroup *logging.LoggersGroup
 
@@ -73,7 +74,7 @@ func (c *AppContainer) setupLoggers() {
 }
 
 func (c *AppContainer) setupDatabase() {
-	dbConnector := database.NewGormConnector(
+	dbConnector := database.NewPgxConnector(
 		c.Config.Database.Name,
 		c.Config.Database.User,
 		c.Config.Database.Password,

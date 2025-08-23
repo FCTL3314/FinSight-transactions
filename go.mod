@@ -3,12 +3,12 @@ module github.com/FCTL3314/FinSight-transactions
 go 1.24.3
 
 require (
+	github.com/Masterminds/squirrel v1.5.4
 	github.com/gin-gonic/gin v1.10.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgerrcode v0.0.0-20240316143900-6e2875d9b438
 	github.com/jackc/pgx/v5 v5.7.5
 	go.uber.org/zap v1.27.0
-	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.30.0
 )
 
@@ -34,6 +34,8 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
+	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
+	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

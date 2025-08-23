@@ -2,6 +2,7 @@ package controller
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/FCTL3314/FinSight-transactions/internal/collections/slice"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
@@ -13,7 +14,16 @@ const (
 )
 
 var (
-	FilterParamsToExclude = []string{"limit", "offset"}
+	allowedFilterKeys = []string{"amount", "name", "note", "category_id"}
+	operatorMap       = map[string]string{
+		"gt":   domain.OpGt,
+		"gte":  domain.OpGte,
+		"lt":   domain.OpLt,
+		"lte":  domain.OpLte,
+		"neq":  domain.OpNotEq,
+		"like": domain.OpLike,
+		"in":   domain.OpIn,
+	}
 )
 
 func getParamAsInt64(c *gin.Context, key string) (int64, error) {
@@ -46,31 +56,41 @@ func getPaginationParams(c *gin.Context, maxLimit int) (domain.PaginationParams,
 	}, nil
 }
 
-func getFilterParams(c *gin.Context) (domain.FilterParams, error) {
+func getFilterParams(c *gin.Context) (*domain.FilterParams, error) {
 	queryParams := c.Request.URL.Query()
-	filter := domain.FilterParams{
-		Query: "",
-		Args:  []interface{}{},
-	}
+	filter := domain.NewFilterParams()
 
 	for key, values := range queryParams {
-		if slice.Contains(FilterParamsToExclude, key) {
+		if len(values) == 0 || values[0] == "" {
 			continue
 		}
 
-		for _, value := range values {
-			query, ok := filter.Query.(string)
-			if !ok {
-				query = ""
-			}
+		fieldName := key
+		operator := domain.OpEq // По умолчанию оператор "равно"
 
-			if query != "" {
-				query += " AND "
+		if parts := strings.Split(key, "_"); len(parts) > 1 {
+			suffix := parts[len(parts)-1]
+			if op, ok := operatorMap[suffix]; ok {
+				fieldName = strings.Join(parts[:len(parts)-1], "_")
+				operator = op
 			}
-			query += key + " = ?"
-			filter.Query = query
-			filter.Args = append(filter.Args, value)
 		}
+
+		if !slice.Contains(allowedFilterKeys, fieldName) {
+			continue
+		}
+
+		var val interface{} = values[0]
+		if operator == domain.OpIn {
+			val = strings.Split(values[0], ",")
+		}
+
+		condition := domain.FilterCondition{
+			Field:    fieldName,
+			Operator: operator,
+			Value:    val,
+		}
+		filter.Conditions = append(filter.Conditions, condition)
 	}
 
 	return filter, nil
@@ -87,9 +107,12 @@ func getParams(c *gin.Context, paginationMaxLimit int) (domain.Params, error) {
 		return domain.Params{}, err
 	}
 
-	return domain.Params{
-		Pagination: paginationParams,
-		Filter:     filterParams,
-	}, nil
+	// TODO: Добавить парсинг сортировки (order by) из query-параметров
+	orderParams := domain.OrderParams{Order: "created_at DESC"}
 
+	return domain.Params{
+		Pagination:  &paginationParams,
+		Filter:      filterParams,
+		OrderParams: orderParams,
+	}, nil
 }
