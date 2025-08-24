@@ -10,7 +10,7 @@ import (
 )
 
 type DetailingUsecase interface {
-	Get(authUserId int64, params *domain.Params) (*domain.FinanceDetailing, error)
+	Get(authUserId int64) (*domain.FinanceDetailing, error)
 }
 
 type detailingUsecase struct {
@@ -28,16 +28,15 @@ func NewDetailingUsecase(
 	}
 }
 
-func (du *detailingUsecase) Get(authUserId int64, params *domain.Params) (*domain.FinanceDetailing, error) {
-	authCondition := domain.FilterCondition{
-		Field:    "user_id",
-		Operator: domain.OpEq,
-		Value:    authUserId,
-	}
-
-	params.Filter.Conditions = append(params.Filter.Conditions, authCondition)
-
-	fmt.Println(params.Filter)
+func (du *detailingUsecase) Get(authUserId int64) (*domain.FinanceDetailing, error) {
+	filterParams := domain.NewFilterParams(
+		domain.FilterCondition{
+			Field:    "user_id",
+			Operator: domain.OpEq,
+			Value:    authUserId,
+		},
+	)
+	params := domain.NewParams(filterParams, nil, nil)
 
 	transactions, err := du.transactionRepository.Fetch(params)
 	if err != nil {
@@ -45,6 +44,13 @@ func (du *detailingUsecase) Get(authUserId int64, params *domain.Params) (*domai
 	}
 
 	fmt.Println(transactions)
-	// TODO: Здесь должна быть логика расчета детализации на основе полученных транзакций
-	return domain.NewFinanceDetailing(time.Time{}, time.Time{}, 0, 0, 0, 0), nil
+
+	totalIncome := 0.0
+
+	for _, transaction := range transactions {
+		totalIncome += transaction.Amount
+	}
+
+	// TODO: Here should be the logic for calculating the detailing based on the received transactions
+	return domain.NewFinanceDetailing(time.Time{}, time.Time{}, 0, totalIncome, 0, 0), nil
 }

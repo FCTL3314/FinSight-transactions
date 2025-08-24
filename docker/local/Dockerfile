@@ -1,6 +1,7 @@
 FROM golang:1.24.3-alpine
 
 RUN apk add --no-cache git make curl
+RUN go install github.com/air-verse/air@latest
 
 WORKDIR /app
 

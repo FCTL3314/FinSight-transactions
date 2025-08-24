@@ -58,7 +58,7 @@ func (wu *transactionUsecase) List(params *domain.Params) (*domain.PaginatedResu
 		return nil, err
 	}
 
-	count, err := wu.transactionRepository.Count(&domain.FilterParams{})
+	count, err := wu.transactionRepository.Count(params.Filter)
 	if err != nil {
 		return nil, err
 	}

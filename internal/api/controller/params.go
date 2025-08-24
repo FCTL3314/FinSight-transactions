@@ -15,6 +15,7 @@ const (
 
 var (
 	operatorMap = map[string]string{
+		"eq":   domain.OpEq,
 		"gt":   domain.OpGt,
 		"gte":  domain.OpGte,
 		"lt":   domain.OpLt,
@@ -55,9 +56,13 @@ func getPaginationParams(c *gin.Context, maxLimit int) (domain.PaginationParams,
 	}, nil
 }
 
-func getFilterParams(c *gin.Context, allowedFilterFields []string) (*domain.FilterParams, error) {
+func getFilterParams(c *gin.Context, allowedFilters map[string][]string) (*domain.FilterParams, error) {
 	queryParams := c.Request.URL.Query()
 	filter := domain.NewFilterParams()
+
+	if allowedFilters == nil {
+		return filter, nil
+	}
 
 	for key, values := range queryParams {
 		if len(values) == 0 || values[0] == "" {
@@ -65,28 +70,35 @@ func getFilterParams(c *gin.Context, allowedFilterFields []string) (*domain.Filt
 		}
 
 		fieldName := key
-		operator := domain.OpEq
+		operatorSuffix := "eq"
 
 		if parts := strings.Split(key, "_"); len(parts) > 1 {
-			suffix := parts[len(parts)-1]
-			if op, ok := operatorMap[suffix]; ok {
+			lastPart := parts[len(parts)-1]
+			if _, ok := operatorMap[lastPart]; ok {
 				fieldName = strings.Join(parts[:len(parts)-1], "_")
-				operator = op
+				operatorSuffix = lastPart
 			}
 		}
 
-		if !slice.Contains(allowedFilterFields, fieldName) {
+		allowedOperators, fieldIsAllowed := allowedFilters[fieldName]
+		if !fieldIsAllowed {
 			continue
 		}
 
+		if !slice.Contains(allowedOperators, operatorSuffix) {
+			continue
+		}
+
+		finalOperator := operatorMap[operatorSuffix]
+
 		var val interface{} = values[0]
-		if operator == domain.OpIn {
+		if finalOperator == domain.OpIn {
 			val = strings.Split(values[0], ",")
 		}
 
 		condition := domain.FilterCondition{
 			Field:    fieldName,
-			Operator: operator,
+			Operator: finalOperator,
 			Value:    val,
 		}
 		filter.Conditions = append(filter.Conditions, condition)
@@ -95,18 +107,46 @@ func getFilterParams(c *gin.Context, allowedFilterFields []string) (*domain.Filt
 	return filter, nil
 }
 
-func getParams(c *gin.Context, paginationMaxLimit int, allowedFilterFields ...string) (domain.Params, error) {
-	paginationParams, err := getPaginationParams(c, paginationMaxLimit)
+type paramsConfig struct {
+	paginationMaxLimit  int
+	allowedFilterFields map[string][]string
+	defaultOrder        string
+}
+
+type ParamOption func(*paramsConfig)
+
+func WithAllowedFilters(filters map[string][]string) ParamOption {
+	return func(cfg *paramsConfig) {
+		cfg.allowedFilterFields = filters
+	}
+}
+
+func WithDefaultOrder(order string) ParamOption {
+	return func(cfg *paramsConfig) {
+		cfg.defaultOrder = order
+	}
+}
+
+func getParams(c *gin.Context, paginationMaxLimit int, opts ...ParamOption) (domain.Params, error) {
+	cfg := &paramsConfig{
+		paginationMaxLimit: paginationMaxLimit,
+	}
+
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
+	paginationParams, err := getPaginationParams(c, cfg.paginationMaxLimit)
 	if err != nil {
 		return domain.Params{}, err
 	}
 
-	filterParams, err := getFilterParams(c, allowedFilterFields)
+	filterParams, err := getFilterParams(c, cfg.allowedFilterFields)
 	if err != nil {
 		return domain.Params{}, err
 	}
 
-	orderParams := domain.OrderParams{Order: "created_at DESC"}
+	orderParams := domain.NewOrderParams(cfg.defaultOrder)
 
 	return domain.Params{
 		Pagination:  &paginationParams,

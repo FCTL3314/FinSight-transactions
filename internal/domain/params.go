@@ -21,8 +21,8 @@ type FilterParams struct {
 	Conditions []FilterCondition
 }
 
-func NewFilterParams() *FilterParams {
-	return &FilterParams{Conditions: make([]FilterCondition, 0)}
+func NewFilterParams(conditions ...FilterCondition) *FilterParams {
+	return &FilterParams{Conditions: conditions}
 }
 
 type PaginationParams struct {
@@ -34,8 +34,20 @@ type OrderParams struct {
 	Order string
 }
 
+func NewOrderParams(order string) *OrderParams {
+	return &OrderParams{Order: order}
+}
+
 type Params struct {
 	Filter     *FilterParams
 	Pagination *PaginationParams
-	OrderParams
+	*OrderParams
+}
+
+func NewParams(filter *FilterParams, pagination *PaginationParams, order *OrderParams) *Params {
+	return &Params{
+		Filter:      filter,
+		Pagination:  pagination,
+		OrderParams: order,
+	}
 }

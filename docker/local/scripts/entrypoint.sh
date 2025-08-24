@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
 
-go run ./cmd/api/main.go
+air -c docker/local/configs/.air.toml
