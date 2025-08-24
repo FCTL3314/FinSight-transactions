@@ -37,3 +37,6 @@ docker/prod/volumes
 
 # Qodana
 qodana.yaml
+
+# Temp
+./docker/local/temp

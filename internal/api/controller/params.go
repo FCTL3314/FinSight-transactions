@@ -15,6 +15,7 @@ const (
 
 var (
 	operatorMap = map[string]string{
+		"eq":   domain.OpEq,
 		"gt":   domain.OpGt,
 		"gte":  domain.OpGte,
 		"lt":   domain.OpLt,
@@ -89,9 +90,6 @@ func getFilterParams(c *gin.Context, allowedFilters map[string][]string) (*domai
 		}
 
 		finalOperator := operatorMap[operatorSuffix]
-		if operatorSuffix == "eq" {
-			finalOperator = domain.OpEq
-		}
 
 		var val interface{} = values[0]
 		if finalOperator == domain.OpIn {
@@ -148,7 +146,7 @@ func getParams(c *gin.Context, paginationMaxLimit int, opts ...ParamOption) (dom
 		return domain.Params{}, err
 	}
 
-	orderParams := domain.OrderParams{Order: cfg.defaultOrder}
+	orderParams := domain.NewOrderParams(cfg.defaultOrder)
 
 	return domain.Params{
 		Pagination:  &paginationParams,

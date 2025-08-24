@@ -10,7 +10,7 @@ import (
 )
 
 type DetailingUsecase interface {
-	Get(authUserId int64, params *domain.Params) (*domain.FinanceDetailing, error)
+	Get(authUserId int64) (*domain.FinanceDetailing, error)
 }
 
 type detailingUsecase struct {
@@ -28,16 +28,15 @@ func NewDetailingUsecase(
 	}
 }
 
-func (du *detailingUsecase) Get(authUserId int64, params *domain.Params) (*domain.FinanceDetailing, error) {
-	authCondition := domain.FilterCondition{
-		Field:    "user_id",
-		Operator: domain.OpEq,
-		Value:    authUserId,
-	}
-
-	params.Filter.Conditions = append(params.Filter.Conditions, authCondition)
-
-	fmt.Println(params.Filter)
+func (du *detailingUsecase) Get(authUserId int64) (*domain.FinanceDetailing, error) {
+	filterParams := domain.NewFilterParams(
+		domain.FilterCondition{
+			Field:    "user_id",
+			Operator: domain.OpEq,
+			Value:    authUserId,
+		},
+	)
+	params := domain.NewParams(filterParams, nil, nil)
 
 	transactions, err := du.transactionRepository.Fetch(params)
 	if err != nil {

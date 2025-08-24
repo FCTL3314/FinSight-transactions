@@ -57,7 +57,16 @@ func (tc *transactionController) Get(c *gin.Context) {
 }
 
 func (tc *transactionController) List(c *gin.Context) {
-	params, err := getParams(c, tc.cfg.Pagination.TransactionLimit)
+	params, err := getParams(
+		c,
+		tc.cfg.Pagination.TransactionLimit,
+		WithAllowedFilters(
+			map[string][]string{
+				"name": {"eq", "like"},
+			},
+		),
+		WithDefaultOrder("name ASC"),
+	)
 	if err != nil {
 		tc.errorHandler.Handle(c, err)
 		return

@@ -92,7 +92,7 @@ func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*domain.T
 	if params.Filter != nil {
 		queryBuilder = applyFilters(queryBuilder, params.Filter.Conditions)
 	}
-	if params.OrderParams.Order != "" {
+	if params.OrderParams != nil && params.OrderParams.Order != "" {
 		queryBuilder = queryBuilder.OrderBy(params.OrderParams.Order)
 	}
 	if params.Pagination != nil {
@@ -109,10 +109,12 @@ func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*domain.T
 		return nil, err
 	}
 
-	err = rows.Close()
-	if err != nil {
-		return nil, err
-	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			// TODO: Pass logger and log error
+		}
+	}(rows)
 
 	transactions := make([]*domain.Transaction, 0)
 	for rows.Next() {

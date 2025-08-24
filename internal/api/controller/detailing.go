@@ -37,17 +37,9 @@ func NewDetailingController(
 }
 
 func (tc *detailingController) Get(c *gin.Context) {
-	params, err := getParams(c, tc.cfg.Pagination.TransactionLimit,
-		WithAllowedFilters(map[string][]string{"amount": {"gt", "lt"}}),
-	)
-	if err != nil {
-		tc.errorHandler.Handle(c, err)
-		return
-	}
-
 	authUserId := c.GetInt64(UserIDContextKey)
 
-	financeDetailing, err := tc.usecase.Get(authUserId, &params)
+	financeDetailing, err := tc.usecase.Get(authUserId)
 
 	if err != nil {
 		tc.errorHandler.Handle(c, err)
