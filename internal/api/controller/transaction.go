@@ -60,12 +60,13 @@ func (tc *transactionController) List(c *gin.Context) {
 	params, err := getParams(
 		c,
 		tc.cfg.Pagination.TransactionLimit,
-		WithAllowedFilters(
+		WithFilters(
 			map[string][]string{
-				"name": {"eq", "like"},
+				"name":    {"eq", "like"},
+				"made_at": {"gte", "lte", "gt", "lt"},
 			},
 		),
-		WithDefaultOrder("name ASC"),
+		WithOrdering("made_at DESC"),
 	)
 	if err != nil {
 		tc.errorHandler.Handle(c, err)

@@ -36,6 +36,7 @@ func (r *DefaultTransactionRepository) scanRow(row squirrel.RowScanner) (*domain
 		&t.Note,
 		&t.CategoryID,
 		&t.UserID,
+		&t.MadeAt,
 		&t.CreatedAt,
 		&t.UpdatedAt,
 	)
@@ -64,6 +65,7 @@ func (r *DefaultTransactionRepository) Get(filterParams *domain.FilterParams) (*
 		"note",
 		"category_id",
 		"user_id",
+		"made_at",
 		"created_at",
 		"updated_at",
 	).From("transactions").Limit(1)
@@ -87,6 +89,7 @@ func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*domain.T
 		"note",
 		"category_id",
 		"user_id",
+		"made_at",
 		"created_at",
 		"updated_at",
 	).From("transactions")
@@ -138,6 +141,7 @@ func (r *DefaultTransactionRepository) Create(transaction *domain.Transaction) (
 			"name",
 			"note",
 			"category_id",
+			"made_at",
 			"user_id",
 			"created_at",
 			"updated_at",
@@ -163,6 +167,7 @@ func (r *DefaultTransactionRepository) Update(transaction *domain.Transaction) (
 		Set("name", transaction.Name).
 		Set("note", transaction.Note).
 		Set("category_id", transaction.CategoryID).
+		Set("made_at", transaction.MadeAt).
 		Set("updated_at", time.Now()).
 		Where(squirrel.Eq{"id": transaction.ID}).
 		ToSql()

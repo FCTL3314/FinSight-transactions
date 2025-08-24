@@ -11,6 +11,7 @@ type Transaction struct {
 	Note       string
 	CategoryID int64
 	UserID     int64
+	MadeAt     time.Time
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 
