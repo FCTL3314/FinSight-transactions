@@ -135,30 +135,37 @@ func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*domain.T
 }
 
 func (r *DefaultTransactionRepository) Create(transaction *domain.Transaction) (*domain.Transaction, error) {
-	sqlQuery, args, err := r.sq.Insert("transactions").
-		Columns(
-			"amount",
-			"name",
-			"note",
-			"category_id",
-			"made_at",
-			"user_id",
-			"created_at",
-			"updated_at",
-		).
-		Values(transaction.Amount, transaction.Name, transaction.Note, transaction.CategoryID, transaction.UserID, transaction.CreatedAt, transaction.UpdatedAt).
-		Suffix("RETURNING id").
-		ToSql()
+	cols := []string{
+		"amount", "name", "note", "category_id", "user_id", "created_at", "updated_at",
+	}
+	vals := []interface{}{
+		transaction.Amount, transaction.Name, transaction.Note,
+		transaction.CategoryID, transaction.UserID, transaction.CreatedAt, transaction.UpdatedAt,
+	}
+
+	if !transaction.MadeAt.IsZero() {
+		cols = append(cols, "made_at")
+		vals = append(vals, transaction.MadeAt)
+	}
+
+	queryBuilder := r.sq.Insert("transactions").
+		Columns(cols...).
+		Values(vals...).
+		Suffix("RETURNING id, amount, name, note, category_id, user_id, made_at, created_at, updated_at")
+
+	sqlQuery, args, err := queryBuilder.ToSql()
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.db.QueryRow(sqlQuery, args...).Scan(&transaction.ID)
+	row := r.db.QueryRow(sqlQuery, args...)
+
+	createdTransaction, err := r.scanRow(row)
 	if err != nil {
 		return nil, err
 	}
 
-	return transaction, nil
+	return createdTransaction, nil
 }
 
 func (r *DefaultTransactionRepository) Update(transaction *domain.Transaction) (*domain.Transaction, error) {
