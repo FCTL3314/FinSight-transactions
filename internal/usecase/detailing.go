@@ -44,6 +44,13 @@ func (du *detailingUsecase) Get(authUserId int64) (*domain.FinanceDetailing, err
 	}
 
 	fmt.Println(transactions)
-	// TODO: Здесь должна быть логика расчета детализации на основе полученных транзакций
-	return domain.NewFinanceDetailing(time.Time{}, time.Time{}, 0, 0, 0, 0), nil
+
+	totalIncome := 0.0
+
+	for _, transaction := range transactions {
+		totalIncome += transaction.Amount
+	}
+
+	// TODO: Here should be the logic for calculating the detailing based on the received transactions
+	return domain.NewFinanceDetailing(time.Time{}, time.Time{}, 0, totalIncome, 0, 0), nil
 }

@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
@@ -112,6 +113,7 @@ func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*domain.T
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
+			fmt.Println(err)
 			// TODO: Pass logger and log error
 		}
 	}(rows)
