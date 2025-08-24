@@ -115,13 +115,13 @@ type paramsConfig struct {
 
 type ParamOption func(*paramsConfig)
 
-func WithAllowedFilters(filters map[string][]string) ParamOption {
+func WithFilters(filters map[string][]string) ParamOption {
 	return func(cfg *paramsConfig) {
 		cfg.allowedFilterFields = filters
 	}
 }
 
-func WithDefaultOrder(order string) ParamOption {
+func WithOrdering(order string) ParamOption {
 	return func(cfg *paramsConfig) {
 		cfg.defaultOrder = order
 	}

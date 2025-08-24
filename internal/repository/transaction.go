@@ -12,6 +12,7 @@ import (
 
 type TransactionRepository interface {
 	Repository[domain.Transaction]
+	GetFinanceDetailing(authUserID int64, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
 }
 
 type DefaultTransactionRepository struct {
@@ -35,6 +36,7 @@ func (r *DefaultTransactionRepository) scanRow(row squirrel.RowScanner) (*domain
 		&t.Note,
 		&t.CategoryID,
 		&t.UserID,
+		&t.MadeAt,
 		&t.CreatedAt,
 		&t.UpdatedAt,
 	)
@@ -63,6 +65,7 @@ func (r *DefaultTransactionRepository) Get(filterParams *domain.FilterParams) (*
 		"note",
 		"category_id",
 		"user_id",
+		"made_at",
 		"created_at",
 		"updated_at",
 	).From("transactions").Limit(1)
@@ -86,6 +89,7 @@ func (r *DefaultTransactionRepository) Fetch(params *domain.Params) ([]*domain.T
 		"note",
 		"category_id",
 		"user_id",
+		"made_at",
 		"created_at",
 		"updated_at",
 	).From("transactions")
@@ -137,6 +141,7 @@ func (r *DefaultTransactionRepository) Create(transaction *domain.Transaction) (
 			"name",
 			"note",
 			"category_id",
+			"made_at",
 			"user_id",
 			"created_at",
 			"updated_at",
@@ -162,6 +167,7 @@ func (r *DefaultTransactionRepository) Update(transaction *domain.Transaction) (
 		Set("name", transaction.Name).
 		Set("note", transaction.Note).
 		Set("category_id", transaction.CategoryID).
+		Set("made_at", transaction.MadeAt).
 		Set("updated_at", time.Now()).
 		Where(squirrel.Eq{"id": transaction.ID}).
 		ToSql()
@@ -232,4 +238,49 @@ func (r *DefaultTransactionRepository) Count(params *domain.FilterParams) (int64
 	}
 
 	return count, nil
+}
+
+func (r *DefaultTransactionRepository) GetFinanceDetailing(authUserID int64, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error) {
+	var totalIncome, totalExpense float64
+
+	baseQuery := r.sq.Select("COALESCE(SUM(amount), 0)").
+		From("transactions").
+		Where(squirrel.Eq{"user_id": authUserID})
+
+	if filterParams != nil {
+		baseQuery = applyFilters(baseQuery, filterParams.Conditions)
+	}
+
+	incomeQuery, incomeArgs, err := baseQuery.Where("amount > 0").ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build income query: %w", err)
+	}
+
+	expenseQuery, expenseArgs, err := baseQuery.Where("amount < 0").ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build expense query: %w", err)
+	}
+
+	if err := r.db.QueryRow(incomeQuery, incomeArgs...).Scan(&totalIncome); err != nil {
+		return nil, fmt.Errorf("failed to query total income: %w", err)
+	}
+
+	if err := r.db.QueryRow(expenseQuery, expenseArgs...).Scan(&totalExpense); err != nil {
+		return nil, fmt.Errorf("failed to query total expense: %w", err)
+	}
+
+	totalExpense = -totalExpense
+
+	balance := totalIncome - totalExpense
+
+	detailing := domain.NewFinanceDetailing(
+		time.Time{},
+		time.Time{},
+		0,
+		totalIncome,
+		totalExpense,
+		balance,
+	)
+
+	return detailing, nil
 }

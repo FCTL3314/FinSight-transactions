@@ -1,9 +1,6 @@
 package usecase
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/FCTL3314/FinSight-transactions/internal/repository"
@@ -36,21 +33,6 @@ func (du *detailingUsecase) Get(authUserId int64) (*domain.FinanceDetailing, err
 			Value:    authUserId,
 		},
 	)
-	params := domain.NewParams(filterParams, nil, nil)
 
-	transactions, err := du.transactionRepository.Fetch(params)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println(transactions)
-
-	totalIncome := 0.0
-
-	for _, transaction := range transactions {
-		totalIncome += transaction.Amount
-	}
-
-	// TODO: Here should be the logic for calculating the detailing based on the received transactions
-	return domain.NewFinanceDetailing(time.Time{}, time.Time{}, 0, totalIncome, 0, 0), nil
+	return du.transactionRepository.GetFinanceDetailing(authUserId, filterParams)
 }

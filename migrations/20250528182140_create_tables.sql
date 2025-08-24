@@ -25,7 +25,6 @@ CREATE TABLE recurring_transactions
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE period_financial_summaries;
 DROP TABLE recurring_transactions;
 DROP TABLE transactions;
 -- +goose StatementEnd
