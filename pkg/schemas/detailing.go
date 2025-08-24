@@ -7,8 +7,8 @@ import (
 )
 
 type GetFinanceDetailingRequest struct {
-	DateFrom time.Time `json:"date_from"`
-	DateTo   time.Time `json:"date_to"`
+	DateFrom time.Time `form:"date_from" binding:"required"`
+	DateTo   time.Time `form:"date_to" binding:"required"`
 }
 
 type ResponseFinanceDetailing struct {

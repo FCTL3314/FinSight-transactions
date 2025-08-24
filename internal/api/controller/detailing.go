@@ -5,6 +5,7 @@ import (
 
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller/errorhandler"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
+	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/FCTL3314/FinSight-transactions/internal/logging"
 	"github.com/FCTL3314/FinSight-transactions/internal/usecase"
 	"github.com/FCTL3314/FinSight-transactions/pkg/schemas"
@@ -37,16 +38,21 @@ func NewDetailingController(
 }
 
 func (tc *detailingController) Get(c *gin.Context) {
+	var req schemas.GetFinanceDetailingRequest
+
+	if err := c.ShouldBindQuery(&req); err != nil {
+		c.JSON(http.StatusBadRequest, domain.NewValidationErrorResponse(err.Error()))
+		return
+	}
+
 	authUserId := c.GetInt64(UserIDContextKey)
 
-	financeDetailing, err := tc.usecase.Get(authUserId)
-
+	financeDetailing, err := tc.usecase.Get(authUserId, req.DateFrom, req.DateTo)
 	if err != nil {
 		tc.errorHandler.Handle(c, err)
 		return
 	}
 
 	responseFinanceDetailing := schemas.NewResponseFinanceDetailing(financeDetailing)
-
 	c.JSON(http.StatusOK, responseFinanceDetailing)
 }

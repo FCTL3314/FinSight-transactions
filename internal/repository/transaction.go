@@ -12,7 +12,7 @@ import (
 
 type TransactionRepository interface {
 	Repository[domain.Transaction]
-	GetFinanceDetailing(authUserID int64, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
+	GetFinanceDetailing(dateFrom, dateTo time.Time, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
 }
 
 type DefaultTransactionRepository struct {
@@ -240,12 +240,10 @@ func (r *DefaultTransactionRepository) Count(params *domain.FilterParams) (int64
 	return count, nil
 }
 
-func (r *DefaultTransactionRepository) GetFinanceDetailing(authUserID int64, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error) {
+func (r *DefaultTransactionRepository) GetFinanceDetailing(dateFrom, dateTo time.Time, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error) {
 	var totalIncome, totalExpense float64
 
-	baseQuery := r.sq.Select("COALESCE(SUM(amount), 0)").
-		From("transactions").
-		Where(squirrel.Eq{"user_id": authUserID})
+	baseQuery := r.sq.Select("COALESCE(SUM(amount), 0)").From("transactions")
 
 	if filterParams != nil {
 		baseQuery = applyFilters(baseQuery, filterParams.Conditions)
@@ -274,8 +272,8 @@ func (r *DefaultTransactionRepository) GetFinanceDetailing(authUserID int64, fil
 	balance := totalIncome - totalExpense
 
 	detailing := domain.NewFinanceDetailing(
-		time.Time{},
-		time.Time{},
+		dateFrom,
+		dateTo,
 		0,
 		totalIncome,
 		totalExpense,
