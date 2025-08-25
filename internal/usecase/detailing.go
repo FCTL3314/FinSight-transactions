@@ -1,15 +1,14 @@
 package usecase
 
 import (
-	"time"
-
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
 	"github.com/FCTL3314/FinSight-transactions/internal/repository"
+	"github.com/FCTL3314/FinSight-transactions/pkg/schemas"
 )
 
 type DetailingUsecase interface {
-	Get(authUserId int64, dateFrom, dateTo time.Time) (*domain.FinanceDetailing, error)
+	Get(authUserId int64, getFinanceDetailingRequest *schemas.GetFinanceDetailingRequest) (*domain.FinanceDetailing, error)
 }
 
 type detailingUsecase struct {
@@ -27,7 +26,7 @@ func NewDetailingUsecase(
 	}
 }
 
-func (du *detailingUsecase) Get(authUserId int64, dateFrom, dateTo time.Time) (*domain.FinanceDetailing, error) {
+func (du *detailingUsecase) Get(authUserId int64, getFinanceDetailingRequest *schemas.GetFinanceDetailingRequest) (*domain.FinanceDetailing, error) {
 	filterParams := domain.NewFilterParams(
 		domain.FilterCondition{
 			Field:    "user_id",
@@ -37,14 +36,19 @@ func (du *detailingUsecase) Get(authUserId int64, dateFrom, dateTo time.Time) (*
 		domain.FilterCondition{
 			Field:    "made_at",
 			Operator: domain.OpGte,
-			Value:    dateFrom,
+			Value:    getFinanceDetailingRequest.DateFrom,
 		},
 		domain.FilterCondition{
 			Field:    "made_at",
 			Operator: domain.OpLte,
-			Value:    dateTo,
+			Value:    getFinanceDetailingRequest.DateTo,
 		},
 	)
 
-	return du.transactionRepository.GetFinanceDetailing(dateFrom, dateTo, filterParams)
+	return du.transactionRepository.GetFinanceDetailing(
+		getFinanceDetailingRequest.DateFrom,
+		getFinanceDetailingRequest.DateTo,
+		getFinanceDetailingRequest.InitialAmount,
+		filterParams,
+	)
 }

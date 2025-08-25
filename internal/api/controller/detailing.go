@@ -47,7 +47,7 @@ func (tc *detailingController) Get(c *gin.Context) {
 
 	authUserId := c.GetInt64(UserIDContextKey)
 
-	financeDetailing, err := tc.usecase.Get(authUserId, req.DateFrom, req.DateTo)
+	financeDetailing, err := tc.usecase.Get(authUserId, &req)
 	if err != nil {
 		tc.errorHandler.Handle(c, err)
 		return
