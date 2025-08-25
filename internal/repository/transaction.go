@@ -12,7 +12,7 @@ import (
 
 type TransactionRepository interface {
 	Repository[domain.Transaction]
-	GetFinanceDetailing(dateFrom, dateTo time.Time, initialAmount float64, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
+	GetFinanceDetailing(dateFrom, dateTo time.Time, initialAmount, currentAmount float64, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
 }
 
 type DefaultTransactionRepository struct {
@@ -247,7 +247,7 @@ func (r *DefaultTransactionRepository) Count(params *domain.FilterParams) (int64
 	return count, nil
 }
 
-func (r *DefaultTransactionRepository) GetFinanceDetailing(dateFrom, dateTo time.Time, initialAmount float64, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error) {
+func (r *DefaultTransactionRepository) GetFinanceDetailing(dateFrom, dateTo time.Time, initialAmount, currentAmount float64, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error) {
 	var totalIncome, totalExpense float64
 
 	baseQuery := r.sq.Select("COALESCE(SUM(amount), 0)").From("transactions")
@@ -276,15 +276,16 @@ func (r *DefaultTransactionRepository) GetFinanceDetailing(dateFrom, dateTo time
 
 	totalExpense = -totalExpense
 
-	balance := totalIncome - totalExpense
+	profitEstimated := totalIncome - totalExpense
 
 	detailing := domain.NewFinanceDetailing(
 		dateFrom,
 		dateTo,
 		initialAmount,
+		currentAmount,
 		totalIncome,
 		totalExpense,
-		balance,
+		profitEstimated,
 	)
 
 	return detailing, nil

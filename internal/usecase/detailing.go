@@ -49,6 +49,7 @@ func (du *detailingUsecase) Get(authUserId int64, getFinanceDetailingRequest *sc
 		getFinanceDetailingRequest.DateFrom,
 		getFinanceDetailingRequest.DateTo,
 		getFinanceDetailingRequest.InitialAmount,
+		getFinanceDetailingRequest.CurrentAmount,
 		filterParams,
 	)
 }
