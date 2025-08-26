@@ -9,6 +9,10 @@ import (
 
 type DetailingRouter interface {
 	GetRouter
+	ListRouter
+	CreateRouter
+	UpdateRouter
+	DeleteRouter
 }
 
 type detailingRouter struct {
@@ -22,12 +26,28 @@ func NewDetailingRouter(
 	detailingController controller.DetailingController,
 	cfg *config.Config,
 ) DetailingRouter {
-	baseRoute := baseRouter.Group("/detailing/")
+	baseRoute := baseRouter.Group("/detailing")
 	return &detailingRouter{baseRoute, detailingController, cfg}
 }
 
 func (tr *detailingRouter) Get() {
-	tr.router.GET("/", middleware.UserContext, tr.detailingController.Get)
+	tr.router.GET("/:id", middleware.UserContext, tr.detailingController.Get)
+}
+
+func (tr *detailingRouter) List() {
+	tr.router.GET("", middleware.UserContext, tr.detailingController.List)
+}
+
+func (tr *detailingRouter) Create() {
+	tr.router.POST("/", middleware.UserContext, tr.detailingController.Create)
+}
+
+func (tr *detailingRouter) Update() {
+	tr.router.PATCH("/:id", middleware.UserContext, tr.detailingController.Update)
+}
+
+func (tr *detailingRouter) Delete() {
+	tr.router.DELETE("/:id", middleware.UserContext, tr.detailingController.Delete)
 }
 
 type detailingRouterRegistrator struct {
@@ -40,4 +60,8 @@ func NewDetailingRouterRegistrator(detailingRouter DetailingRouter) Registrator 
 
 func (r *detailingRouterRegistrator) Register() {
 	r.router.Get()
+	r.router.List()
+	r.router.Create()
+	r.router.Update()
+	r.router.Delete()
 }

@@ -2,6 +2,7 @@ package dependency
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/FCTL3314/FinSight-transactions/internal/api/controller/errorhandler"
 	"github.com/FCTL3314/FinSight-transactions/internal/config"
@@ -28,8 +29,8 @@ func NewAppContainer() *AppContainer {
 	var c AppContainer
 
 	c.setupGin()
-	c.setupLoggers()
 	c.setupConfig()
+	c.setupLoggers()
 	c.setupDatabase()
 	c.setupHealthCheck()
 	c.setupTransaction()
@@ -51,20 +52,19 @@ func (c *AppContainer) setupGin() {
 func (c *AppContainer) setupConfig() {
 	cfg, err := config.Load()
 	if err != nil {
-		c.LoggersGroup.General.Fatal(
-			"Failed to load configuration. Please check environmental files. "+
-				"If you run the application via Docker, "+
+		log.Fatal(
+			"Failed to load configuration. Please check environmental files. " +
+				"If you run the application via Docker, " +
 				"check if you use the WORKDIR directive.",
-			logging.WithError(err),
 		)
 	}
 	c.Config = cfg
 }
 
 func (c *AppContainer) setupLoggers() {
-	generalLogger := logging.InitGeneralLogger()
-	transactionLogger := logging.InitTransactionLogger()
-	detailingLogger := logging.InitDetailingLogger()
+	generalLogger := logging.InitGeneralLogger(c.Config.LogsDir)
+	transactionLogger := logging.InitTransactionLogger(c.Config.LogsDir)
+	detailingLogger := logging.InitDetailingLogger(c.Config.LogsDir)
 
 	c.LoggersGroup = logging.NewLoggersGroup(
 		generalLogger,
@@ -98,7 +98,7 @@ func (c *AppContainer) setupHealthCheck() {
 
 func (c *AppContainer) setupTransaction() {
 	errorMapper := errormapper.BuildAllErrorsMapperChain()
-	errorHandler := errorhandler.NewErrorHandler(errorMapper)
+	errorHandler := errorhandler.NewErrorHandler(errorMapper, c.LoggersGroup.General)
 	errorhandler.RegisterAllErrorHandlers(errorHandler)
 
 	c.TransactionContainer = NewTransactionContainer(
@@ -112,7 +112,7 @@ func (c *AppContainer) setupTransaction() {
 
 func (c *AppContainer) setupDetailing() {
 	errorMapper := errormapper.BuildAllErrorsMapperChain()
-	errorHandler := errorhandler.NewErrorHandler(errorMapper)
+	errorHandler := errorhandler.NewErrorHandler(errorMapper, c.LoggersGroup.General)
 	errorhandler.RegisterAllErrorHandlers(errorHandler)
 
 	c.DetailingContainer = NewDetailingContainer(

@@ -1,10 +1,9 @@
 package logging
 
 const (
-	LogsDir              = "logs"
-	GeneralLogsFile      = "general.json"
-	TransactionsLogsFile = "transactions.json"
-	DetailingLogsFile    = "detailing.json"
+	GeneralLogsFile      = "general.ndjson"
+	TransactionsLogsFile = "transactions.ndjson"
+	DetailingLogsFile    = "detailing.ndjson"
 )
 
 type Logger interface {

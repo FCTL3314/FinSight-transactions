@@ -1,2 +1,3 @@
 pagination:
   transaction_limit: 64
+  FinanceDetailingLimit: 32

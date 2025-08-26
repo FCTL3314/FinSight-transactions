@@ -8,7 +8,8 @@ import (
 )
 
 type Pagination struct {
-	TransactionLimit int `yaml:"transaction_limit"`
+	TransactionLimit      int `yaml:"transaction_limit"`
+	FinanceDetailingLimit int `yaml:"finance_detailing_limit"`
 }
 
 type Server struct {
@@ -25,10 +26,12 @@ type Database struct {
 	Port     string `env:"DB_PORT"`
 }
 type Config struct {
-	BaseDir    string
-	Server     Server
-	Database   Database
-	Pagination Pagination
+	BaseDir     string
+	LogsDir     string
+	SettingsDir string
+	Server      Server
+	Database    Database
+	Pagination  Pagination
 }
 
 func Load() (*Config, error) {
@@ -39,12 +42,14 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 	cfg.BaseDir = baseDir
+	cfg.LogsDir = baseDir + "/logs"
+	cfg.SettingsDir = baseDir + "/settings"
 
 	if err := cleanenv.ReadEnv(&cfg); err != nil {
 		return nil, err
 	}
 
-	if err := cleanenv.ReadConfig(fmt.Sprintf("%s/config.yml", baseDir), &cfg); err != nil {
+	if err := cleanenv.ReadConfig(fmt.Sprintf("%s/config.yml", cfg.SettingsDir), &cfg); err != nil {
 		return nil, err
 	}
 

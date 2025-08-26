@@ -20,7 +20,7 @@ services:
   app:
     image: ${DOCKERHUB_USERNAME}/finsight-transactions:latest
     env_file:
-      - ../../env_files/.env.prod
+      - ../../settings/.env.prod
     depends_on:
       db:
         condition: service_healthy

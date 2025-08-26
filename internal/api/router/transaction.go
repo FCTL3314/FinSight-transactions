@@ -22,7 +22,7 @@ func NewTransactionRouter(
 	transactionController controller.TransactionController,
 	cfg *config.Config,
 ) TransactionRouter {
-	baseRoute := baseRouter.Group("/transactions/")
+	baseRoute := baseRouter.Group("/transactions")
 	return &transactionRouter{baseRoute, transactionController, cfg}
 }
 

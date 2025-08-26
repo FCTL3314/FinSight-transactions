@@ -1,5 +1,5 @@
-env_files/.env.prod.dist
-env_files/.env.local.dist
+settings/.env.prod.dist
+settings/.env.local.dist
 README.md
 .gitignore
 LICENSE

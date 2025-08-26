@@ -14,7 +14,7 @@ import (
 )
 
 type DetailingContainer struct {
-	Repository        repository.TransactionRepository
+	Repository        repository.DetailingRepository
 	Usecase           usecase.DetailingUsecase
 	Controller        controller.DetailingController
 	Router            router.DetailingRouter
@@ -31,7 +31,7 @@ func NewDetailingContainer(
 ) *DetailingContainer {
 	var container DetailingContainer
 
-	container.Repository = repository.NewDefaultTransactionRepository(db)
+	container.Repository = repository.NewDefaultDetailingRepository(db)
 
 	container.Usecase = usecase.NewDetailingUsecase(
 		container.Repository,
