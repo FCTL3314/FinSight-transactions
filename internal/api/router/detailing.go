@@ -9,6 +9,7 @@ import (
 
 type DetailingRouter interface {
 	GetRouter
+	ListRouter
 	CreateRouter
 	UpdateRouter
 	DeleteRouter
@@ -33,6 +34,10 @@ func (tr *detailingRouter) Get() {
 	tr.router.GET("/:id", middleware.UserContext, tr.detailingController.Get)
 }
 
+func (tr *detailingRouter) List() {
+	tr.router.GET("", middleware.UserContext, tr.detailingController.List)
+}
+
 func (tr *detailingRouter) Create() {
 	tr.router.POST("/", middleware.UserContext, tr.detailingController.Create)
 }
@@ -55,6 +60,7 @@ func NewDetailingRouterRegistrator(detailingRouter DetailingRouter) Registrator 
 
 func (r *detailingRouterRegistrator) Register() {
 	r.router.Get()
+	r.router.List()
 	r.router.Create()
 	r.router.Update()
 	r.router.Delete()

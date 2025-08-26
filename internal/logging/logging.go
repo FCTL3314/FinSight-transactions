@@ -1,7 +1,6 @@
 package logging
 
 const (
-	LogsDir              = "logs"
 	GeneralLogsFile      = "general.ndjson"
 	TransactionsLogsFile = "transactions.ndjson"
 	DetailingLogsFile    = "detailing.ndjson"

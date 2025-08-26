@@ -23,7 +23,7 @@ services:
       context: ../../
       dockerfile: ./docker/local/Dockerfile
     env_file:
-      - ../../env_files/.env.local
+      - ../../settings/.env.local
     depends_on:
       db:
         condition: service_healthy

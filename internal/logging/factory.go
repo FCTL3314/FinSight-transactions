@@ -10,8 +10,8 @@ func NewLoggerFactory(baseDir string) *LoggerFactory {
 	return &LoggerFactory{baseDir: baseDir}
 }
 
-func InitGeneralLogger() Logger {
-	factory := NewLoggerFactory(LogsDir)
+func InitGeneralLogger(baseDir string) Logger {
+	factory := NewLoggerFactory(baseDir)
 	logger, err := factory.NewZapLogger(GeneralLogsFile)
 	if err != nil {
 		log.Fatalf("Failed to initialize general logger: %v", err)
@@ -19,8 +19,8 @@ func InitGeneralLogger() Logger {
 	return logger
 }
 
-func InitTransactionLogger() Logger {
-	factory := NewLoggerFactory(LogsDir)
+func InitTransactionLogger(baseDir string) Logger {
+	factory := NewLoggerFactory(baseDir)
 	logger, err := factory.NewZapLogger(TransactionsLogsFile)
 	if err != nil {
 		log.Fatalf("Failed to initialize transaction logger: %v", err)
@@ -28,8 +28,8 @@ func InitTransactionLogger() Logger {
 	return logger
 }
 
-func InitDetailingLogger() Logger {
-	factory := NewLoggerFactory(LogsDir)
+func InitDetailingLogger(baseDir string) Logger {
+	factory := NewLoggerFactory(baseDir)
 	logger, err := factory.NewZapLogger(DetailingLogsFile)
 	if err != nil {
 		log.Fatalf("Failed to initialize detailing logger: %v", err)

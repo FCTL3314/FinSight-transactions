@@ -89,3 +89,11 @@ func NewResponseFinanceDetailing(fd *domain.FinanceDetailing) *ResponseFinanceDe
 		AfterAmountNet:   afterAmountNet,
 	}
 }
+
+func NewResponseFinanceDetailingList(detailings []*domain.FinanceDetailing) []*ResponseFinanceDetailing {
+	response := make([]*ResponseFinanceDetailing, len(detailings))
+	for i, detailing := range detailings {
+		response[i] = NewResponseFinanceDetailing(detailing)
+	}
+	return response
+}

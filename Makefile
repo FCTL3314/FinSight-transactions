@@ -1,7 +1,7 @@
 ######    Variables    ######
 # Environment
-ENV_LOCAL_PATH=./env_files/.env.local
-ENV_PROD_PATH=./env_files/.env.prod
+ENV_LOCAL_PATH=./settings/.env.local
+ENV_PROD_PATH=./settings/.env.prod
 
 # Docker
 LOCAL_DOCKER_COMPOSE_PROJECT_NAME=transactions_services_local

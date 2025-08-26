@@ -9,6 +9,7 @@ import (
 
 type DetailingUsecase interface {
 	Get(authUserId, id int64) (*domain.FinanceDetailing, error)
+	List(authUserId int64, params *domain.Params) (*domain.PaginatedResult[*domain.FinanceDetailing], error)
 	Create(authUserId int64, createFinanceDetailingRequest *schemas.CreateFinanceDetailingRequest) (*domain.FinanceDetailing, error)
 	Update(authUserId, id int64, updateFinanceDetailingRequest *schemas.UpdateFinanceDetailingRequest) (*domain.FinanceDetailing, error)
 	Delete(authUserId, id int64) error
@@ -37,6 +38,26 @@ func (du *detailingUsecase) Get(authUserId, id int64) (*domain.FinanceDetailing,
 		},
 	}
 	return du.detailingRepository.Get(filterParams)
+}
+
+func (du *detailingUsecase) List(authUserId int64, params *domain.Params) (*domain.PaginatedResult[*domain.FinanceDetailing], error) {
+	params.Filter.Conditions = append(params.Filter.Conditions, domain.FilterCondition{
+		Field:    "user_id",
+		Operator: domain.OpEq,
+		Value:    authUserId,
+	})
+
+	detailings, err := du.detailingRepository.Fetch(params)
+	if err != nil {
+		return nil, err
+	}
+
+	count, err := du.detailingRepository.Count(params.Filter)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.PaginatedResult[*domain.FinanceDetailing]{Results: detailings, Count: count}, nil
 }
 
 func (du *detailingUsecase) Create(authUserId int64, createFinanceDetailingRequest *schemas.CreateFinanceDetailingRequest) (*domain.FinanceDetailing, error) {

@@ -22,8 +22,8 @@ go.work
 go.work.sum
 
 # env file
-env_files/.env.local
-env_files/.env.prod
+settings/.env.local
+settings/.env.prod
 
 # Database files
 docker/local/volumes

@@ -11,6 +11,8 @@ import (
 
 type DetailingRepository interface {
 	Get(filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
+	Fetch(params *domain.Params) ([]*domain.FinanceDetailing, error)
+	Count(filterParams *domain.FilterParams) (int64, error)
 	Create(detailing *domain.FinanceDetailing, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
 	Update(detailing *domain.FinanceDetailing, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
 	Delete(id int64) error
@@ -80,6 +82,83 @@ func (r *DefaultDetailingRepository) Get(filterParams *domain.FilterParams) (*do
 	return r.scanRow(row)
 }
 
+func (r *DefaultDetailingRepository) Fetch(params *domain.Params) ([]*domain.FinanceDetailing, error) {
+	queryBuilder := r.sq.Select(
+		"id",
+		"user_id",
+		"date_from",
+		"date_to",
+		"initial_amount",
+		"current_amount",
+		"total_income",
+		"total_expense",
+		"profit_estimated",
+		"profit_real",
+		"after_amount_net",
+		"after_amount_gross",
+	).From("finance_detailing")
+
+	if params.Filter != nil {
+		queryBuilder = applyFilters(queryBuilder, params.Filter.Conditions)
+	}
+	if params.OrderParams != nil && params.OrderParams.Order != "" {
+		queryBuilder = queryBuilder.OrderBy(params.OrderParams.Order)
+	}
+	if params.Pagination != nil {
+		queryBuilder = queryBuilder.Limit(uint64(params.Pagination.Limit)).Offset(uint64(params.Pagination.Offset))
+	}
+
+	sqlQuery, args, err := queryBuilder.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := r.db.Query(sqlQuery, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			fmt.Println(err)
+			// TODO: Pass logger and log error
+		}
+	}(rows)
+
+	detailings := make([]*domain.FinanceDetailing, 0)
+	for rows.Next() {
+		d, err := r.scanRow(rows)
+		if err != nil {
+			return nil, err
+		}
+		detailings = append(detailings, d)
+	}
+
+	return detailings, nil
+}
+
+func (r *DefaultDetailingRepository) Count(filterParams *domain.FilterParams) (int64, error) {
+	queryBuilder := r.sq.Select("COUNT(*)").From("finance_detailing")
+
+	if filterParams != nil {
+		queryBuilder = applyFilters(queryBuilder, filterParams.Conditions)
+	}
+
+	sqlQuery, args, err := queryBuilder.ToSql()
+	if err != nil {
+		return 0, err
+	}
+
+	var count int64
+	err = r.db.QueryRow(sqlQuery, args...).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *DefaultDetailingRepository) calculateTransactionTotals(filterParams *domain.FilterParams) (float64, float64, error) {
 	var totalIncome, totalExpense float64
 
@@ -127,7 +206,7 @@ func (r *DefaultDetailingRepository) Create(detailing *domain.FinanceDetailing, 
 		Values(
 			detailing.UserID, detailing.DateFrom, detailing.DateTo, detailing.InitialAmount, detailing.CurrentAmount,
 			detailing.TotalIncome, detailing.TotalExpense, detailing.ProfitEstimated, detailing.ProfitReal,
-			detailing.AfterAmountNet, // detailing.AfterAmountGross,
+			detailing.AfterAmountNet, detailing.AfterAmountGross,
 		).
 		Suffix("RETURNING id, user_id, date_from, date_to, initial_amount, current_amount, total_income, total_expense, profit_estimated, profit_real, after_amount_net, after_amount_gross")
 

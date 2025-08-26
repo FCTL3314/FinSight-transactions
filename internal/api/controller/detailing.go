@@ -14,6 +14,7 @@ import (
 
 type DetailingController interface {
 	GetController
+	ListController
 	CreateController
 	UpdateController
 	DeleteController
@@ -57,6 +58,42 @@ func (tc *detailingController) Get(c *gin.Context) {
 
 	responseFinanceDetailing := schemas.NewResponseFinanceDetailing(financeDetailing)
 	c.JSON(http.StatusOK, responseFinanceDetailing)
+}
+
+func (tc *detailingController) List(c *gin.Context) {
+	params, err := getParams(
+		c,
+		tc.cfg.Pagination.FinanceDetailingLimit,
+		WithFilters(
+			map[string][]string{
+				"date_from": {"gte", "lte", "gt", "lt"},
+				"date_to":   {"gte", "lte", "gt", "lt"},
+			},
+		),
+		WithOrdering("created_at DESC"),
+	)
+	if err != nil {
+		tc.errorHandler.Handle(c, err)
+		return
+	}
+
+	authUserId := c.GetInt64(UserIDContextKey)
+	paginatedResult, err := tc.usecase.List(authUserId, &params)
+	if err != nil {
+		tc.errorHandler.Handle(c, err)
+		return
+	}
+
+	responseDetailing := schemas.NewResponseFinanceDetailingList(paginatedResult.Results)
+
+	paginatedResponse := domain.PaginatedResponse[*schemas.ResponseFinanceDetailing]{
+		Count:   paginatedResult.Count,
+		Limit:   params.Pagination.Limit,
+		Offset:  params.Pagination.Offset,
+		Results: responseDetailing,
+	}
+
+	c.JSON(http.StatusOK, paginatedResponse)
 }
 
 func (tc *detailingController) Create(c *gin.Context) {
