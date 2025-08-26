@@ -8,25 +8,39 @@ import (
 )
 
 type DetailingUsecase interface {
-	Get(authUserId int64, getFinanceDetailingRequest *schemas.GetFinanceDetailingRequest) (*domain.FinanceDetailing, error)
+	Get(authUserId, id int64) (*domain.FinanceDetailing, error)
+	Create(authUserId int64, createFinanceDetailingRequest *schemas.CreateFinanceDetailingRequest) (*domain.FinanceDetailing, error)
+	Update(authUserId, id int64, updateFinanceDetailingRequest *schemas.UpdateFinanceDetailingRequest) (*domain.FinanceDetailing, error)
 }
 
 type detailingUsecase struct {
-	transactionRepository repository.TransactionRepository
-	cfg                   *config.Config
+	detailingRepository repository.DetailingRepository
+	cfg                 *config.Config
 }
 
 func NewDetailingUsecase(
-	transactionRepository repository.TransactionRepository,
+	detailingRepository repository.DetailingRepository,
 	cfg *config.Config,
 ) DetailingUsecase {
 	return &detailingUsecase{
-		transactionRepository: transactionRepository,
-		cfg:                   cfg,
+		detailingRepository: detailingRepository,
+		cfg:                 cfg,
 	}
 }
 
-func (du *detailingUsecase) Get(authUserId int64, getFinanceDetailingRequest *schemas.GetFinanceDetailingRequest) (*domain.FinanceDetailing, error) {
+func (du *detailingUsecase) Get(authUserId, id int64) (*domain.FinanceDetailing, error) {
+	filterParams := &domain.FilterParams{
+		Conditions: []domain.FilterCondition{
+			{Field: "id", Operator: domain.OpEq, Value: id},
+			{Field: "user_id", Operator: domain.OpEq, Value: authUserId},
+		},
+	}
+	return du.detailingRepository.Get(filterParams)
+}
+
+func (du *detailingUsecase) Create(authUserId int64, createFinanceDetailingRequest *schemas.CreateFinanceDetailingRequest) (*domain.FinanceDetailing, error) {
+	detailing := createFinanceDetailingRequest.ToDomainModel(authUserId)
+
 	filterParams := domain.NewFilterParams(
 		domain.FilterCondition{
 			Field:    "user_id",
@@ -36,20 +50,43 @@ func (du *detailingUsecase) Get(authUserId int64, getFinanceDetailingRequest *sc
 		domain.FilterCondition{
 			Field:    "made_at",
 			Operator: domain.OpGte,
-			Value:    getFinanceDetailingRequest.DateFrom,
+			Value:    createFinanceDetailingRequest.DateFrom,
 		},
 		domain.FilterCondition{
 			Field:    "made_at",
 			Operator: domain.OpLte,
-			Value:    getFinanceDetailingRequest.DateTo,
+			Value:    createFinanceDetailingRequest.DateTo,
 		},
 	)
 
-	return du.transactionRepository.GetFinanceDetailing(
-		getFinanceDetailingRequest.DateFrom,
-		getFinanceDetailingRequest.DateTo,
-		getFinanceDetailingRequest.InitialAmount,
-		getFinanceDetailingRequest.CurrentAmount,
-		filterParams,
+	return du.detailingRepository.Create(detailing, filterParams)
+}
+
+func (du *detailingUsecase) Update(authUserId, id int64, updateFinanceDetailingRequest *schemas.UpdateFinanceDetailingRequest) (*domain.FinanceDetailing, error) {
+	detailingToUpdate, err := du.Get(authUserId, id)
+	if err != nil {
+		return nil, err
+	}
+
+	updateFinanceDetailingRequest.ApplyToDomainModel(detailingToUpdate)
+
+	filterParams := domain.NewFilterParams(
+		domain.FilterCondition{
+			Field:    "user_id",
+			Operator: domain.OpEq,
+			Value:    authUserId,
+		},
+		domain.FilterCondition{
+			Field:    "made_at",
+			Operator: domain.OpGte,
+			Value:    detailingToUpdate.DateFrom,
+		},
+		domain.FilterCondition{
+			Field:    "made_at",
+			Operator: domain.OpLte,
+			Value:    detailingToUpdate.DateTo,
+		},
 	)
+
+	return du.detailingRepository.Update(detailingToUpdate, filterParams)
 }

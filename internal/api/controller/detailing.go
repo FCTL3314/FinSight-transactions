@@ -14,6 +14,8 @@ import (
 
 type DetailingController interface {
 	GetController
+	CreateController
+	UpdateController
 }
 
 type detailingController struct {
@@ -38,21 +40,64 @@ func NewDetailingController(
 }
 
 func (tc *detailingController) Get(c *gin.Context) {
-	var req schemas.GetFinanceDetailingRequest
-
-	if err := c.ShouldBindQuery(&req); err != nil {
-		c.JSON(http.StatusBadRequest, domain.NewValidationErrorResponse(err.Error()))
+	id, err := getParamAsInt64(c, "id")
+	if err != nil {
+		tc.errorHandler.Handle(c, err)
 		return
 	}
 
 	authUserId := c.GetInt64(UserIDContextKey)
 
-	financeDetailing, err := tc.usecase.Get(authUserId, &req)
+	financeDetailing, err := tc.usecase.Get(authUserId, id)
 	if err != nil {
 		tc.errorHandler.Handle(c, err)
 		return
 	}
 
 	responseFinanceDetailing := schemas.NewResponseFinanceDetailing(financeDetailing)
+	c.JSON(http.StatusOK, responseFinanceDetailing)
+}
+
+func (tc *detailingController) Create(c *gin.Context) {
+	var req schemas.CreateFinanceDetailingRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, domain.NewValidationErrorResponse(err.Error()))
+		return
+	}
+
+	authUserId := c.GetInt64(UserIDContextKey)
+
+	createdDetailing, err := tc.usecase.Create(authUserId, &req)
+	if err != nil {
+		tc.errorHandler.Handle(c, err)
+		return
+	}
+
+	responseFinanceDetailing := schemas.NewResponseFinanceDetailing(createdDetailing)
+	c.JSON(http.StatusCreated, responseFinanceDetailing)
+}
+
+func (tc *detailingController) Update(c *gin.Context) {
+	id, err := getParamAsInt64(c, "id")
+	if err != nil {
+		tc.errorHandler.Handle(c, err)
+		return
+	}
+
+	var req schemas.UpdateFinanceDetailingRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, domain.NewValidationErrorResponse(err.Error()))
+		return
+	}
+
+	authUserId := c.GetInt64(UserIDContextKey)
+
+	updatedDetailing, err := tc.usecase.Update(authUserId, id, &req)
+	if err != nil {
+		tc.errorHandler.Handle(c, err)
+		return
+	}
+
+	responseFinanceDetailing := schemas.NewResponseFinanceDetailing(updatedDetailing)
 	c.JSON(http.StatusOK, responseFinanceDetailing)
 }

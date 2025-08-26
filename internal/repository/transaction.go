@@ -12,7 +12,6 @@ import (
 
 type TransactionRepository interface {
 	Repository[domain.Transaction]
-	GetFinanceDetailing(dateFrom, dateTo time.Time, initialAmount, currentAmount float64, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
 }
 
 type DefaultTransactionRepository struct {
@@ -245,48 +244,4 @@ func (r *DefaultTransactionRepository) Count(params *domain.FilterParams) (int64
 	}
 
 	return count, nil
-}
-
-func (r *DefaultTransactionRepository) GetFinanceDetailing(dateFrom, dateTo time.Time, initialAmount, currentAmount float64, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error) {
-	var totalIncome, totalExpense float64
-
-	baseQuery := r.sq.Select("COALESCE(SUM(amount), 0)").From("transactions")
-
-	if filterParams != nil {
-		baseQuery = applyFilters(baseQuery, filterParams.Conditions)
-	}
-
-	incomeQuery, incomeArgs, err := baseQuery.Where("amount > 0").ToSql()
-	if err != nil {
-		return nil, fmt.Errorf("failed to build income query: %w", err)
-	}
-
-	expenseQuery, expenseArgs, err := baseQuery.Where("amount < 0").ToSql()
-	if err != nil {
-		return nil, fmt.Errorf("failed to build expense query: %w", err)
-	}
-
-	if err := r.db.QueryRow(incomeQuery, incomeArgs...).Scan(&totalIncome); err != nil {
-		return nil, fmt.Errorf("failed to query total income: %w", err)
-	}
-
-	if err := r.db.QueryRow(expenseQuery, expenseArgs...).Scan(&totalExpense); err != nil {
-		return nil, fmt.Errorf("failed to query total expense: %w", err)
-	}
-
-	totalExpense = -totalExpense
-
-	profitEstimated := totalIncome - totalExpense
-
-	detailing := domain.NewFinanceDetailing(
-		dateFrom,
-		dateTo,
-		initialAmount,
-		currentAmount,
-		totalIncome,
-		totalExpense,
-		profitEstimated,
-	)
-
-	return detailing, nil
 }
