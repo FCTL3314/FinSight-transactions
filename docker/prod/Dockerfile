@@ -26,7 +26,7 @@ RUN mkdir -p /app/logs && chown -R appuser:appuser /app/logs
 COPY --from=builder /app/app .
 COPY --from=builder /go/bin/goose /usr/local/bin/
 
-COPY config.yml /app/config.yml
+COPY settings/config.yml /app/config.yml
 COPY docker/prod/scripts/entrypoint.sh /app/entrypoint.sh
 COPY Makefile /app/Makefile
 COPY migrations /app/migrations
