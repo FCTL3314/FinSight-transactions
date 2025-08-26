@@ -11,6 +11,7 @@ type DetailingRouter interface {
 	GetRouter
 	CreateRouter
 	UpdateRouter
+	DeleteRouter
 }
 
 type detailingRouter struct {
@@ -40,6 +41,10 @@ func (tr *detailingRouter) Update() {
 	tr.router.PATCH("/:id", middleware.UserContext, tr.detailingController.Update)
 }
 
+func (tr *detailingRouter) Delete() {
+	tr.router.DELETE("/:id", middleware.UserContext, tr.detailingController.Delete)
+}
+
 type detailingRouterRegistrator struct {
 	router DetailingRouter
 }
@@ -52,4 +57,5 @@ func (r *detailingRouterRegistrator) Register() {
 	r.router.Get()
 	r.router.Create()
 	r.router.Update()
+	r.router.Delete()
 }

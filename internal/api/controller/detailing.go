@@ -16,6 +16,7 @@ type DetailingController interface {
 	GetController
 	CreateController
 	UpdateController
+	DeleteController
 }
 
 type detailingController struct {
@@ -100,4 +101,20 @@ func (tc *detailingController) Update(c *gin.Context) {
 
 	responseFinanceDetailing := schemas.NewResponseFinanceDetailing(updatedDetailing)
 	c.JSON(http.StatusOK, responseFinanceDetailing)
+}
+
+func (tc *detailingController) Delete(c *gin.Context) {
+	id, err := getParamAsInt64(c, "id")
+	if err != nil {
+		tc.errorHandler.Handle(c, err)
+		return
+	}
+
+	authUserId := c.GetInt64(UserIDContextKey)
+
+	if err := tc.usecase.Delete(authUserId, id); err != nil {
+		tc.errorHandler.Handle(c, err)
+		return
+	}
+	c.Status(http.StatusNoContent)
 }

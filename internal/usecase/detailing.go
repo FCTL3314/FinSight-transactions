@@ -11,6 +11,7 @@ type DetailingUsecase interface {
 	Get(authUserId, id int64) (*domain.FinanceDetailing, error)
 	Create(authUserId int64, createFinanceDetailingRequest *schemas.CreateFinanceDetailingRequest) (*domain.FinanceDetailing, error)
 	Update(authUserId, id int64, updateFinanceDetailingRequest *schemas.UpdateFinanceDetailingRequest) (*domain.FinanceDetailing, error)
+	Delete(authUserId, id int64) error
 }
 
 type detailingUsecase struct {
@@ -89,4 +90,17 @@ func (du *detailingUsecase) Update(authUserId, id int64, updateFinanceDetailingR
 	)
 
 	return du.detailingRepository.Update(detailingToUpdate, filterParams)
+}
+
+func (du *detailingUsecase) Delete(authUserId, id int64) error {
+	detailing, err := du.Get(authUserId, id)
+	if err != nil {
+		return err
+	}
+
+	if detailing.UserID != authUserId {
+		return domain.ErrAccessDenied
+	}
+
+	return du.detailingRepository.Delete(id)
 }

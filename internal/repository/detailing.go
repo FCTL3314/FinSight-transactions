@@ -13,6 +13,7 @@ type DetailingRepository interface {
 	Get(filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
 	Create(detailing *domain.FinanceDetailing, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
 	Update(detailing *domain.FinanceDetailing, filterParams *domain.FilterParams) (*domain.FinanceDetailing, error)
+	Delete(id int64) error
 }
 
 type DefaultDetailingRepository struct {
@@ -126,7 +127,7 @@ func (r *DefaultDetailingRepository) Create(detailing *domain.FinanceDetailing, 
 		Values(
 			detailing.UserID, detailing.DateFrom, detailing.DateTo, detailing.InitialAmount, detailing.CurrentAmount,
 			detailing.TotalIncome, detailing.TotalExpense, detailing.ProfitEstimated, detailing.ProfitReal,
-			detailing.AfterAmountNet, detailing.AfterAmountGross,
+			detailing.AfterAmountNet, // detailing.AfterAmountGross,
 		).
 		Suffix("RETURNING id, user_id, date_from, date_to, initial_amount, current_amount, total_income, total_expense, profit_estimated, profit_real, after_amount_net, after_amount_gross")
 
@@ -169,4 +170,29 @@ func (r *DefaultDetailingRepository) Update(detailing *domain.FinanceDetailing, 
 
 	row := r.db.QueryRow(sqlQuery, args...)
 	return r.scanRow(row)
+}
+
+func (r *DefaultDetailingRepository) Delete(id int64) error {
+	sqlQuery, args, err := r.sq.Delete("finance_detailing").
+		Where(squirrel.Eq{"id": id}).
+		ToSql()
+	if err != nil {
+		return err
+	}
+
+	result, err := r.db.Exec(sqlQuery, args...)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return domain.ErrObjectNotFound
+	}
+
+	return nil
 }

@@ -98,7 +98,7 @@ func (c *AppContainer) setupHealthCheck() {
 
 func (c *AppContainer) setupTransaction() {
 	errorMapper := errormapper.BuildAllErrorsMapperChain()
-	errorHandler := errorhandler.NewErrorHandler(errorMapper)
+	errorHandler := errorhandler.NewErrorHandler(errorMapper, c.LoggersGroup.General)
 	errorhandler.RegisterAllErrorHandlers(errorHandler)
 
 	c.TransactionContainer = NewTransactionContainer(
@@ -112,7 +112,7 @@ func (c *AppContainer) setupTransaction() {
 
 func (c *AppContainer) setupDetailing() {
 	errorMapper := errormapper.BuildAllErrorsMapperChain()
-	errorHandler := errorhandler.NewErrorHandler(errorMapper)
+	errorHandler := errorhandler.NewErrorHandler(errorMapper, c.LoggersGroup.General)
 	errorhandler.RegisterAllErrorHandlers(errorHandler)
 
 	c.DetailingContainer = NewDetailingContainer(
