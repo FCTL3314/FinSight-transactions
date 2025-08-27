@@ -14,8 +14,8 @@ type GetFinanceDetailingRequest struct {
 }
 
 type CreateFinanceDetailingRequest struct {
-	DateFrom      time.Time `json:"date_from" binding:"required" time_format:"2006-01-02"`
-	DateTo        time.Time `json:"date_to" binding:"required" time_format:"2006-01-02"`
+	DateFrom      time.Time `json:"date_from" binding:"required,datetime=2006-01-02"`
+	DateTo        time.Time `json:"date_to" binding:"required,datetime=2006-01-02"`
 	InitialAmount float64   `json:"initial_amount" binding:"required"`
 	CurrentAmount float64   `json:"current_amount" binding:"required"`
 }
@@ -31,8 +31,8 @@ func (req *CreateFinanceDetailingRequest) ToDomainModel(userID int64) *domain.Fi
 }
 
 type UpdateFinanceDetailingRequest struct {
-	DateFrom      *time.Time `json:"date_from" time_format:"2006-01-02"`
-	DateTo        *time.Time `json:"date_to" time_format:"2006-01-02"`
+	DateFrom      *time.Time `json:"date_from" binding:"omitempty,datetime=2006-01-02"`
+	DateTo        *time.Time `json:"date_to" binding:"omitempty,datetime=2006-01-02"`
 	InitialAmount *float64   `json:"initial_amount"`
 	CurrentAmount *float64   `json:"current_amount"`
 }
