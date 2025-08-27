@@ -2,7 +2,7 @@ package schemas
 
 import (
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
-	"github.com/golang-module/carbon/v2"
+	"github.com/dromara/carbon/v2"
 )
 
 type GetFinanceDetailingRequest struct {
