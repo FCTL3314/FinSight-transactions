@@ -52,7 +52,7 @@ func (c *AppContainer) setupGin() {
 func (c *AppContainer) setupConfig() {
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatal("Failed to load configuration. Please check environmental files.", err)
+		log.Fatal("Failed to load configuration. Please check environmental and config files.", err)
 	}
 	c.Config = cfg
 }
