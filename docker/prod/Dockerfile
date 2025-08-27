@@ -33,6 +33,6 @@ COPY migrations /app/migrations
 
 RUN chmod +x /app/entrypoint.sh
 
-EXPOSE ${PORT}
+EXPOSE ${INTERNAL_PORT}
 
 ENTRYPOINT ["/app/entrypoint.sh"]

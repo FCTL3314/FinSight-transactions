@@ -13,6 +13,6 @@ COPY . .
 COPY docker/local/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-EXPOSE ${PORT}
+EXPOSE ${INTERNAL_PORT}
 
 ENTRYPOINT ["entrypoint.sh"]
