@@ -7,15 +7,15 @@ import (
 )
 
 type GetFinanceDetailingRequest struct {
-	DateFrom      time.Time `form:"date_from" binding:"required"`
-	DateTo        time.Time `form:"date_to" binding:"required"`
+	DateFrom      time.Time `form:"date_from" binding:"required" time_format:"2006-01-02"`
+	DateTo        time.Time `form:"date_to" binding:"required" time_format:"2006-01-02"`
 	InitialAmount float64   `form:"initial_amount" binding:"required"`
 	CurrentAmount float64   `form:"current_amount" binding:"required"`
 }
 
 type CreateFinanceDetailingRequest struct {
-	DateFrom      time.Time `json:"date_from" binding:"required"`
-	DateTo        time.Time `json:"date_to" binding:"required"`
+	DateFrom      time.Time `json:"date_from" binding:"required" time_format:"2006-01-02"`
+	DateTo        time.Time `json:"date_to" binding:"required" time_format:"2006-01-02"`
 	InitialAmount float64   `json:"initial_amount" binding:"required"`
 	CurrentAmount float64   `json:"current_amount" binding:"required"`
 }
@@ -31,8 +31,8 @@ func (req *CreateFinanceDetailingRequest) ToDomainModel(userID int64) *domain.Fi
 }
 
 type UpdateFinanceDetailingRequest struct {
-	DateFrom      *time.Time `json:"date_from"`
-	DateTo        *time.Time `json:"date_to"`
+	DateFrom      *time.Time `json:"date_from" time_format:"2006-01-02"`
+	DateTo        *time.Time `json:"date_to" time_format:"2006-01-02"`
 	InitialAmount *float64   `json:"initial_amount"`
 	CurrentAmount *float64   `json:"current_amount"`
 }
@@ -54,8 +54,8 @@ func (req *UpdateFinanceDetailingRequest) ApplyToDomainModel(fd *domain.FinanceD
 
 type ResponseFinanceDetailing struct {
 	ID               uint      `json:"id"`
-	DateFrom         time.Time `json:"date_from"`
-	DateTo           time.Time `json:"date_to"`
+	DateFrom         time.Time `json:"date_from" time_format:"2006-01-02"`
+	DateTo           time.Time `json:"date_to" time_format:"2006-01-02"`
 	InitialAmount    float64   `json:"initial_amount"`
 	CurrentAmount    float64   `json:"current_amount"`
 	TotalIncome      float64   `json:"total_income"`
