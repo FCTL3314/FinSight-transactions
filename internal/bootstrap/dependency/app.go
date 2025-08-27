@@ -52,11 +52,7 @@ func (c *AppContainer) setupGin() {
 func (c *AppContainer) setupConfig() {
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatal(
-			"Failed to load configuration. Please check environmental files. " +
-				"If you run the application via Docker, " +
-				"check if you use the WORKDIR directive.",
-		)
+		log.Fatal("Failed to load configuration. Please check environmental files.", err)
 	}
 	c.Config = cfg
 }
