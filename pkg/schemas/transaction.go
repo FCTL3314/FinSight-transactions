@@ -10,7 +10,7 @@ type CreateTransactionRequest struct {
 	Amount     float64   `json:"amount" binding:"required"`
 	Name       string    `json:"name" binding:"required"`
 	Note       string    `json:"note"`
-	CategoryID int64     `json:"category_id" binding:"required"`
+	CategoryID int64     `json:"category_id"`
 	MadeAt     time.Time `json:"made_at"`
 }
 
