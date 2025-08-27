@@ -1,23 +1,22 @@
 package schemas
 
 import (
-	"time"
-
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
+	"github.com/golang-module/carbon/v2"
 )
 
 type GetFinanceDetailingRequest struct {
-	DateFrom      time.Time `form:"date_from" binding:"required" time_format:"2006-01-02"`
-	DateTo        time.Time `form:"date_to" binding:"required" time_format:"2006-01-02"`
-	InitialAmount float64   `form:"initial_amount" binding:"required"`
-	CurrentAmount float64   `form:"current_amount" binding:"required"`
+	DateFrom      carbon.Carbon `form:"date_from" binding:"required" time_format:"2006-01-02"`
+	DateTo        carbon.Carbon `form:"date_to" binding:"required" time_format:"2006-01-02"`
+	InitialAmount float64       `form:"initial_amount" binding:"required"`
+	CurrentAmount float64       `form:"current_amount" binding:"required"`
 }
 
 type CreateFinanceDetailingRequest struct {
-	DateFrom      time.Time `json:"date_from" binding:"required,datetime=2006-01-02"`
-	DateTo        time.Time `json:"date_to" binding:"required,datetime=2006-01-02"`
-	InitialAmount float64   `json:"initial_amount" binding:"required"`
-	CurrentAmount float64   `json:"current_amount" binding:"required"`
+	DateFrom      carbon.Carbon `json:"date_from" binding:"required,datetime=2006-01-02"`
+	DateTo        carbon.Carbon `json:"date_to" binding:"required,datetime=2006-01-02"`
+	InitialAmount float64       `json:"initial_amount" binding:"required"`
+	CurrentAmount float64       `json:"current_amount" binding:"required"`
 }
 
 func (req *CreateFinanceDetailingRequest) ToDomainModel(userID int64) *domain.FinanceDetailing {
@@ -31,10 +30,10 @@ func (req *CreateFinanceDetailingRequest) ToDomainModel(userID int64) *domain.Fi
 }
 
 type UpdateFinanceDetailingRequest struct {
-	DateFrom      *time.Time `json:"date_from" binding:"omitempty,datetime=2006-01-02"`
-	DateTo        *time.Time `json:"date_to" binding:"omitempty,datetime=2006-01-02"`
-	InitialAmount *float64   `json:"initial_amount"`
-	CurrentAmount *float64   `json:"current_amount"`
+	DateFrom      *carbon.Carbon `json:"date_from" binding:"omitempty,datetime=2006-01-02"`
+	DateTo        *carbon.Carbon `json:"date_to" binding:"omitempty,datetime=2006-01-02"`
+	InitialAmount *float64       `json:"initial_amount"`
+	CurrentAmount *float64       `json:"current_amount"`
 }
 
 func (req *UpdateFinanceDetailingRequest) ApplyToDomainModel(fd *domain.FinanceDetailing) {
@@ -53,17 +52,17 @@ func (req *UpdateFinanceDetailingRequest) ApplyToDomainModel(fd *domain.FinanceD
 }
 
 type ResponseFinanceDetailing struct {
-	ID               uint      `json:"id"`
-	DateFrom         time.Time `json:"date_from" time_format:"2006-01-02"`
-	DateTo           time.Time `json:"date_to" time_format:"2006-01-02"`
-	InitialAmount    float64   `json:"initial_amount"`
-	CurrentAmount    float64   `json:"current_amount"`
-	TotalIncome      float64   `json:"total_income"`
-	TotalExpense     float64   `json:"total_expense"`
-	ProfitEstimated  float64   `json:"profit_estimated"`
-	ProfitReal       float64   `json:"profit_real"`
-	AfterAmountNet   float64   `json:"after_amount_net"`
-	AfterAmountGross float64   `json:"after_amount_gross"`
+	ID               uint          `json:"id"`
+	DateFrom         carbon.Carbon `json:"date_from" time_format:"2006-01-02"`
+	DateTo           carbon.Carbon `json:"date_to" time_format:"2006-01-02"`
+	InitialAmount    float64       `json:"initial_amount"`
+	CurrentAmount    float64       `json:"current_amount"`
+	TotalIncome      float64       `json:"total_income"`
+	TotalExpense     float64       `json:"total_expense"`
+	ProfitEstimated  float64       `json:"profit_estimated"`
+	ProfitReal       float64       `json:"profit_real"`
+	AfterAmountNet   float64       `json:"after_amount_net"`
+	AfterAmountGross float64       `json:"after_amount_gross"`
 }
 
 func NewResponseFinanceDetailing(fd *domain.FinanceDetailing) *ResponseFinanceDetailing {
