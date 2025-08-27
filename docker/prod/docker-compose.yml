@@ -27,7 +27,7 @@ services:
     volumes:
       - ../../logs:/app/logs
     ports:
-      - "{EXTERNAL_PORT}:${INTERNAL_PORT}"
+      - "${EXTERNAL_PORT}:${INTERNAL_PORT}"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:${INTERNAL_PORT}/health-check || exit 1"]
       interval: 10s
