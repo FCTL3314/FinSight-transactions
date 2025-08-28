@@ -1,39 +1,35 @@
 package schemas
 
 import (
+	"time"
+
 	"github.com/FCTL3314/FinSight-transactions/internal/domain"
-	"github.com/dromara/carbon/v2"
 )
 
-type GetFinanceDetailingRequest struct {
-	DateFrom      carbon.Carbon `form:"date_from" binding:"required" time_format:"2006-01-02"`
-	DateTo        carbon.Carbon `form:"date_to" binding:"required" time_format:"2006-01-02"`
-	InitialAmount float64       `form:"initial_amount" binding:"required"`
-	CurrentAmount float64       `form:"current_amount" binding:"required"`
-}
-
 type CreateFinanceDetailingRequest struct {
-	DateFrom      carbon.Carbon `json:"date_from" binding:"required,datetime=2006-01-02"`
-	DateTo        carbon.Carbon `json:"date_to" binding:"required,datetime=2006-01-02"`
-	InitialAmount float64       `json:"initial_amount" binding:"required"`
-	CurrentAmount float64       `json:"current_amount" binding:"required"`
+	DateFrom      time.Time `json:"date_from" time_format:"2006-01-02" binding:"required"`
+	DateTo        time.Time `json:"date_to" time_format:"2006-01-02" binding:"required"`
+	InitialAmount float64   `json:"initial_amount" binding:"required"`
+	CurrentAmount float64   `json:"current_amount" binding:"required"`
 }
 
 func (req *CreateFinanceDetailingRequest) ToDomainModel(userID int64) *domain.FinanceDetailing {
-	return &domain.FinanceDetailing{
-		UserID:        userID,
-		DateFrom:      req.DateFrom,
-		DateTo:        req.DateTo,
-		InitialAmount: req.InitialAmount,
-		CurrentAmount: req.CurrentAmount,
-	}
+	return domain.NewFinanceDetailing(
+		userID,
+		req.DateFrom,
+		req.DateTo,
+		req.InitialAmount,
+		req.CurrentAmount,
+		0,
+		0,
+	)
 }
 
 type UpdateFinanceDetailingRequest struct {
-	DateFrom      *carbon.Carbon `json:"date_from" binding:"omitempty,datetime=2006-01-02"`
-	DateTo        *carbon.Carbon `json:"date_to" binding:"omitempty,datetime=2006-01-02"`
-	InitialAmount *float64       `json:"initial_amount"`
-	CurrentAmount *float64       `json:"current_amount"`
+	DateFrom      *time.Time `json:"date_from" time_format:"2006-01-02" binding:"omitempty"`
+	DateTo        *time.Time `json:"date_to" time_format:"2006-01-02" binding:"omitempty"`
+	InitialAmount *float64   `json:"initial_amount"`
+	CurrentAmount *float64   `json:"current_amount"`
 }
 
 func (req *UpdateFinanceDetailingRequest) ApplyToDomainModel(fd *domain.FinanceDetailing) {
@@ -52,17 +48,17 @@ func (req *UpdateFinanceDetailingRequest) ApplyToDomainModel(fd *domain.FinanceD
 }
 
 type ResponseFinanceDetailing struct {
-	ID               uint          `json:"id"`
-	DateFrom         carbon.Carbon `json:"date_from" time_format:"2006-01-02"`
-	DateTo           carbon.Carbon `json:"date_to" time_format:"2006-01-02"`
-	InitialAmount    float64       `json:"initial_amount"`
-	CurrentAmount    float64       `json:"current_amount"`
-	TotalIncome      float64       `json:"total_income"`
-	TotalExpense     float64       `json:"total_expense"`
-	ProfitEstimated  float64       `json:"profit_estimated"`
-	ProfitReal       float64       `json:"profit_real"`
-	AfterAmountNet   float64       `json:"after_amount_net"`
-	AfterAmountGross float64       `json:"after_amount_gross"`
+	ID               uint      `json:"id"`
+	DateFrom         time.Time `json:"date_from"`
+	DateTo           time.Time `json:"date_to"`
+	InitialAmount    float64   `json:"initial_amount"`
+	CurrentAmount    float64   `json:"current_amount"`
+	TotalIncome      float64   `json:"total_income"`
+	TotalExpense     float64   `json:"total_expense"`
+	ProfitEstimated  float64   `json:"profit_estimated"`
+	ProfitReal       float64   `json:"profit_real"`
+	AfterAmountNet   float64   `json:"after_amount_net"`
+	AfterAmountGross float64   `json:"after_amount_gross"`
 }
 
 func NewResponseFinanceDetailing(fd *domain.FinanceDetailing) *ResponseFinanceDetailing {
@@ -70,9 +66,7 @@ func NewResponseFinanceDetailing(fd *domain.FinanceDetailing) *ResponseFinanceDe
 		return nil
 	}
 
-	profitReal := fd.CurrentAmount - fd.InitialAmount
-	afterAmountGross := fd.InitialAmount + fd.TotalIncome
-	afterAmountNet := afterAmountGross - fd.TotalExpense
+	fd.Calculate()
 
 	return &ResponseFinanceDetailing{
 		ID:               fd.ID,
@@ -83,9 +77,9 @@ func NewResponseFinanceDetailing(fd *domain.FinanceDetailing) *ResponseFinanceDe
 		TotalIncome:      fd.TotalIncome,
 		TotalExpense:     fd.TotalExpense,
 		ProfitEstimated:  fd.ProfitEstimated,
-		ProfitReal:       profitReal,
-		AfterAmountGross: afterAmountGross,
-		AfterAmountNet:   afterAmountNet,
+		ProfitReal:       fd.ProfitReal,
+		AfterAmountNet:   fd.AfterAmountNet,
+		AfterAmountGross: fd.AfterAmountGross,
 	}
 }
 
