@@ -11,7 +11,7 @@ PROD_DOCKER_COMPOSE_PROJECT_NAME=transactions_services
 PROD_DOCKER_COMPOSE_FILE_PATH=./docker/prod/docker-compose.yml
 
 # Migrations (Alembic)
-ALEMBIC_CONFIG=./alembic.ini
+ALEMBIC_CONFIG=./migrations/alembic.ini
 
 ######    Shortcuts    ######
 # Local Docker Services
@@ -33,7 +33,7 @@ down_prod_services:
 apply_migrations:
 	alembic -c $(ALEMBIC_CONFIG) upgrade head
 
-add_migration:
+create_migration:
 	alembic -c $(ALEMBIC_CONFIG) revision --autogenerate -m "$(name)"
 
 # Deployment
