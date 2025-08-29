@@ -1,34 +1,37 @@
-FROM python:3.13-slim as builder
+FROM ghcr.io/astral-sh/uv:python3.13-trixie-slim AS builder
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-RUN pip install uv
+ENV VENV_PATH=/opt/venv
+RUN python -m venv $VENV_PATH
+ENV PATH="$VENV_PATH/bin:$PATH"
 
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
-
-RUN uv pip sync --no-dev --system
+RUN uv sync --locked --no-dev
 
 COPY . .
 
+FROM python:3.13-slim-trixie
 
-FROM python:3.13-slim
-
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV VENV_PATH=/opt/venv
+ENV PATH="$VENV_PATH/bin:$PATH"
 ENV APP_USER=appuser
 
 RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USER}
 
 WORKDIR /app
 
-COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
-COPY --from=builder /app .
+COPY --from=builder ${VENV_PATH} ${VENV_PATH}
 
-COPY ./docker/prod/scripts/entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+COPY --from=builder /app /app
+
+COPY ./docker/prod/scripts/entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
 RUN chown -R ${APP_USER}:${APP_USER} /app
 

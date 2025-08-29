@@ -28,6 +28,9 @@ up_prod_services:
 	docker-compose --env-file ${ENV_PROD_PATH} -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d
 down_prod_services:
 	docker-compose --env-file ${ENV_PROD_PATH} -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) down
+rebuild_prod_services:
+	docker-compose --env-file ${ENV_PROD_PATH} -p $(PROD_DOCKER_COMPOSE_PROJECT_NAME) -f $(PROD_DOCKER_COMPOSE_FILE_PATH) up -d --build
+restart_prod_services: down_prod_services up_prod_services
 
 # Migrations (Alembic)
 apply_migrations:
