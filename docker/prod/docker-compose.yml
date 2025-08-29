@@ -18,17 +18,12 @@ services:
     restart: unless-stopped
 
   app:
-    # image: ${DOCKERHUB_USERNAME}/finsight-transactions:latest
-    build:
-      context: ../../
-      dockerfile: ./docker/local/Dockerfile
+    image: ${DOCKERHUB_USERNAME}/finsight-transactions:latest
     env_file:
       - ../../settings/.env.prod
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ../../logs:/app/logs
     ports:
       - "${EXTERNAL_PORT}:${INTERNAL_PORT}"
     healthcheck:
