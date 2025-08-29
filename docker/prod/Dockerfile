@@ -14,8 +14,9 @@ RUN uv sync --locked --no-dev
 
 COPY . .
 
-FROM python:3.13-slim-trixie
+FROM ghcr.io/astral-sh/uv:python3.13-trixie-slim
 
+ENV PATH="/root/.local/bin:$PATH"
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV VENV_PATH=/opt/venv
@@ -29,8 +30,9 @@ RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USE
 WORKDIR /app
 
 COPY --from=builder ${VENV_PATH} ${VENV_PATH}
-
 COPY --from=builder /app /app
+
+ENV UV_CACHE_DIR=/tmp/uv_cache
 
 COPY ./docker/prod/scripts/entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh

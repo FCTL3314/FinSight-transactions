@@ -37,10 +37,10 @@ restart_prod_services: down_prod_services up_prod_services
 
 # Migrations (Alembic)
 apply_migrations:
-	uv run alembic -c ${ALEMBIC_CONFIG} upgrade head
+	alembic -c ${ALEMBIC_CONFIG} upgrade head
 
 create_migration:
-	uv run alembic -c ${ALEMBIC_CONFIG} revision --autogenerate -m "$(name)"
+	alembic -c ${ALEMBIC_CONFIG} revision --autogenerate -m "$(name)"
 
 # Deployment
 deploy_prod:
