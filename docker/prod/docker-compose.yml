@@ -18,7 +18,10 @@ services:
     restart: unless-stopped
 
   app:
-    image: ${DOCKERHUB_USERNAME}/finsight-transactions:latest
+    #image: ${DOCKERHUB_USERNAME}/finsight-transactions:latest
+    build:
+      context: ../../
+      dockerfile: ./docker/prod/Dockerfile
     env_file:
       - ../../settings/.env.prod
     depends_on:
