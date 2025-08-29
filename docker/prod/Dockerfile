@@ -22,6 +22,8 @@ ENV VENV_PATH=/opt/venv
 ENV PATH="$VENV_PATH/bin:$PATH"
 ENV APP_USER=appuser
 
+RUN apt-get update && apt-get install -y make && rm -rf /var/lib/apt/lists/*
+
 RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USER}
 
 WORKDIR /app
