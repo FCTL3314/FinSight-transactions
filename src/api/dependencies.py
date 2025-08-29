@@ -17,7 +17,9 @@ async def get_user_id(x_user_id: Annotated[int | None, Header()] = None) -> int:
     return x_user_id
 
 
-async def get_transactions_service(session: Session = Depends(get_db)) -> TransactionService:
+async def get_transactions_service(
+    session: Session = Depends(get_db),
+) -> TransactionService:
     return TransactionService(session)
 
 

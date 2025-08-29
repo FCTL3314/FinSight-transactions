@@ -25,7 +25,9 @@ router = APIRouter(tags=["System"])
         }
     },
 )
-async def health_check(session: Session = Depends(get_db)) -> HealthCheckResponse | JSONResponse:
+async def health_check(
+    session: Session = Depends(get_db),
+) -> HealthCheckResponse | JSONResponse:
     try:
         session.execute(text("SELECT 1"))
         return HealthCheckResponse(status="ok", db_connection=True)

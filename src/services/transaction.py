@@ -22,7 +22,9 @@ class TransactionService:
     def create(self, transaction: TransactionCreate, user_id: int) -> Transaction:
         return self.repo.create(transaction, user_id)
 
-    def update(self, transaction_id: int, transaction: TransactionUpdate, user_id: int) -> Transaction:
+    def update(
+        self, transaction_id: int, transaction: TransactionUpdate, user_id: int
+    ) -> Transaction:
         updated_transaction = self.repo.update(transaction_id, transaction, user_id)
         if not updated_transaction:
             raise ObjectNotFound

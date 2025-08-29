@@ -33,10 +33,14 @@ class DetailingService:
             raise ObjectNotFound
         return detailing
 
-    def get_all(self, user_id: int, skip: int, limit: int) -> list[type[FinanceDetailing]]:
+    def get_all(
+        self, user_id: int, skip: int, limit: int
+    ) -> list[type[FinanceDetailing]]:
         return self.repo.get_all(user_id, skip, limit)
 
-    def create(self, detailing_data: FinanceDetailingCreate, user_id: int) -> FinanceDetailing:
+    def create(
+        self, detailing_data: FinanceDetailingCreate, user_id: int
+    ) -> FinanceDetailing:
         db_detailing = FinanceDetailing(**detailing_data.model_dump(), user_id=user_id)
 
         self._calculate_and_set_fields(db_detailing)

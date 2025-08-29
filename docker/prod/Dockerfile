@@ -1,23 +1,38 @@
-FROM python:3.11-slim as builder
+FROM python:3.13-slim as builder
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN pip install uv
 
 WORKDIR /app
 
-RUN pip install poetry
+COPY pyproject.toml uv.lock ./
 
-COPY poetry.lock pyproject.toml ./
-RUN poetry config virtualenvs.create false && poetry install --no-dev --no-interaction --no-ansi
+RUN uv pip sync --no-dev --system
 
 COPY . .
 
-FROM python:3.11-slim
+
+FROM python:3.13-slim
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV APP_USER=appuser
+
+RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USER}
 
 WORKDIR /app
 
-COPY --from=builder /app /app
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
+COPY --from=builder /app .
 
-COPY --from=builder /go/bin/goose /usr/local/bin/
 COPY ./docker/prod/scripts/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
+
+RUN chown -R ${APP_USER}:${APP_USER} /app
+
+USER ${APP_USER}
 
 EXPOSE ${INTERNAL_PORT}
 

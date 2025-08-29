@@ -3,11 +3,6 @@ from pathlib import Path
 import yaml
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-_BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
-_SETTINGS_DIR: Path = _BASE_DIR / "settings"
-_LOCAL_ENV_PATH = _SETTINGS_DIR / ".env.local"
-_CONFIG_FILE_PATH = _SETTINGS_DIR / "config.yml"
-
 
 class PaginationSettings(BaseSettings):
     transaction_limit: int
@@ -19,7 +14,7 @@ class ServerSettings(BaseSettings):
     internal_port: int
     external_port: int
 
-    model_config = SettingsConfigDict(env_file=_LOCAL_ENV_PATH, extra="ignore")
+    model_config = SettingsConfigDict(extra="ignore")
 
 
 class DatabaseSettings(BaseSettings):
@@ -29,9 +24,7 @@ class DatabaseSettings(BaseSettings):
     host: str
     port: int
 
-    model_config = SettingsConfigDict(
-        env_file=_LOCAL_ENV_PATH, env_prefix="DB_", extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="DB_", extra="ignore")
 
     @property
     def url(self) -> str:
@@ -42,13 +35,14 @@ class DatabaseSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-    base_dir: Path = _BASE_DIR
-    settings_dir: Path = _SETTINGS_DIR
+    base_dir: Path = Path(__file__).resolve().parent.parent.parent
+    settings_dir: Path = base_dir / "settings"
+    config_file_path: Path = settings_dir / "config.yml"
 
     server: ServerSettings = ServerSettings()  # noqa
     db: DatabaseSettings = DatabaseSettings()  # noqa
 
-    _config_file_dict = yaml.safe_load(_CONFIG_FILE_PATH.read_text())
+    _config_file_dict = yaml.safe_load(config_file_path.read_text())
 
     pagination: PaginationSettings = PaginationSettings(
         **_config_file_dict["pagination"]

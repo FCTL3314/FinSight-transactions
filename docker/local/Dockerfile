@@ -1,15 +1,13 @@
-FROM python:3.11-slim
+FROM ghcr.io/astral-sh/uv:python3.13-trixie-slim
 
-RUN pip install "uvicorn[standard]" fastapi pydantic pydantic-settings sqlalchemy psycopg2-binary alembic python-dotenv pyyaml
+RUN apt-get update && apt-get install -y --no-install-recommends curl
 
-RUN pip install watchgod
-
-WORKDIR /app
-
-COPY ./requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+ENV PATH="/root/.local/bin:$PATH"
 
 COPY . /app
+WORKDIR /app
+
+RUN uv sync --locked
 
 EXPOSE ${INTERNAL_PORT}
 
