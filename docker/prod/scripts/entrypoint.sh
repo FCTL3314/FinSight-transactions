@@ -1,8 +1,6 @@
 #!/bin/sh
 set -e
 
-chown -R appuser:appuser /app/logs
+alembic -c settings/alembic.ini upgrade head
 
-make apply_migrations POSTGRES_DSN=postgresql://postgres:postgres@db:5432/postgres?sslmode=disable
-
-exec su-exec appuser ./app
+exec uvicorn main:app --host 0.0.0.0 --port ${INTERNAL_PORT}

@@ -1,18 +1,16 @@
-FROM golang:1.24.3-alpine
+FROM python:3.11-slim
 
-RUN apk add --no-cache git make curl
-RUN go install github.com/air-verse/air@latest
+RUN pip install "uvicorn[standard]" fastapi pydantic pydantic-settings sqlalchemy psycopg2-binary alembic python-dotenv pyyaml
+
+RUN pip install watchgod
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
-RUN go mod download
+COPY ./requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-COPY . .
-
-COPY docker/local/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY . /app
 
 EXPOSE ${INTERNAL_PORT}
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/app/docker/local/scripts/entrypoint.sh"]

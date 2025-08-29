@@ -1,36 +1,22 @@
-FROM golang:1.24.3-alpine AS builder
-
-RUN apk add --no-cache git
+FROM python:3.11-slim as builder
 
 WORKDIR /app
 
-RUN go install github.com/pressly/goose/v3/cmd/goose@latest
+RUN pip install poetry
 
-COPY go.mod go.sum ./
-RUN go mod download
+COPY poetry.lock pyproject.toml ./
+RUN poetry config virtualenvs.create false && poetry install --no-dev --no-interaction --no-ansi
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o app ./cmd/api
-
-FROM alpine:latest
-
-RUN apk add --no-cache bash ca-certificates make curl su-exec
-
-RUN adduser -D -g '' appuser
+FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN mkdir -p /app/logs && chown -R appuser:appuser /app/logs
+COPY --from=builder /app /app
 
-COPY --from=builder /app/app .
 COPY --from=builder /go/bin/goose /usr/local/bin/
-
-COPY settings/config.yml /app/settings/config.yml
-COPY docker/prod/scripts/entrypoint.sh /app/entrypoint.sh
-COPY Makefile /app/Makefile
-COPY migrations /app/migrations
-
+COPY ./docker/prod/scripts/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 EXPOSE ${INTERNAL_PORT}
