@@ -1,37 +1,41 @@
-FROM golang:1.24.3-alpine AS builder
+FROM ghcr.io/astral-sh/uv:python3.13-trixie-slim AS builder
 
-RUN apk add --no-cache git
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+ENV VENV_PATH=/opt/venv
+RUN python -m venv $VENV_PATH
+ENV PATH="$VENV_PATH/bin:$PATH"
 
 WORKDIR /app
 
-RUN go install github.com/pressly/goose/v3/cmd/goose@latest
-
-COPY go.mod go.sum ./
-RUN go mod download
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o app ./cmd/api
+FROM python:3.13-slim-trixie
 
-FROM alpine:latest
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV VENV_PATH=/opt/venv
+ENV PATH="$VENV_PATH/bin:$PATH"
+ENV APP_USER=appuser
 
-RUN apk add --no-cache bash ca-certificates make curl su-exec
-
-RUN adduser -D -g '' appuser
+RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USER}
 
 WORKDIR /app
 
-RUN mkdir -p /app/logs && chown -R appuser:appuser /app/logs
+COPY --from=builder ${VENV_PATH} ${VENV_PATH}
 
-COPY --from=builder /app/app .
-COPY --from=builder /go/bin/goose /usr/local/bin/
+COPY --from=builder /app /app
 
-COPY settings/config.yml /app/settings/config.yml
-COPY docker/prod/scripts/entrypoint.sh /app/entrypoint.sh
-COPY Makefile /app/Makefile
-COPY migrations /app/migrations
+COPY ./docker/prod/scripts/entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
-RUN chmod +x /app/entrypoint.sh
+RUN chown -R ${APP_USER}:${APP_USER} /app
+
+USER ${APP_USER}
 
 EXPOSE ${INTERNAL_PORT}
 

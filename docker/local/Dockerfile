@@ -1,18 +1,14 @@
-FROM golang:1.24.3-alpine
+FROM ghcr.io/astral-sh/uv:python3.13-trixie-slim
 
-RUN apk add --no-cache git make curl
-RUN go install github.com/air-verse/air@latest
+RUN apt-get update && apt-get install -y --no-install-recommends curl
 
+ENV PATH="/root/.local/bin:$PATH"
+
+COPY . /app
 WORKDIR /app
 
-COPY go.mod go.sum ./
-RUN go mod download
-
-COPY . .
-
-COPY docker/local/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN uv sync --locked
 
 EXPOSE ${INTERNAL_PORT}
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/app/docker/local/scripts/entrypoint.sh"]

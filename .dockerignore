@@ -1,9 +1,31 @@
+# Git
+.git/
+.github/
+.gitignore
+
+# IDE-specific
+.idea/
+.vscode/
+*.swp
+
+# Python virtual environments
+**/*venv/
+
+# Python cache
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Settings
 settings/.env.prod.dist
 settings/.env.local.dist
+
+# Docs
 README.md
-.gitignore
 LICENSE
-.idea
-.git
-.github
-qodana.yaml

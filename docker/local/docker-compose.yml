@@ -29,6 +29,7 @@ services:
         condition: service_healthy
     volumes:
       - ../../:/app
+      - venv_data:/app/.venv
     ports:
       - "${EXTERNAL_PORT}:${INTERNAL_PORT}"
     healthcheck:
@@ -37,3 +38,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+volumes:
+  venv_data:
