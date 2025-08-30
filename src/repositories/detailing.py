@@ -1,5 +1,5 @@
 from datetime import date
-from sqlalchemy import func, select, delete, update
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.models.detailing import FinanceDetailing
 from src.db.models.transaction import Transaction
