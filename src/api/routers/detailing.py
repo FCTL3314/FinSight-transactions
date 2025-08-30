@@ -1,12 +1,14 @@
 from fastapi import APIRouter, Depends, status
+from fastapi_pagination import LimitOffsetPage
 
 from src.api.dependencies import get_user_id, get_detailing_service
 from src.api.schemas.detailing import (
     FinanceDetailingCreate,
     FinanceDetailingUpdate,
     FinanceDetailingResponse,
+    FinanceDetailingPage,
+    FinanceDetailingPaginationParams,
 )
-from src.core import settings
 from src.services.detailing import DetailingService
 
 router = APIRouter(prefix="/detailing", tags=["Detailing"])
@@ -23,14 +25,14 @@ async def create_detailing(
     return await service.create(detailing, user_id)
 
 
-@router.get("/", response_model=list[FinanceDetailingResponse])
+@router.get("/", response_model=FinanceDetailingPage)
 async def get_all_detailing(
     user_id: int = Depends(get_user_id),
-    skip: int = 0,
-    limit: int = settings.pagination.finance_detailing_limit,
+    params: FinanceDetailingPaginationParams = Depends(),
     service: DetailingService = Depends(get_detailing_service),
 ):
-    return await service.get_all(user_id, skip, limit)
+    items, total = await service.get_all(user_id, params.limit, params.offset)
+    return LimitOffsetPage.create(items, params=params, total=total)
 
 
 @router.get("/{detailing_id}", response_model=FinanceDetailingResponse)

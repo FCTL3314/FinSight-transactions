@@ -19,9 +19,9 @@ class TransactionService:
         return transaction
 
     async def get_all(
-        self, user_id: int, skip: int, limit: int
-    ) -> Sequence[Transaction]:
-        return await self.repo.get_all(user_id, skip, limit)
+        self, user_id: int, limit: int, offset: int
+    ) -> tuple[Sequence[Transaction], int]:
+        return await self.repo.get_all(user_id, limit, offset)
 
     async def create(self, transaction: TransactionCreate, user_id: int) -> Transaction:
         return await self.repo.create(transaction, user_id)

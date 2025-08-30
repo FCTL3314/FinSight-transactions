@@ -1,3 +1,4 @@
+from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.schemas.detailing import FinanceDetailingCreate, FinanceDetailingUpdate
@@ -33,9 +34,9 @@ class DetailingService:
         return detailing
 
     async def get_all(
-        self, user_id: int, skip: int, limit: int
-    ) -> list[FinanceDetailing]:
-        return await self.repo.get_all(user_id, skip, limit)
+        self, user_id: int, limit: int, offset: int
+    ) -> tuple[Sequence[FinanceDetailing], int]:
+        return await self.repo.get_all(user_id, limit, offset)
 
     async def create(
         self, detailing_data: FinanceDetailingCreate, user_id: int

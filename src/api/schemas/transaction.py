@@ -1,6 +1,12 @@
 from datetime import datetime, UTC
 
+from fastapi.params import Query
+from fastapi_pagination import LimitOffsetParams, LimitOffsetPage
+from fastapi_pagination.customization import CustomizedPage, UseParams
 from pydantic import BaseModel, Field
+
+from src.api.schemas import IdFirstMixin
+from src.core import settings
 
 
 class TransactionBase(BaseModel):
@@ -23,7 +29,7 @@ class TransactionUpdate(BaseModel):
     made_at: datetime | None = None
 
 
-class TransactionResponse(TransactionBase):
+class TransactionResponse(IdFirstMixin, TransactionBase):
     id: int
     user_id: int
     created_at: datetime
@@ -31,3 +37,18 @@ class TransactionResponse(TransactionBase):
 
     class Config:
         from_attributes = True
+
+
+class TransactionPaginationParams(LimitOffsetParams):
+    limit: int = Query(
+        settings.pagination.transaction_limit,
+        ge=1,
+        le=settings.pagination.transaction_limit,
+        description="Page size limit",
+    )
+
+
+TransactionPage = CustomizedPage[
+    LimitOffsetPage[TransactionResponse],
+    UseParams(TransactionPaginationParams),
+]

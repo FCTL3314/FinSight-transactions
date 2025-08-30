@@ -1,18 +1,21 @@
 from datetime import date
+from typing import Sequence
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.db.models.detailing import FinanceDetailing
 from src.db.models.transaction import Transaction
 
 
 class DetailingRepository:
-    def __init__(self, db: AsyncSession) -> None:
-        self.db = db
+    def __init__(self, session: AsyncSession) -> None:
+        self.session = session
 
     async def get_by_id(
         self, detailing_id: int, user_id: int
     ) -> FinanceDetailing | None:
-        result = await self.db.execute(
+        result = await self.session.execute(
             select(FinanceDetailing).filter(
                 FinanceDetailing.id == detailing_id, FinanceDetailing.user_id == user_id
             )
@@ -20,21 +23,27 @@ class DetailingRepository:
         return result.scalar_one_or_none()
 
     async def get_all(
-        self, user_id: int, skip: int = 0, limit: int = 32
-    ) -> list[FinanceDetailing]:
-        result = await self.db.execute(
-            select(FinanceDetailing)
-            .filter(FinanceDetailing.user_id == user_id)
-            .order_by(FinanceDetailing.created_at.desc())
-            .offset(skip)
-            .limit(limit)
+        self, user_id: int, limit: int, offset: int
+    ) -> tuple[Sequence[FinanceDetailing], int]:
+        total_result = await self.session.execute(
+            select(func.count()).where(FinanceDetailing.user_id == user_id)
         )
-        return result.scalars().all()
+        total = total_result.scalar_one()
+
+        result = await self.session.execute(
+            select(FinanceDetailing)
+            .where(FinanceDetailing.user_id == user_id)
+            .order_by(FinanceDetailing.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
+        items = result.scalars().all()
+        return items, total
 
     async def get_transaction_totals(
         self, user_id: int, date_from: date, date_to: date
     ) -> tuple[float, float]:
-        income_query = await self.db.execute(
+        income_query = await self.session.execute(
             select(func.coalesce(func.sum(Transaction.amount), 0.0)).filter(
                 Transaction.user_id == user_id,
                 Transaction.amount > 0,
@@ -44,7 +53,7 @@ class DetailingRepository:
         )
         total_income = income_query.scalar()
 
-        expense_query = await self.db.execute(
+        expense_query = await self.session.execute(
             select(func.coalesce(func.sum(Transaction.amount), 0.0)).filter(
                 Transaction.user_id == user_id,
                 Transaction.amount < 0,
@@ -57,17 +66,17 @@ class DetailingRepository:
         return total_income, abs(total_expense)
 
     async def create(self, detailing: FinanceDetailing) -> FinanceDetailing:
-        self.db.add(detailing)
-        await self.db.commit()
-        await self.db.refresh(detailing)
+        self.session.add(detailing)
+        await self.session.commit()
+        await self.session.refresh(detailing)
         return detailing
 
     async def update(self, detailing: FinanceDetailing) -> FinanceDetailing:
-        self.db.add(detailing)
-        await self.db.commit()
-        await self.db.refresh(detailing)
+        self.session.add(detailing)
+        await self.session.commit()
+        await self.session.refresh(detailing)
         return detailing
 
     async def delete(self, detailing: FinanceDetailing) -> None:
-        await self.db.delete(detailing)
-        await self.db.commit()
+        await self.session.delete(detailing)
+        await self.session.commit()

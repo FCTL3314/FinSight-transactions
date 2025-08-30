@@ -17,13 +17,15 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-config.set_section_option(config.config_ini_section, "DB_NAME", settings.db.name)
-config.set_section_option(config.config_ini_section, "DB_USER", settings.db.user)
+config.set_section_option(config.config_ini_section, "DB_NAME", settings.session.name)
+config.set_section_option(config.config_ini_section, "DB_USER", settings.session.user)
 config.set_section_option(
-    config.config_ini_section, "DB_PASSWORD", settings.db.password
+    config.config_ini_section, "DB_PASSWORD", settings.session.password
 )
-config.set_section_option(config.config_ini_section, "DB_HOST", settings.db.host)
-config.set_section_option(config.config_ini_section, "DB_PORT", str(settings.db.port))
+config.set_section_option(config.config_ini_section, "DB_HOST", settings.session.host)
+config.set_section_option(
+    config.config_ini_section, "DB_PORT", str(settings.session.port)
+)
 
 
 def run_migrations_offline() -> None:
@@ -36,7 +38,7 @@ def run_migrations_offline() -> None:
 
     Calls to context.execute() here emit the script output to stdout.
     """
-    url = settings.db.url
+    url = settings.session.url
     context.configure(
         url=url,
         target_metadata=target_metadata,

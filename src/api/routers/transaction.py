@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, status
+from fastapi_pagination import LimitOffsetPage
 
 from src.api.dependencies import get_user_id, get_transactions_service
 from src.api.schemas.transaction import (
     TransactionCreate,
     TransactionUpdate,
     TransactionResponse,
+    TransactionPage,
+    TransactionPaginationParams,
 )
 from src.services.transaction import TransactionService
 
@@ -31,14 +34,14 @@ async def get_transaction(
     return await service.get_by_id(transaction_id, user_id)
 
 
-@router.get("/", response_model=list[TransactionResponse])
+@router.get("/", response_model=TransactionPage)
 async def get_all_transactions(
     user_id: int = Depends(get_user_id),
-    skip: int = 0,
-    limit: int = 100,
+    params: TransactionPaginationParams = Depends(),
     service: TransactionService = Depends(get_transactions_service),
 ):
-    return await service.get_all(user_id, skip, limit)
+    items, total = await service.get_all(user_id, params.limit, params.offset)
+    return LimitOffsetPage.create(items, params=params, total=total)
 
 
 @router.patch("/{transaction_id}", response_model=TransactionResponse)
