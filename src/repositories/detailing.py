@@ -1,76 +1,73 @@
 from datetime import date
-
-from sqlalchemy import func
-from sqlalchemy.orm import Session
-
+from sqlalchemy import func, select, delete, update
+from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.models.detailing import FinanceDetailing
 from src.db.models.transaction import Transaction
 
 
 class DetailingRepository:
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    def get_by_id(self, detailing_id: int, user_id: int) -> FinanceDetailing | None:
-        return (
-            self.db.query(FinanceDetailing)
-            .filter(
+    async def get_by_id(
+        self, detailing_id: int, user_id: int
+    ) -> FinanceDetailing | None:
+        result = await self.db.execute(
+            select(FinanceDetailing).filter(
                 FinanceDetailing.id == detailing_id, FinanceDetailing.user_id == user_id
             )
-            .first()
         )
+        return result.scalar_one_or_none()
 
-    def get_all(
+    async def get_all(
         self, user_id: int, skip: int = 0, limit: int = 32
-    ) -> list[type[FinanceDetailing]]:
-        return (
-            self.db.query(FinanceDetailing)
+    ) -> list[FinanceDetailing]:
+        result = await self.db.execute(
+            select(FinanceDetailing)
             .filter(FinanceDetailing.user_id == user_id)
             .order_by(FinanceDetailing.created_at.desc())
             .offset(skip)
             .limit(limit)
-            .all()
         )
+        return result.scalars().all()
 
-    def get_transaction_totals(
+    async def get_transaction_totals(
         self, user_id: int, date_from: date, date_to: date
     ) -> tuple[float, float]:
-        income_query = (
-            self.db.query(func.coalesce(func.sum(Transaction.amount), 0.0))
-            .filter(
+        income_query = await self.db.execute(
+            select(func.coalesce(func.sum(Transaction.amount), 0.0)).filter(
                 Transaction.user_id == user_id,
                 Transaction.amount > 0,
                 Transaction.made_at >= date_from,
                 Transaction.made_at <= date_to,
             )
-            .scalar()
         )
+        total_income = income_query.scalar()
 
-        expense_query = (
-            self.db.query(func.coalesce(func.sum(Transaction.amount), 0.0))
-            .filter(
+        expense_query = await self.db.execute(
+            select(func.coalesce(func.sum(Transaction.amount), 0.0)).filter(
                 Transaction.user_id == user_id,
                 Transaction.amount < 0,
                 Transaction.made_at >= date_from,
                 Transaction.made_at <= date_to,
             )
-            .scalar()
         )
+        total_expense = expense_query.scalar()
 
-        return income_query, abs(expense_query)
+        return total_income, abs(total_expense)
 
-    def create(self, detailing: FinanceDetailing) -> FinanceDetailing:
+    async def create(self, detailing: FinanceDetailing) -> FinanceDetailing:
         self.db.add(detailing)
-        self.db.commit()
-        self.db.refresh(detailing)
+        await self.db.commit()
+        await self.db.refresh(detailing)
         return detailing
 
-    def update(self, detailing: FinanceDetailing) -> FinanceDetailing:
+    async def update(self, detailing: FinanceDetailing) -> FinanceDetailing:
         self.db.add(detailing)
-        self.db.commit()
-        self.db.refresh(detailing)
+        await self.db.commit()
+        await self.db.refresh(detailing)
         return detailing
 
-    def delete(self, detailing: FinanceDetailing) -> None:
-        self.db.delete(detailing)
-        self.db.commit()
+    async def delete(self, detailing: FinanceDetailing) -> None:
+        await self.db.delete(detailing)
+        await self.db.commit()

@@ -2,9 +2,9 @@ from http import HTTPStatus
 from typing import Annotated
 
 from fastapi import Header, HTTPException, Depends
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.db.database import get_db
+from src.db.database import get_session
 from src.services.detailing import DetailingService
 from src.services.transaction import TransactionService
 
@@ -18,10 +18,12 @@ async def get_user_id(x_user_id: Annotated[int | None, Header()] = None) -> int:
 
 
 async def get_transactions_service(
-    session: Session = Depends(get_db),
+    session: AsyncSession = Depends(get_session),
 ) -> TransactionService:
     return TransactionService(session)
 
 
-async def get_detailing_service(session: Session = Depends(get_db)) -> DetailingService:
+async def get_detailing_service(
+    session: AsyncSession = Depends(get_session),
+) -> DetailingService:
     return DetailingService(session)
