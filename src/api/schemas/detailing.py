@@ -1,6 +1,8 @@
 from datetime import date, datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_serializer
+
+from src.api.schemas import IdFirstMixin
 
 
 class FinanceDetailingBase(BaseModel):
@@ -21,7 +23,7 @@ class FinanceDetailingUpdate(BaseModel):
     current_amount: float | None = None
 
 
-class FinanceDetailingResponse(FinanceDetailingBase):
+class FinanceDetailingResponse(IdFirstMixin, FinanceDetailingBase):
     id: int
     user_id: int
     total_income: float

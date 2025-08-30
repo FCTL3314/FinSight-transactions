@@ -2,6 +2,8 @@ from datetime import datetime, UTC
 
 from pydantic import BaseModel, Field
 
+from src.api.schemas import IdFirstMixin
+
 
 class TransactionBase(BaseModel):
     amount: float
@@ -23,7 +25,7 @@ class TransactionUpdate(BaseModel):
     made_at: datetime | None = None
 
 
-class TransactionResponse(TransactionBase):
+class TransactionResponse(IdFirstMixin, TransactionBase):
     id: int
     user_id: int
     created_at: datetime
