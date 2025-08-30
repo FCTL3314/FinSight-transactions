@@ -3,6 +3,8 @@ from pathlib import Path
 import yaml
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from src.core.types import LoggingLevels
+
 
 class PaginationSettings(BaseSettings):
     transaction_limit: int
@@ -37,7 +39,10 @@ class DatabaseSettings(BaseSettings):
 class Settings(BaseSettings):
     base_dir: Path = Path(__file__).resolve().parent.parent.parent
     settings_dir: Path = base_dir / "settings"
+    logs_dir: Path = base_dir / "logs"
     config_file_path: Path = settings_dir / "config.yml"
+
+    log_level: LoggingLevels
 
     server: ServerSettings = ServerSettings()  # noqa
     db: DatabaseSettings = DatabaseSettings()  # noqa
