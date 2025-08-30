@@ -17,14 +17,14 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-config.set_section_option(config.config_ini_section, "DB_NAME", settings.session.name)
-config.set_section_option(config.config_ini_section, "DB_USER", settings.session.user)
+config.set_section_option(config.config_ini_section, "DB_NAME", settings.db.name)
+config.set_section_option(config.config_ini_section, "DB_USER", settings.db.user)
 config.set_section_option(
-    config.config_ini_section, "DB_PASSWORD", settings.session.password
+    config.config_ini_section, "DB_PASSWORD", settings.db.password
 )
-config.set_section_option(config.config_ini_section, "DB_HOST", settings.session.host)
+config.set_section_option(config.config_ini_section, "DB_HOST", settings.db.host)
 config.set_section_option(
-    config.config_ini_section, "DB_PORT", str(settings.session.port)
+    config.config_ini_section, "DB_PORT", str(settings.db.port)
 )
 
 

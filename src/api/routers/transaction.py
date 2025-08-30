@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, status
 from fastapi_pagination import LimitOffsetPage
 
@@ -12,6 +14,9 @@ from src.api.schemas.transaction import (
 from src.services.transaction import TransactionService
 
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
+
+
+logger = logging.getLogger(__name__)
 
 
 @router.post(
@@ -40,6 +45,7 @@ async def get_all_transactions(
     params: TransactionPaginationParams = Depends(),
     service: TransactionService = Depends(get_transactions_service),
 ):
+    logger.info(__name__)
     items, total = await service.get_all(user_id, params.limit, params.offset)
     return LimitOffsetPage.create(items, params=params, total=total)
 
