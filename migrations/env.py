@@ -23,9 +23,7 @@ config.set_section_option(
     config.config_ini_section, "DB_PASSWORD", settings.db.password
 )
 config.set_section_option(config.config_ini_section, "DB_HOST", settings.db.host)
-config.set_section_option(
-    config.config_ini_section, "DB_PORT", str(settings.db.port)
-)
+config.set_section_option(config.config_ini_section, "DB_PORT", str(settings.db.port))
 
 
 def run_migrations_offline() -> None:

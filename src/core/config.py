@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     settings_dir: Path = base_dir / "settings"
     logs_dir: Path = base_dir / "logs"
     config_file_path: Path = settings_dir / "config.yml"
+    _config_file_dict = yaml.safe_load(config_file_path.read_text())
+    logging_config_dict: dict = _config_file_dict["logging"]
+
     log_level: LoggingLevels
 
     server: ServerSettings = ServerSettings()  # noqa
