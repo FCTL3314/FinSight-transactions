@@ -1,8 +1,12 @@
 from datetime import date, datetime
 
-from pydantic import BaseModel, model_serializer
+from fastapi.params import Query
+from fastapi_pagination import LimitOffsetParams, LimitOffsetPage
+from fastapi_pagination.customization import CustomizedPage, UseParams
+from pydantic import BaseModel
 
 from src.api.schemas import IdFirstMixin
+from src.core import settings
 
 
 class FinanceDetailingBase(BaseModel):
@@ -37,3 +41,18 @@ class FinanceDetailingResponse(IdFirstMixin, FinanceDetailingBase):
 
     class Config:
         from_attributes = True
+
+
+class FinanceDetailingPaginationParams(LimitOffsetParams):
+    limit: int = Query(
+        settings.pagination.finance_detailing_limit,
+        ge=1,
+        le=settings.pagination.finance_detailing_limit,
+        description="Page size limit",
+    )
+
+
+FinanceDetailingPage = CustomizedPage[
+    LimitOffsetPage[FinanceDetailingResponse],
+    UseParams(FinanceDetailingPaginationParams),
+]

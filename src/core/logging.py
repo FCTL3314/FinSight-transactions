@@ -25,5 +25,3 @@ def setup_logging() -> None:
     )
     file_handler.setFormatter(formatter)
     root_logger.addHandler(file_handler)
-
-    logging.info(f"Logging configured. Log file: {log_file}")

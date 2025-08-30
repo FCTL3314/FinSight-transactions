@@ -8,6 +8,7 @@ app = FastAPI(
     description="Backend server for managing financial transactions.",
     version="1.0.0",
     lifespan=lifespan,
+    debug=settings.server.debug,
 )
 
 
