@@ -4,9 +4,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
+
 COPY pyproject.toml uv.lock ./
-RUN python -m venv /opt/venv && \
-    /opt/venv/bin/uv sync --locked --no-dev
+RUN uv sync --locked --no-dev
+
 COPY . .
 
 FROM ghcr.io/astral-sh/uv:python3.13-trixie-slim
