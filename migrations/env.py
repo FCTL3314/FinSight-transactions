@@ -19,7 +19,9 @@ target_metadata = Base.metadata
 
 config.set_section_option(config.config_ini_section, "DB_NAME", settings.db.name)
 config.set_section_option(config.config_ini_section, "DB_USER", settings.db.user)
-config.set_section_option(config.config_ini_section, "DB_PASSWORD", settings.db.password)
+config.set_section_option(
+    config.config_ini_section, "DB_PASSWORD", settings.db.password
+)
 config.set_section_option(config.config_ini_section, "DB_HOST", settings.db.host)
 config.set_section_option(config.config_ini_section, "DB_PORT", str(settings.db.port))
 
