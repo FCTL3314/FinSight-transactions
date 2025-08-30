@@ -54,3 +54,9 @@ health_check_prod:
 
 logs_prod:
 	docker compose --env-file ${ENV_PROD_PATH} -p ${PROD_DOCKER_COMPOSE_PROJECT_NAME} -f ${PROD_DOCKER_COMPOSE_FILE_PATH} logs app
+
+# Linting & Formatting
+lint:
+	uv run ruff check .
+format:
+	uv run ruff format .
