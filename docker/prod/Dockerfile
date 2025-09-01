@@ -24,7 +24,7 @@ ENV PATH="$VENV_PATH/bin:$PATH"
 ENV UV_CACHE_DIR=/tmp/uv_cache
 ENV APP_USER=appuser
 
-RUN apt-get update && apt-get install -y make && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y make gosu && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USER}
 
@@ -37,8 +37,6 @@ COPY ./docker/prod/scripts/entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
 RUN chown -R ${APP_USER}:${APP_USER} /app
-
-USER ${APP_USER}
 
 EXPOSE ${INTERNAL_PORT}
 
