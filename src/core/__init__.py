@@ -1,3 +1,3 @@
 from src.core.config import Settings
 
-settings = Settings()
+settings = Settings()  # noqa
