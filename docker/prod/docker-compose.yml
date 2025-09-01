@@ -25,7 +25,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ../../logs:${LOGS_DIR}
+      - ../../logs:/app/logs
     ports:
       - "${EXTERNAL_PORT}:${INTERNAL_PORT}"
     healthcheck:
